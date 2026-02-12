@@ -31,9 +31,9 @@ export function ProjectCard({ project }: ProjectCardProps) {
   return (
     <Link
       href={`/projects/${project.slug}`}
-      className="block group p-6 border border-neutral-800 rounded-lg hover:border-neutral-700 transition-colors bg-neutral-900/30"
+      className="block group p-8 sm:p-10 border border-neutral-800 rounded-xl hover:border-neutral-600 transition-all duration-300 bg-neutral-900/30 hover:-translate-y-0.5"
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-5">
         <span
           className={`text-[11px] tracking-wider uppercase ${
             isCompleted ? 'text-accent' : 'text-amber-400'
@@ -41,53 +41,53 @@ export function ProjectCard({ project }: ProjectCardProps) {
         >
           {isCompleted ? 'Completed' : 'In Progress'}
         </span>
-        <span className="text-neutral-600 text-[11px]">
+        <span className="text-neutral-600 text-[12px]">
           {formatDate(project.date)}
         </span>
       </div>
 
-      <h3 className="font-pixel text-neutral-100 text-base mb-3 group-hover:text-accent transition-colors">
+      <h3 className="font-pixel text-neutral-100 text-lg mb-4 group-hover:text-accent transition-colors duration-300">
         {project.title.toUpperCase()}
       </h3>
 
-      <p className="text-neutral-500 text-[13px] line-clamp-2 mb-5 leading-relaxed">
+      <p className="text-neutral-400 text-[15px] mb-6 leading-[1.8]">
         {project.description}
       </p>
 
       {project.stats && (
-        <div className="flex flex-wrap gap-x-5 gap-y-1 text-[12px] mb-5">
+        <div className="flex flex-wrap gap-x-6 gap-y-2 text-[13px] mb-6">
           {project.stats.lines && (
-            <span className="text-neutral-400">
+            <span className="text-neutral-300">
               <span className="text-accent/60">loc</span>{' '}
               {project.stats.lines}
             </span>
           )}
           {project.stats.sharpe !== undefined && (
-            <span className="text-neutral-400">
+            <span className="text-neutral-300">
               <span className="text-accent/60">sharpe</span>{' '}
               {project.stats.sharpe}
             </span>
           )}
           {project.stats.strategies !== undefined && (
-            <span className="text-neutral-400">
+            <span className="text-neutral-300">
               <span className="text-accent/60">strats</span>{' '}
               {project.stats.strategies}
             </span>
           )}
           {project.stats.sources !== undefined && (
-            <span className="text-neutral-400">
+            <span className="text-neutral-300">
               <span className="text-accent/60">sources</span>{' '}
               {project.stats.sources}
             </span>
           )}
           {project.stats.modules !== undefined && (
-            <span className="text-neutral-400">
+            <span className="text-neutral-300">
               <span className="text-accent/60">modules</span>{' '}
               {project.stats.modules}
             </span>
           )}
           {project.stats.stars !== undefined && (
-            <span className="text-neutral-400">
+            <span className="text-neutral-300">
               <span className="text-accent/60">stars</span>{' '}
               {project.stats.stars}
             </span>
@@ -95,13 +95,13 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </div>
       )}
 
-      <div className="flex flex-wrap gap-1.5">
-        {project.tags.slice(0, 4).map((tag) => (
+      <div className="flex flex-wrap gap-2">
+        {project.tags.slice(0, 5).map((tag) => (
           <TechTag key={tag} tag={tag} />
         ))}
-        {project.tags.length > 4 && (
-          <span className="text-neutral-600 text-[10px] self-center ml-1">
-            +{project.tags.length - 4}
+        {project.tags.length > 5 && (
+          <span className="text-neutral-600 text-[11px] self-center ml-1">
+            +{project.tags.length - 5}
           </span>
         )}
       </div>

@@ -54,7 +54,7 @@ export function ProjectGrid({ projects }: ProjectGridProps) {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {filteredProjects.map((project) => (
           <ProjectCard key={project.slug} project={project} />
         ))}

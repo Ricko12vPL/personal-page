@@ -3,11 +3,11 @@ import { siteConfig } from '@/config/site'
 export function Footer() {
   return (
     <footer className="border-t border-neutral-800/50 mt-auto">
-      <div className="max-w-[1100px] mx-auto px-8 py-8 flex items-center justify-between">
-        <p className="text-neutral-600 text-[12px]">
+      <div className="max-w-[1100px] mx-auto px-8 py-16 flex items-center justify-between">
+        <p className="text-neutral-600 text-[13px]">
           &copy; 2025 Kacper Saks
         </p>
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-8">
           {[
             { label: 'GitHub', href: siteConfig.links.github },
             { label: 'LinkedIn', href: siteConfig.links.linkedin },
@@ -18,7 +18,7 @@ export function Footer() {
               href={link.href}
               target={link.label === 'Email' ? undefined : '_blank'}
               rel={link.label === 'Email' ? undefined : 'noopener noreferrer'}
-              className="text-neutral-600 hover:text-accent text-[12px] transition-colors"
+              className="text-neutral-500 hover:text-accent text-[13px] transition-colors"
             >
               {link.label}
             </a>

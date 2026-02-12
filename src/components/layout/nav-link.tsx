@@ -17,7 +17,7 @@ export function NavLink({ href, label }: NavLinkProps) {
     <Link
       href={href}
       className={cn(
-        'text-[13px] transition-colors',
+        'text-[14px] transition-colors',
         isActive
           ? 'text-accent'
           : 'text-neutral-500 hover:text-neutral-200'

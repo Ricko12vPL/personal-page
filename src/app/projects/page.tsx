@@ -13,7 +13,7 @@ export default function ProjectsPage() {
   const projects = getProjects()
 
   return (
-    <div className="max-w-[1100px] mx-auto px-8 py-20">
+    <div className="max-w-[1100px] mx-auto px-8 py-24">
       <SectionHeading
         title="projects"
         subtitle="Quantitative finance, AI agents, and full-stack applications"

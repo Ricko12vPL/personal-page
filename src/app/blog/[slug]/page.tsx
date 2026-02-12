@@ -30,7 +30,7 @@ export default async function BlogPostPage({ params }: PageProps) {
   if (!post) notFound()
 
   return (
-    <div className="max-w-[800px] mx-auto px-8 py-20">
+    <div className="max-w-[800px] mx-auto px-8 py-24">
       <Link
         href="/blog"
         className="text-neutral-500 text-[13px] hover:text-accent transition-colors mb-12 inline-block"

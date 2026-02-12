@@ -13,7 +13,7 @@ export default function BlogPage() {
   const posts = getPublishedPosts()
 
   return (
-    <div className="max-w-[800px] mx-auto px-8 py-20">
+    <div className="max-w-[800px] mx-auto px-8 py-24">
       <SectionHeading
         title="blog"
         subtitle="Project updates and engineering notes"

@@ -40,7 +40,7 @@ export function Typewriter() {
   }, [tick, isDeleting])
 
   return (
-    <p className="text-lg text-neutral-400 mt-6">
+    <p className="text-xl text-neutral-400 mt-6 tracking-wide">
       <span className="text-accent">
         {currentRole.slice(0, charIndex)}
       </span>

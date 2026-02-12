@@ -68,15 +68,35 @@ html {
   animation: blink 1s step-end infinite;
 }
 
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-in {
+  animation: fadeInUp 0.6s ease-out both;
+}
+
+.animate-in-delay-1 { animation-delay: 0.1s; }
+.animate-in-delay-2 { animation-delay: 0.2s; }
+.animate-in-delay-3 { animation-delay: 0.3s; }
+.animate-in-delay-4 { animation-delay: 0.4s; }
+
 /* MDX content styles */
 .mdx-content h2 {
   color: #f5f5f5;
   font-family: var(--font-geist-pixel-square);
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 500;
-  margin-top: 3rem;
-  margin-bottom: 1.25rem;
-  padding-bottom: 0.75rem;
+  margin-top: 4rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
   border-bottom: 1px solid #262626;
   text-transform: uppercase;
 }
@@ -84,18 +104,18 @@ html {
 .mdx-content h3 {
   color: #00ff41;
   font-family: var(--font-geist-pixel-square);
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   font-weight: 500;
-  margin-top: 2.5rem;
-  margin-bottom: 1rem;
+  margin-top: 3rem;
+  margin-bottom: 1.25rem;
   text-transform: uppercase;
 }
 
 .mdx-content p {
   color: #a3a3a3;
-  font-size: 0.9375rem;
-  line-height: 1.8;
-  margin-bottom: 1.25rem;
+  font-size: 1rem;
+  line-height: 1.85;
+  margin-bottom: 1.5rem;
 }
 
 .mdx-content ul {
@@ -106,8 +126,8 @@ html {
 
 .mdx-content ul li {
   color: #a3a3a3;
-  font-size: 0.9375rem;
-  line-height: 1.8;
+  font-size: 1rem;
+  line-height: 1.85;
   position: relative;
   padding-left: 1.5rem;
   margin-bottom: 0.25rem;

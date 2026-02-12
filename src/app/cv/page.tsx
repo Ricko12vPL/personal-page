@@ -135,11 +135,11 @@ const certifications = [
 
 export default function CvPage() {
   return (
-    <div className="max-w-[800px] mx-auto px-8 py-20">
+    <div className="max-w-[800px] mx-auto px-8 py-24">
       <PrintButton />
 
       {/* Summary */}
-      <section className="mb-24">
+      <section className="mb-32">
         <SectionHeading title="summary" />
         <p className="text-neutral-300 text-[15px] leading-[1.9] max-w-2xl">
           ML / Backend Engineer with experience building production ML
@@ -173,25 +173,25 @@ export default function CvPage() {
       </section>
 
       {/* Experience */}
-      <section className="mb-24">
+      <section className="mb-32">
         <SectionHeading title="experience" />
         <Timeline items={experience} />
       </section>
 
       {/* Education */}
-      <section className="mb-24">
+      <section className="mb-32">
         <SectionHeading title="education" />
         <Timeline items={education} />
       </section>
 
       {/* Skills */}
-      <section className="mb-24">
+      <section className="mb-32">
         <SectionHeading title="skills" />
         <SkillSection categories={skillCategories} />
       </section>
 
       {/* Certifications */}
-      <section className="mb-24">
+      <section className="mb-32">
         <SectionHeading title="certifications" />
         <div className="space-y-3">
           {certifications.map((cert) => (
@@ -218,7 +218,7 @@ export default function CvPage() {
       </section>
 
       {/* LeetCode */}
-      <section className="mb-24">
+      <section className="mb-32">
         <SectionHeading title="leetcode" />
         <LeetcodeStats />
       </section>
