@@ -1,0 +1,48 @@
+---
+slug: esg-compliance-agent
+title: "ESG Compliance Agent: AI-Powered Regulatory Assessment"
+description: "Enterprise ESG compliance system with local LLM, FAISS vector search, and automated ESRS gap analysis across 10 regulatory modules."
+date: 2024-09-01
+updated: 2025-01-30
+featured: true
+status: completed
+tags: [python, llm, rag, fastapi, faiss, ai-agents, nlp]
+github: "https://github.com/Ricko12vPL/ESG_agent"
+stats:
+  sources: 26
+  modules: 10
+---
+
+## Overview
+
+A production ESG compliance assessment system that uses AI to analyze company sustainability documents against ESRS (European Sustainability Reporting Standards). The system features a local LLM for completely offline operation, making it suitable for confidential enterprise environments.
+
+## Architecture
+
+The system follows a 4-layer architecture with SOLID principles:
+
+- **Presentation** — Interactive CLI with Rich terminal UI and 5 context modes
+- **Application** — Command registry, process orchestration, report generation
+- **Domain** — Core models, interfaces, ESRS compliance logic
+- **Infrastructure** — RAG server (FastAPI on port 8001), data collectors, API clients
+
+## Key Features
+
+- **Local LLM** — Granite Tiny 4.0 (1.3B params, 4-bit GGUF) for zero-network inference
+- **RAG Pipeline** — FAISS vector store with BGE embeddings for semantic document search
+- **26 Data Sources** — News APIs, regulatory feeds, company reports, market data, carbon monitoring
+- **10 ESRS Modules** — Full coverage: E1-E5 (Environmental), S1-S4 (Social), G1 (Governance)
+- **Automated Reporting** — Professional HTML compliance reports with per-module scoring
+
+## ESRS Coverage
+
+Each module receives a compliance score (0-100) with uncertainty propagation:
+
+- **E1** Climate Change — Scope 1/2/3 emissions, transition plans
+- **E2-E5** — Pollution, Water, Biodiversity, Circular Economy
+- **S1-S4** — Workforce, Supply Chain, Communities, Consumers
+- **G1** — Business Conduct, Ethics, Governance
+
+## Tech Stack
+
+Python, FastAPI, LangChain, FAISS, sentence-transformers, llama-cpp-python, Selenium, Rich, pytest

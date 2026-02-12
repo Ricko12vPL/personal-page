@@ -1,0 +1,53 @@
+---
+slug: x-quant
+title: "X_Quant: Institutional-Grade Quantitative Trading Platform"
+description: "90K+ line Python platform for systematic quantitative trading with ML pipeline, live IBKR paper trading, and CPCV/PBO validation achieving Sharpe 1.236."
+date: 2024-06-15
+updated: 2025-02-10
+featured: true
+status: completed
+tags: [python, machine-learning, quantitative-finance, xgboost, lightgbm, ibkr, fastapi]
+github: "https://github.com/Ricko12vPL/X_Quant"
+stats:
+  lines: "90K+"
+  sharpe: 1.236
+  strategies: 18
+---
+
+## Overview
+
+X_Quant is a production-grade quantitative trading platform designed to compete with institutional-level hedge fund systems. Built from the ground up in Python, it implements a complete algorithmic trading pipeline from data ingestion through execution to risk management.
+
+The system is currently running 24/7 as a live paper trading daemon connected to Interactive Brokers.
+
+## Architecture
+
+The platform follows a modular monolith architecture with 32 core modules:
+
+- **Alpha Generation** — 30 atomic alpha signals with universal shift(1) anti-lookahead
+- **ML Pipeline (v4.3)** — 4-layer institutional pipeline: 137 raw features → 411 normalized → IC stability selection → 6-model ensemble (XGBoost, LightGBM, CatBoost, Ridge, Lasso, ElasticNet)
+- **Signal Generation** — MetaEnsemble combining 7 base strategies through 6 sub-ensembles with IR-boost weighting
+- **Execution Engine** — Enhanced Almgren-Chriss with TWAP/VWAP algorithms and Smart Order Routing
+- **Risk Management** — VaR/CVaR (4 methods), 5-level drawdown controls, circuit breakers, regime-aware scaling
+
+## Validation
+
+The system uses institutional-grade statistical validation:
+
+- **CPCV** — Combinatorial Purged Cross-Validation (12 folds, 5-day purge)
+- **PBO** — Probability of Backtest Overfitting: 0.01 (target < 0.30)
+- **DSR** — Deflated Sharpe Ratio: 1.189 (target > 1.0)
+- **Hansen's SPA Test** — Superior Predictive Ability
+- **Walk-Forward Efficiency** — 71.18% (target > 70%)
+
+## Key Results
+
+- Out-of-Sample Sharpe Ratio: **1.236**
+- CAGR (net of costs): **16.97%**
+- Maximum Drawdown: **13.05%**
+- Win Rate: **68.7%**
+- 11 of 16 strategies pass all 12 institutional checks
+
+## Tech Stack
+
+Python, NumPy, Pandas, XGBoost, LightGBM, CatBoost, scikit-learn, Optuna, asyncio, multiprocessing, Interactive Brokers API, PostgreSQL, Docker, Prometheus, Grafana, pytest

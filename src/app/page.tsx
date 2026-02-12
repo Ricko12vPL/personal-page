@@ -1,65 +1,92 @@
-import Image from "next/image";
+import { AsciiHero } from '@/components/ascii/ascii-hero'
+import { Typewriter } from '@/components/ascii/typewriter'
+import { TerminalWindow } from '@/components/ui/terminal-window'
+import { ProjectCard } from '@/components/projects/project-card'
+import { getFeaturedProjects } from '@/lib/content'
+import { siteConfig } from '@/config/site'
+import Link from 'next/link'
 
-export default function Home() {
+export default function HomePage() {
+  const featured = getFeaturedProjects()
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="max-w-[1100px] mx-auto px-8">
+      {/* Hero */}
+      <section className="pt-32 pb-32 md:pt-40 md:pb-40">
+        <AsciiHero />
+        <Typewriter />
+        <p className="text-neutral-500 text-[15px] mt-8 max-w-xl leading-relaxed">
+          ML/Backend/SWE Engineer in Warsaw, Poland. Building quantitative
+          trading systems, AI agents, and production ML infrastructure.
+        </p>
+        <div className="flex items-center gap-5 mt-8">
+          <a
+            href={`mailto:${siteConfig.links.email}`}
+            className="text-accent text-[13px] hover:opacity-70 transition-opacity"
+          >
+            {siteConfig.links.email}
+          </a>
+          <a
+            href={siteConfig.links.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-neutral-500 text-[13px] hover:text-neutral-200 transition-colors"
+          >
+            GitHub
+          </a>
+          <a
+            href={siteConfig.links.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-neutral-500 text-[13px] hover:text-neutral-200 transition-colors"
+          >
+            LinkedIn
+          </a>
+        </div>
+      </section>
+
+      {/* About */}
+      <section className="pb-32">
+        <TerminalWindow>
+          <p className="text-neutral-300 text-[15px] leading-[1.9]">
+            Specializing in institutional-grade backtesting (CPCV, DSR, PBO)
+            for quantitative trading platforms, high-performance Python
+            backends, multi-agent LLM systems, and AI engineering — from
+            RAG pipelines to autonomous agent architectures. Engineering
+            discipline from aerospace applied to software.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          <p className="text-neutral-500 text-[15px] mt-6 leading-[1.9]">
+            BEng in Mechanical Engineering from Silesian University of
+            Technology, currently pursuing a Master&apos;s in Project Management
+            at Collegium Civitas while working full-time at{' '}
+            <span className="text-neutral-200">Airbus Defence and Space</span>.
+            Alongside work and studies, completed{' '}
+            <span className="text-neutral-200">42 Warsaw</span> — a tuition-free,
+            peer-to-peer programming academy with no lectures or teachers,
+            focused on project-based learning 24/7.
+          </p>
+        </TerminalWindow>
+      </section>
+
+      {/* Featured Projects */}
+      <section className="pb-32">
+        <div className="flex items-baseline justify-between mb-12">
+          <h2 className="font-pixel text-accent text-2xl sm:text-3xl tracking-tight">
+            FEATURED
+          </h2>
+          <Link
+            href="/projects"
+            className="text-neutral-500 text-[13px] hover:text-accent transition-colors"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            View all projects
+          </Link>
         </div>
-      </main>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {featured.map((project) => (
+            <ProjectCard key={project.slug} project={project} />
+          ))}
+        </div>
+      </section>
     </div>
-  );
+  )
 }

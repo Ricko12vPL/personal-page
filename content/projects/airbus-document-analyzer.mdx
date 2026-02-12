@@ -1,0 +1,51 @@
+---
+slug: airbus-document-analyzer
+title: "Airbus Document Analyzer: Air-Gapped AI System"
+description: "Fully offline document analysis application with local LLM, OCR, and semantic search for high-confidentiality environments at Airbus Defence and Space."
+date: 2024-03-01
+updated: 2025-01-15
+featured: true
+status: completed
+tags: [python, llm, rag, pyside6, faiss, ocr, desktop-app]
+github: "https://github.com/Ricko12vPL/Airbus-APL-AI"
+stats:
+  lines: "9.7K"
+---
+
+## Overview
+
+A fully offline, air-gapped desktop application designed for high-confidentiality environments at Airbus Defence and Space. It enables document analysis, question answering, and semantic search using a local LLM — with zero network connectivity by design.
+
+## Security Architecture
+
+The system enforces complete network isolation:
+
+- **Network Guard** — Patches Python's socket module to block ALL outbound connections
+- **Audit Logging** — All blocked connection attempts are logged for compliance
+- **Startup Verification** — Isolation is verified before any processing begins
+- **Zero Telemetry** — No analytics, no cloud sync, no external calls
+
+## Key Features
+
+- **14+ File Formats** — PDF, DOCX, XLSX, PPTX, images (PNG, JPG, TIFF), Markdown, CSV
+- **OCR Pipeline** — Tesseract-based text extraction from scanned documents and images
+- **RAG Pipeline** — Semantic chunking → BGE embeddings → FAISS search → LLM generation with source citations
+- **Conversation Memory** — Multi-turn context with session persistence and token management
+- **Streaming Responses** — Real-time LLM output display in the PySide6 GUI
+
+## Architecture
+
+8-phase LangChain integration built iteratively:
+
+1. LangChain wrappers for local LLM and embeddings
+2. Conversation memory with session management
+3. Advanced retrieval (multi-query + compression)
+4. Structured output with Pydantic schemas
+5. LCEL chain composition
+6. SQLite caching layer
+7. Qt streaming callbacks
+8. Enhanced semantic chunking
+
+## Tech Stack
+
+Python, PySide6, LLaMA 3.1 (8B GGUF), LangChain, FAISS, sentence-transformers, Tesseract OCR, PyInstaller
