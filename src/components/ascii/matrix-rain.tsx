@@ -4,7 +4,6 @@ import { useEffect, useRef } from 'react'
 
 const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 const FONT_SIZE = 13
-const COLUMN_GAP = 50
 
 interface Drop {
   x: number
@@ -29,37 +28,36 @@ export function MatrixRain() {
     let drops: Drop[] = []
     let lastTime = 0
 
-    function createDrop(canvasWidth: number, canvasHeight: number): Drop {
-      const col = Math.floor(Math.random() * Math.floor(canvasWidth / COLUMN_GAP))
+    function createDrop(w: number, h: number, scatter = false): Drop {
       return {
-        x: col * COLUMN_GAP + COLUMN_GAP / 2,
-        y: -Math.random() * canvasHeight * 0.5,
-        speed: 0.3 + Math.random() * 0.4,
+        x: Math.random() * w,
+        y: scatter ? -Math.random() * h * 0.5 : -Math.random() * 60,
+        speed: 0.2 + Math.random() * 0.5,
         chars: [],
         nextCharAt: 0,
-        trail: 4 + Math.floor(Math.random() * 6),
+        trail: 3 + Math.floor(Math.random() * 5),
       }
     }
 
     function resize() {
       canvas!.width = window.innerWidth
       canvas!.height = window.innerHeight
-      const targetDrops = Math.floor(canvas!.width / COLUMN_GAP) * 0.4
-      while (drops.length < targetDrops) {
-        const drop = createDrop(canvas!.width, canvas!.height)
-        drop.y = Math.random() * canvas!.height
-        drops.push(drop)
+      const target = Math.floor((canvas!.width * canvas!.height) / 18000)
+      while (drops.length < target) {
+        const d = createDrop(canvas!.width, canvas!.height, true)
+        d.y = Math.random() * canvas!.height
+        drops.push(d)
       }
     }
 
     function draw(time: number) {
-      const delta = lastTime ? (time - lastTime) : 16
+      const delta = lastTime ? time - lastTime : 16
       lastTime = time
 
       ctx!.clearRect(0, 0, canvas!.width, canvas!.height)
 
-      const targetDrops = Math.floor(canvas!.width / COLUMN_GAP) * 0.4
-      if (drops.length < targetDrops && Math.random() > 0.97) {
+      const target = Math.floor((canvas!.width * canvas!.height) / 18000)
+      if (drops.length < target && Math.random() > 0.92) {
         drops.push(createDrop(canvas!.width, canvas!.height))
       }
 
@@ -106,7 +104,6 @@ export function MatrixRain() {
 
     resize()
     animationId = requestAnimationFrame(draw)
-
     window.addEventListener('resize', resize)
 
     return () => {
