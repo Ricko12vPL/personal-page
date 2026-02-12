@@ -31,18 +31,18 @@ export function MatrixRain() {
     function createDrop(w: number, h: number, scatter = false): Drop {
       return {
         x: Math.random() * w,
-        y: scatter ? -Math.random() * h * 0.5 : -Math.random() * 60,
-        speed: 0.2 + Math.random() * 0.5,
+        y: scatter ? -Math.random() * h * 0.5 : -Math.random() * 40,
+        speed: 0.15 + Math.random() * 0.45,
         chars: [],
         nextCharAt: 0,
-        trail: 3 + Math.floor(Math.random() * 5),
+        trail: 2 + Math.floor(Math.random() * 4),
       }
     }
 
     function resize() {
       canvas!.width = window.innerWidth
       canvas!.height = window.innerHeight
-      const target = Math.floor((canvas!.width * canvas!.height) / 18000)
+      const target = Math.floor((canvas!.width * canvas!.height) / 6000)
       while (drops.length < target) {
         const d = createDrop(canvas!.width, canvas!.height, true)
         d.y = Math.random() * canvas!.height
@@ -56,8 +56,8 @@ export function MatrixRain() {
 
       ctx!.clearRect(0, 0, canvas!.width, canvas!.height)
 
-      const target = Math.floor((canvas!.width * canvas!.height) / 18000)
-      if (drops.length < target && Math.random() > 0.92) {
+      const target = Math.floor((canvas!.width * canvas!.height) / 6000)
+      if (drops.length < target && Math.random() > 0.85) {
         drops.push(createDrop(canvas!.width, canvas!.height))
       }
 
@@ -71,9 +71,9 @@ export function MatrixRain() {
           drop.chars.push({
             char: CHARS[Math.floor(Math.random() * CHARS.length)],
             y: drop.y,
-            opacity: 0.12,
+            opacity: 0.25,
           })
-          drop.nextCharAt = drop.y + FONT_SIZE * 1.8
+          drop.nextCharAt = drop.y + FONT_SIZE * 2.2
         }
 
         for (let j = drop.chars.length - 1; j >= 0; j--) {
@@ -82,7 +82,7 @@ export function MatrixRain() {
           const fadeStart = drop.trail * FONT_SIZE * 1.5
 
           if (age > fadeStart) {
-            c.opacity -= 0.0008 * delta
+            c.opacity -= 0.001 * delta
           }
 
           if (c.opacity <= 0) {
