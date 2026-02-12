@@ -4,14 +4,22 @@ import { useEffect, useRef } from 'react'
 
 const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 const FONT_SIZE = 13
+const CELL_SIZE = 24
+
+interface CharCell {
+  char: string
+  x: number
+  y: number
+  opacity: number
+  fadeRate: number
+}
 
 interface Drop {
   x: number
   y: number
   speed: number
-  chars: { char: string; y: number; opacity: number }[]
-  nextCharAt: number
   trail: number
+  charsSpawned: number
 }
 
 export function MatrixRain() {
@@ -26,83 +34,119 @@ export function MatrixRain() {
 
     let animationId: number
     let drops: Drop[] = []
+    let cells: CharCell[] = []
+    let occupied = new Set<string>()
     let lastTime = 0
+    let w = 0
+    let h = 0
 
-    function createDrop(w: number, h: number, scatter = false): Drop {
-      return {
+    function cellKey(x: number, y: number): string {
+      return `${Math.round(x / CELL_SIZE)},${Math.round(y / CELL_SIZE)}`
+    }
+
+    function spawnDrop() {
+      drops.push({
         x: Math.random() * w,
-        y: scatter ? -Math.random() * h * 0.5 : -Math.random() * 40,
-        speed: 0.15 + Math.random() * 0.45,
-        chars: [],
-        nextCharAt: 0,
-        trail: 2 + Math.floor(Math.random() * 4),
-      }
+        y: -FONT_SIZE - Math.random() * h * 0.3,
+        speed: 20 + Math.random() * 35,
+        trail: 3 + Math.floor(Math.random() * 5),
+        charsSpawned: 0,
+      })
     }
 
     function resize() {
-      canvas!.width = window.innerWidth
-      canvas!.height = window.innerHeight
-      const target = Math.floor((canvas!.width * canvas!.height) / 6000)
-      while (drops.length < target) {
-        const d = createDrop(canvas!.width, canvas!.height, true)
-        d.y = Math.random() * canvas!.height
-        drops.push(d)
+      w = canvas!.width = window.innerWidth
+      h = canvas!.height = window.innerHeight
+    }
+
+    function init() {
+      resize()
+      drops = []
+      cells = []
+      occupied = new Set()
+      const count = Math.floor((w * h) / 5000)
+      for (let i = 0; i < count; i++) {
+        const drop: Drop = {
+          x: Math.random() * w,
+          y: Math.random() * h,
+          speed: 20 + Math.random() * 35,
+          trail: 3 + Math.floor(Math.random() * 5),
+          charsSpawned: 0,
+        }
+        drops.push(drop)
       }
     }
 
     function draw(time: number) {
-      const delta = lastTime ? time - lastTime : 16
+      const delta = Math.min(lastTime ? time - lastTime : 16, 32)
       lastTime = time
+      const dt = delta / 1000
 
-      ctx!.clearRect(0, 0, canvas!.width, canvas!.height)
-
-      const target = Math.floor((canvas!.width * canvas!.height) / 6000)
-      if (drops.length < target && Math.random() > 0.85) {
-        drops.push(createDrop(canvas!.width, canvas!.height))
-      }
-
+      ctx!.clearRect(0, 0, w, h)
       ctx!.font = `${FONT_SIZE}px var(--font-geist-pixel-square), monospace`
+
+      const target = Math.floor((w * h) / 5000)
+      const spawnRate = Math.max(1, Math.floor(target * dt * 0.8))
+      for (let s = 0; s < spawnRate; s++) {
+        if (drops.length < target) {
+          spawnDrop()
+        }
+      }
 
       for (let i = drops.length - 1; i >= 0; i--) {
         const drop = drops[i]
-        drop.y += drop.speed * delta * 0.06
+        drop.y += drop.speed * dt
 
-        if (drop.y > drop.nextCharAt) {
-          drop.chars.push({
-            char: CHARS[Math.floor(Math.random() * CHARS.length)],
-            y: drop.y,
-            opacity: 0.25,
-          })
-          drop.nextCharAt = drop.y + FONT_SIZE * 2.2
-        }
+        const charSpacing = FONT_SIZE * 2.2
+        const expectedChars = Math.floor(drop.y / charSpacing)
 
-        for (let j = drop.chars.length - 1; j >= 0; j--) {
-          const c = drop.chars[j]
-          const age = drop.y - c.y
-          const fadeStart = drop.trail * FONT_SIZE * 1.5
+        while (drop.charsSpawned < expectedChars && drop.charsSpawned < drop.trail + 8) {
+          const cy = drop.charsSpawned * charSpacing
+          const key = cellKey(drop.x, cy)
 
-          if (age > fadeStart) {
-            c.opacity -= 0.001 * delta
+          if (!occupied.has(key)) {
+            occupied.add(key)
+            cells.push({
+              char: CHARS[Math.floor(Math.random() * CHARS.length)],
+              x: drop.x,
+              y: cy,
+              opacity: 0.22 + Math.random() * 0.08,
+              fadeRate: 0.04 + Math.random() * 0.03,
+            })
           }
+          drop.charsSpawned++
+        }
 
-          if (c.opacity <= 0) {
-            drop.chars.splice(j, 1)
-            continue
+        if (drop.y > h + drop.trail * charSpacing) {
+          drops[i] = {
+            x: Math.random() * w,
+            y: -FONT_SIZE - Math.random() * 80,
+            speed: 20 + Math.random() * 35,
+            trail: 3 + Math.floor(Math.random() * 5),
+            charsSpawned: 0,
           }
+        }
+      }
 
-          ctx!.fillStyle = `rgba(0, 255, 65, ${c.opacity})`
-          ctx!.fillText(c.char, drop.x, c.y)
+      for (let j = cells.length - 1; j >= 0; j--) {
+        const c = cells[j]
+        c.opacity -= c.fadeRate * dt
+
+        if (c.opacity <= 0) {
+          occupied.delete(cellKey(c.x, c.y))
+          cells[j] = cells[cells.length - 1]
+          cells.pop()
+          continue
         }
 
-        if (drop.chars.length === 0 && drop.y > canvas!.height) {
-          drops.splice(i, 1)
-        }
+        ctx!.fillStyle = `rgba(0, 255, 65, ${c.opacity})`
+        ctx!.fillText(c.char, c.x, c.y)
       }
 
       animationId = requestAnimationFrame(draw)
     }
 
-    resize()
+    init()
     animationId = requestAnimationFrame(draw)
     window.addEventListener('resize', resize)
 
