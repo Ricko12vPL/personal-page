@@ -1,0 +1,82 @@
+---
+slug: google-swe-l3-interview
+title: "Google SWE L3 — First Round Technical Interview"
+description: "Notes from my Google Software Engineer L3 first round interview: coding challenge (similar to LeetCode #394), behavioral, and Googleyness rounds."
+date: 2026-02-09
+published: true
+tags: [interviews, google, algorithms, career]
+---
+
+## The Interview
+
+On February 9, 2026 I completed my first round technical interview for the **Software Engineer L3** position at Google. The round consisted of three parts: a coding challenge, a behavioral interview, and a Googleyness & Leadership assessment.
+
+## Coding Challenge
+
+The coding problem I received was very similar to **LeetCode #394 — Decode String**.
+
+### Problem
+
+Given an encoded string, return its decoded string. The encoding rule is `k[encoded_string]`, where the `encoded_string` inside the square brackets is repeated exactly `k` times. Brackets can be nested.
+
+```
+Input:  "3[a]2[bc]"    → Output: "aaabcbc"
+Input:  "3[a2[c]]"     → Output: "accaccacc"
+Input:  "2[abc]3[cd]ef" → Output: "abcabccdcdcdef"
+```
+
+### Optimal Solution — Two-Stack Approach
+
+The most optimal solution uses two stacks: one for multipliers and one for accumulated strings. Single pass through the input, O(n) time.
+
+```python
+def decode_string(s: str) -> str:
+    count_stack = []
+    string_stack = []
+    current = ""
+    k = 0
+
+    for ch in s:
+        if ch.isdigit():
+            k = k * 10 + int(ch)
+        elif ch == "[":
+            count_stack.append(k)
+            string_stack.append(current)
+            current = ""
+            k = 0
+        elif ch == "]":
+            prev = string_stack.pop()
+            repeat = count_stack.pop()
+            current = prev + current * repeat
+        else:
+            current += ch
+
+    return current
+```
+
+**How it works:**
+
+- Digits build up the multiplier `k` (handles multi-digit numbers like `12[a]`)
+- On `[` — push current state (multiplier + accumulated string) onto stacks, reset for the nested section
+- On `]` — pop the previous string and multiplier, combine: `previous + current * repeat`
+- Letters simply append to the current string
+
+**Complexity:** O(n) time, O(d) space where d is the maximum nesting depth of brackets.
+
+### Why This Approach Wins
+
+A recursive solution also works but the iterative two-stack approach avoids call stack overhead and handles arbitrarily deep nesting without risk of stack overflow. It processes each character exactly once.
+
+## Behavioral
+
+Standard STAR-format questions about past projects, teamwork, conflict resolution, and how I handle ambiguity. I drew heavily on my experience at Airbus Defence and Space — cross-functional collaboration on production workflows and the 30% assembly time reduction project.
+
+## Googleyness & Leadership
+
+This round assessed cultural fit — intellectual humility, comfort with ambiguity, bias toward action, and collaborative instincts. Questions about navigating disagreements, supporting teammates, and taking initiative without being asked.
+
+## Takeaways
+
+- LeetCode #394 is a classic stack problem — recognizing the pattern immediately saves time
+- The two-stack approach is clean and interviewer-friendly: easy to explain, easy to trace through examples
+- Behavioral prep matters as much as coding prep at Google — they evaluate the whole engineer
