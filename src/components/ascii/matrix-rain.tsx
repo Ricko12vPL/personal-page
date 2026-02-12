@@ -1,10 +1,11 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 const FONT_SIZE = 13
 const CELL_SIZE = 24
+const CHAR_SPACING = FONT_SIZE * 2.2
 
 interface CharCell {
   char: string
@@ -20,12 +21,20 @@ interface Drop {
   speed: number
   trail: number
   charsSpawned: number
+  startY: number
 }
 
 export function MatrixRain() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+
     const canvas = canvasRef.current
     if (!canvas) return
 
@@ -44,14 +53,18 @@ export function MatrixRain() {
       return `${Math.round(x / CELL_SIZE)},${Math.round(y / CELL_SIZE)}`
     }
 
-    function spawnDrop() {
-      drops.push({
+    function makeDrop(startAbove: boolean): Drop {
+      const negY = startAbove
+        ? -FONT_SIZE - Math.random() * 300
+        : -FONT_SIZE - Math.random() * h * 2
+      return {
         x: Math.random() * w,
-        y: -FONT_SIZE - Math.random() * h * 0.3,
+        y: negY,
+        startY: negY,
         speed: 20 + Math.random() * 35,
         trail: 3 + Math.floor(Math.random() * 5),
         charsSpawned: 0,
-      })
+      }
     }
 
     function resize() {
@@ -66,14 +79,7 @@ export function MatrixRain() {
       occupied = new Set()
       const count = Math.floor((w * h) / 5000)
       for (let i = 0; i < count; i++) {
-        const drop: Drop = {
-          x: Math.random() * w,
-          y: Math.random() * h,
-          speed: 20 + Math.random() * 35,
-          trail: 3 + Math.floor(Math.random() * 5),
-          charsSpawned: 0,
-        }
-        drops.push(drop)
+        drops.push(makeDrop(false))
       }
     }
 
@@ -86,10 +92,10 @@ export function MatrixRain() {
       ctx!.font = `${FONT_SIZE}px var(--font-geist-pixel-square), monospace`
 
       const target = Math.floor((w * h) / 5000)
-      const spawnRate = Math.max(1, Math.floor(target * dt * 0.8))
-      for (let s = 0; s < spawnRate; s++) {
-        if (drops.length < target) {
-          spawnDrop()
+      if (drops.length < target) {
+        const batch = Math.min(3, target - drops.length)
+        for (let s = 0; s < batch; s++) {
+          drops.push(makeDrop(true))
         }
       }
 
@@ -97,34 +103,29 @@ export function MatrixRain() {
         const drop = drops[i]
         drop.y += drop.speed * dt
 
-        const charSpacing = FONT_SIZE * 2.2
-        const expectedChars = Math.floor(drop.y / charSpacing)
+        const distFromStart = drop.y - drop.startY
+        const expectedChars = Math.floor(distFromStart / CHAR_SPACING)
 
         while (drop.charsSpawned < expectedChars && drop.charsSpawned < drop.trail + 8) {
-          const cy = drop.charsSpawned * charSpacing
-          const key = cellKey(drop.x, cy)
-
-          if (!occupied.has(key)) {
-            occupied.add(key)
-            cells.push({
-              char: CHARS[Math.floor(Math.random() * CHARS.length)],
-              x: drop.x,
-              y: cy,
-              opacity: 0.22 + Math.random() * 0.08,
-              fadeRate: 0.04 + Math.random() * 0.03,
-            })
+          const cy = drop.startY + drop.charsSpawned * CHAR_SPACING
+          if (cy >= -FONT_SIZE && cy <= h + FONT_SIZE) {
+            const key = cellKey(drop.x, cy)
+            if (!occupied.has(key)) {
+              occupied.add(key)
+              cells.push({
+                char: CHARS[Math.floor(Math.random() * CHARS.length)],
+                x: drop.x,
+                y: cy,
+                opacity: 0.22 + Math.random() * 0.08,
+                fadeRate: 0.04 + Math.random() * 0.03,
+              })
+            }
           }
           drop.charsSpawned++
         }
 
-        if (drop.y > h + drop.trail * charSpacing) {
-          drops[i] = {
-            x: Math.random() * w,
-            y: -FONT_SIZE - Math.random() * 80,
-            speed: 20 + Math.random() * 35,
-            trail: 3 + Math.floor(Math.random() * 5),
-            charsSpawned: 0,
-          }
+        if (drop.y > h + drop.trail * CHAR_SPACING + 100) {
+          drops[i] = makeDrop(true)
         }
       }
 
@@ -154,13 +155,15 @@ export function MatrixRain() {
       cancelAnimationFrame(animationId)
       window.removeEventListener('resize', resize)
     }
-  }, [])
+  }, [mounted])
+
+  if (!mounted) return null
 
   return (
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none"
-      style={{ zIndex: 0 }}
+      style={{ zIndex: 0, background: 'transparent' }}
       aria-hidden="true"
     />
   )
