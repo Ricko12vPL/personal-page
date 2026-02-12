@@ -18,17 +18,62 @@ stats:
 
 X_Quant is a production-grade quantitative trading platform designed to compete with institutional-level hedge fund systems. Built from the ground up in Python, it implements a complete algorithmic trading pipeline from data ingestion through execution to risk management.
 
-The system is currently running 24/7 as a live paper trading daemon connected to Interactive Brokers.
+The system achieves an **out-of-sample Sharpe Ratio of 1.236** with a CAGR of 16.97% net of costs — validated through institutional-grade statistical methods (CPCV, PBO, DSR) to guard against overfitting.
+
+Currently running 24/7 as a live paper trading daemon connected to Interactive Brokers.
 
 ## Architecture
 
-The platform follows a modular monolith architecture with 32 core modules:
+```
+┌─────────────────────────────────────────────────────────┐
+│                    DATA INGESTION                       │
+│   Market Data API → Normalization → Feature Store       │
+└────────────────────────┬────────────────────────────────┘
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│              ALPHA GENERATION (30 signals)               │
+│   Technical · Microstructure · Fundamental · Cross-Asset │
+│   Universal shift(1) anti-lookahead guard               │
+└────────────────────────┬────────────────────────────────┘
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│           ML PIPELINE v4.3 (6-model ensemble)           │
+│   137 raw → 411 normalized → IC selection → ensemble    │
+│   XGBoost · LightGBM · CatBoost · Ridge · Lasso · EN   │
+└────────────────────────┬────────────────────────────────┘
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│              SIGNAL GENERATION (MetaEnsemble)            │
+│   7 base strategies → 6 sub-ensembles → IR-boost        │
+└────────────────────────┬────────────────────────────────┘
+                         ▼
+┌──────────────────────┬──────────────────────────────────┐
+│   EXECUTION ENGINE   │        RISK MANAGEMENT           │
+│   Almgren-Chriss     │   VaR/CVaR (4 methods)           │
+│   TWAP / VWAP / SOR  │   5-level drawdown controls      │
+│   IBKR Live Gateway  │   Circuit breakers + regime       │
+└──────────────────────┴──────────────────────────────────┘
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│              MONITORING (24/7 daemon)                    │
+│   Prometheus metrics → Grafana dashboards               │
+│   Position tracking · PnL · Exposure · Alerts           │
+└─────────────────────────────────────────────────────────┘
+```
 
-- **Alpha Generation** — 30 atomic alpha signals with universal shift(1) anti-lookahead
-- **ML Pipeline (v4.3)** — 4-layer institutional pipeline: 137 raw features → 411 normalized → IC stability selection → 6-model ensemble (XGBoost, LightGBM, CatBoost, Ridge, Lasso, ElasticNet)
-- **Signal Generation** — MetaEnsemble combining 7 base strategies through 6 sub-ensembles with IR-boost weighting
-- **Execution Engine** — Enhanced Almgren-Chriss with TWAP/VWAP algorithms and Smart Order Routing
-- **Risk Management** — VaR/CVaR (4 methods), 5-level drawdown controls, circuit breakers, regime-aware scaling
+The platform follows a modular monolith architecture with 32 core modules.
+
+## Strategies
+
+18 strategies across multiple timeframes and styles:
+
+- **Trend-following** — Moving average crossovers, breakout systems, channel strategies (daily/weekly)
+- **Mean-reversion** — Bollinger band, RSI-based, pairs trading (intraday/daily)
+- **Momentum** — Cross-sectional momentum, sector rotation (daily/weekly)
+- **Statistical arbitrage** — Cointegration-based, spread trading (intraday)
+- **ML-driven** — Ensemble predictions from the 6-model pipeline (daily)
+
+11 of 18 strategies pass all 12 institutional validation checks.
 
 ## Validation
 
@@ -46,7 +91,14 @@ The system uses institutional-grade statistical validation:
 - CAGR (net of costs): **16.97%**
 - Maximum Drawdown: **13.05%**
 - Win Rate: **68.7%**
-- 11 of 16 strategies pass all 12 institutional checks
+
+## Production Notes
+
+- **Monitoring** — Prometheus metrics exported for Grafana dashboards: PnL, exposure, drawdown, signal quality
+- **Testing** — 450+ pytest tests, CI via GitHub Actions on every push
+- **Deployment** — Docker containerized, runs as systemd daemon on dedicated server
+- **Live trading** — 24/7 paper trading on IBKR with automated position reconciliation
+- **Alerting** — Slack notifications for circuit breaker triggers, drawdown warnings, system errors
 
 ## Tech Stack
 

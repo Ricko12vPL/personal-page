@@ -17,7 +17,38 @@ stats:
 
 A production ESG compliance assessment system that uses AI to analyze company sustainability documents against ESRS (European Sustainability Reporting Standards). The system features a local LLM for completely offline operation, making it suitable for confidential enterprise environments.
 
+Processes a full ESRS assessment across all 10 modules in under 3 minutes.
+
 ## Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│           26 DATA SOURCES                                │
+│   News APIs · Regulatory feeds · Company reports        │
+│   Market data · Carbon monitoring · ESG databases       │
+└────────────────────────┬────────────────────────────────┘
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│           COLLECTORS (Selenium + API clients)            │
+│   Automated scraping · Rate limiting · Deduplication    │
+└────────────────────────┬────────────────────────────────┘
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│           FAISS VECTOR INDEX (BGE embeddings)            │
+│   Semantic document search · Context retrieval          │
+└────────────────────────┬────────────────────────────────┘
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│           RAG PIPELINE → LLM (Granite 1.3B, 4-bit)     │
+│   Per-module analysis · Evidence extraction             │
+│   Compliance scoring with uncertainty propagation       │
+└────────────────────────┬────────────────────────────────┘
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│           COMPLIANCE REPORT (HTML)                       │
+│   10 ESRS modules × score (0-100) + evidence + gaps    │
+└─────────────────────────────────────────────────────────┘
+```
 
 The system follows a 4-layer architecture with SOLID principles:
 
@@ -25,14 +56,6 @@ The system follows a 4-layer architecture with SOLID principles:
 - **Application** — Command registry, process orchestration, report generation
 - **Domain** — Core models, interfaces, ESRS compliance logic
 - **Infrastructure** — RAG server (FastAPI on port 8001), data collectors, API clients
-
-## Key Features
-
-- **Local LLM** — Granite Tiny 4.0 (1.3B params, 4-bit GGUF) for zero-network inference
-- **RAG Pipeline** — FAISS vector store with BGE embeddings for semantic document search
-- **26 Data Sources** — News APIs, regulatory feeds, company reports, market data, carbon monitoring
-- **10 ESRS Modules** — Full coverage: E1-E5 (Environmental), S1-S4 (Social), G1 (Governance)
-- **Automated Reporting** — Professional HTML compliance reports with per-module scoring
 
 ## ESRS Coverage
 
@@ -42,6 +65,28 @@ Each module receives a compliance score (0-100) with uncertainty propagation:
 - **E2-E5** — Pollution, Water, Biodiversity, Circular Economy
 - **S1-S4** — Workforce, Supply Chain, Communities, Consumers
 - **G1** — Business Conduct, Ethics, Governance
+
+### Example Assessment Result
+
+```
+Module: E1 Climate Change
+Score:  78 / 100  (±6 uncertainty)
+Time:   ~15s
+
+Findings:
+  ✓ Scope 1 & 2 emissions disclosed (high confidence)
+  ✓ Transition plan referenced in sustainability report
+  ⚠ Scope 3 partially covered — supply chain gaps
+  ✗ Science-based targets not yet validated by SBTi
+```
+
+## Key Features
+
+- **Local LLM** — Granite Tiny 4.0 (1.3B params, 4-bit GGUF) for zero-network inference
+- **RAG Pipeline** — FAISS vector store with BGE embeddings for semantic document search
+- **26 Data Sources** — News APIs, regulatory feeds, company reports, market data, carbon monitoring
+- **10 ESRS Modules** — Full coverage: E1-E5 (Environmental), S1-S4 (Social), G1 (Governance)
+- **Automated Reporting** — Professional HTML compliance reports with per-module scoring
 
 ## Tech Stack
 

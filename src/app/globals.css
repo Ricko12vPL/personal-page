@@ -165,3 +165,60 @@ html {
   margin-bottom: 1.5rem;
   color: #737373;
 }
+
+/* Print styles for CV PDF export */
+@media print {
+  header, footer, canvas, .print-hidden {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: #111 !important;
+    font-size: 11pt;
+    line-height: 1.5;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+
+  * {
+    color: #111 !important;
+    border-color: #ccc !important;
+  }
+
+  .text-accent, .text-neutral-200, .text-neutral-300 {
+    color: #111 !important;
+  }
+
+  .text-neutral-400, .text-neutral-500, .text-neutral-600 {
+    color: #444 !important;
+  }
+
+  .font-pixel {
+    font-family: var(--font-geist-pixel-square), monospace !important;
+  }
+
+  .bg-neutral-900\/30, .bg-neutral-800 {
+    background: transparent !important;
+  }
+
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 9pt;
+    color: #666 !important;
+  }
+
+  a[href^="/"]::after {
+    content: " (kacpersaks.dev" attr(href) ")";
+  }
+
+  a[href^="mailto:"]::after {
+    content: "";
+  }
+
+  section {
+    page-break-inside: avoid;
+  }
+}

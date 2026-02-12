@@ -15,9 +15,10 @@ export default function HomePage() {
       <section className="pt-32 pb-32 md:pt-40 md:pb-40">
         <AsciiHero />
         <Typewriter />
-        <p className="text-neutral-500 text-[15px] mt-8 max-w-xl leading-relaxed">
-          ML/Backend/SWE Engineer in Warsaw, Poland. Building quantitative
-          trading systems, AI agents, and production ML infrastructure.
+        <p className="text-neutral-400 text-[15px] mt-8 max-w-xl leading-relaxed">
+          I build production ML systems and scalable backend infrastructure
+          — from model training and institutional backtesting to real-time
+          inference, monitoring and CI/CD.
         </p>
         <div className="flex items-center gap-5 mt-8">
           <a
@@ -42,6 +43,20 @@ export default function HomePage() {
           >
             LinkedIn
           </a>
+        </div>
+        <div className="flex items-center gap-4 mt-10">
+          <Link
+            href="/projects"
+            className="text-[13px] px-5 py-2.5 border border-accent text-accent rounded hover:bg-accent/10 transition-colors"
+          >
+            View Projects
+          </Link>
+          <Link
+            href="/cv"
+            className="text-[13px] px-5 py-2.5 border border-neutral-700 text-neutral-400 rounded hover:border-neutral-500 hover:text-neutral-200 transition-colors"
+          >
+            Download CV
+          </Link>
         </div>
       </section>
 

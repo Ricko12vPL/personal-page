@@ -4,6 +4,8 @@ import { SectionHeading } from '@/components/ui/section-heading'
 import { Timeline } from '@/components/cv/timeline'
 import { SkillSection } from '@/components/cv/skill-section'
 import { LeetcodeStats } from '@/components/cv/leetcode-stats'
+import { PrintButton } from '@/components/cv/print-button'
+import Link from 'next/link'
 
 export function generateMetadata(): Metadata {
   return {
@@ -21,9 +23,9 @@ const experience = [
     location: 'Warsaw, Poland',
     current: true,
     description: [
-      'Optimized production workflows reducing assembly time 30%, achieving \u20AC50K annual cost savings',
-      'Created standardized technical documentation ensuring compliance',
-      'Applied rigorous engineering discipline to software development practices',
+      'Led cross-team process optimization; automated documentation flow and reduced assembly time by 30% (~€50K/yr) via standardized procedures and scripts',
+      'Created standardized technical documentation ensuring compliance across production workflows',
+      'Applied rigorous aerospace engineering discipline to software development and system design',
     ],
   },
   {
@@ -134,16 +136,40 @@ const certifications = [
 export default function CvPage() {
   return (
     <div className="max-w-[800px] mx-auto px-8 py-20">
+      <PrintButton />
+
       {/* Summary */}
       <section className="mb-24">
         <SectionHeading title="summary" />
         <p className="text-neutral-300 text-[15px] leading-[1.9] max-w-2xl">
-          ML/Backend Engineer specializing in quantitative finance,
-          institutional-grade backtesting (CPCV, DSR, PBO), and production ML
-          systems. Expert in Python, high-performance backends, optimization
-          algorithms, and multi-agent LLM systems. Engineering discipline from
-          Airbus Defence and Space applied to software development.
+          ML / Backend Engineer with experience building production ML
+          pipelines, institutional backtesting systems and secure offline AI
+          tools. Strong discipline from aerospace engineering applied to system
+          design, testing and CI/CD.
         </p>
+        <div className="flex flex-wrap gap-4 mt-6">
+          <span className="text-neutral-600 text-[12px] uppercase tracking-wider self-center">
+            Selected projects:
+          </span>
+          <Link
+            href="/projects/x-quant"
+            className="text-accent text-[13px] hover:opacity-70 transition-opacity"
+          >
+            X_QUANT
+          </Link>
+          <Link
+            href="/projects/esg-compliance-agent"
+            className="text-accent text-[13px] hover:opacity-70 transition-opacity"
+          >
+            ESG Agent
+          </Link>
+          <Link
+            href="/projects/airbus-document-analyzer"
+            className="text-accent text-[13px] hover:opacity-70 transition-opacity"
+          >
+            Airbus Analyzer
+          </Link>
+        </div>
       </section>
 
       {/* Experience */}
