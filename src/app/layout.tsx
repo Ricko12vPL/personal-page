@@ -4,6 +4,7 @@ import { GeistPixelSquare, GeistPixelGrid, GeistPixelLine } from 'geist/font/pix
 import { siteConfig } from '@/config/site'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
+import { MatrixRain } from '@/components/ascii/matrix-rain'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -94,8 +95,9 @@ export default function RootLayout({
       <body
         className={`${GeistMono.variable} ${GeistPixelSquare.variable} ${GeistPixelGrid.variable} ${GeistPixelLine.variable} font-mono antialiased bg-background text-foreground min-h-screen flex flex-col`}
       >
+        <MatrixRain />
         <Header />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 relative z-10">{children}</main>
         <Footer />
       </body>
     </html>
