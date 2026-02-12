@@ -2,12 +2,18 @@
 
 import { useEffect, useRef } from 'react'
 
-const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*()_+-=[]{}|;:,.<>?'
-const FONT_SIZE = 14
-const COLUMN_GAP = 28
-const FADE_SPEED = 0.03
-const DROP_CHANCE = 0.985
-const MAX_OPACITY = 0.07
+const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+const FONT_SIZE = 13
+const COLUMN_GAP = 50
+
+interface Drop {
+  x: number
+  y: number
+  speed: number
+  chars: { char: string; y: number; opacity: number }[]
+  nextCharAt: number
+  trail: number
+}
 
 export function MatrixRain() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -20,45 +26,78 @@ export function MatrixRain() {
     if (!ctx) return
 
     let animationId: number
-    let columns: number
-    let drops: number[]
-    let opacities: number[]
+    let drops: Drop[] = []
+    let lastTime = 0
+
+    function createDrop(canvasWidth: number, canvasHeight: number): Drop {
+      const col = Math.floor(Math.random() * Math.floor(canvasWidth / COLUMN_GAP))
+      return {
+        x: col * COLUMN_GAP + COLUMN_GAP / 2,
+        y: -Math.random() * canvasHeight * 0.5,
+        speed: 0.3 + Math.random() * 0.4,
+        chars: [],
+        nextCharAt: 0,
+        trail: 4 + Math.floor(Math.random() * 6),
+      }
+    }
 
     function resize() {
       canvas!.width = window.innerWidth
       canvas!.height = window.innerHeight
-      columns = Math.floor(canvas!.width / COLUMN_GAP)
-      drops = Array.from({ length: columns }, () =>
-        Math.floor(Math.random() * canvas!.height / FONT_SIZE)
-      )
-      opacities = Array.from({ length: columns }, () =>
-        Math.random() * MAX_OPACITY
-      )
+      const targetDrops = Math.floor(canvas!.width / COLUMN_GAP) * 0.4
+      while (drops.length < targetDrops) {
+        const drop = createDrop(canvas!.width, canvas!.height)
+        drop.y = Math.random() * canvas!.height
+        drops.push(drop)
+      }
     }
 
-    function draw() {
-      ctx!.fillStyle = 'rgba(5, 5, 5, 0.15)'
-      ctx!.fillRect(0, 0, canvas!.width, canvas!.height)
+    function draw(time: number) {
+      const delta = lastTime ? (time - lastTime) : 16
+      lastTime = time
 
-      for (let i = 0; i < columns; i++) {
-        const char = CHARS[Math.floor(Math.random() * CHARS.length)]
-        const x = i * COLUMN_GAP
-        const y = drops[i] * FONT_SIZE
+      ctx!.clearRect(0, 0, canvas!.width, canvas!.height)
 
-        ctx!.font = `${FONT_SIZE}px var(--font-geist-pixel-square), monospace`
-        ctx!.fillStyle = `rgba(0, 255, 65, ${opacities[i]})`
-        ctx!.fillText(char, x, y)
+      const targetDrops = Math.floor(canvas!.width / COLUMN_GAP) * 0.4
+      if (drops.length < targetDrops && Math.random() > 0.97) {
+        drops.push(createDrop(canvas!.width, canvas!.height))
+      }
 
-        if (y > canvas!.height && Math.random() > DROP_CHANCE) {
-          drops[i] = 0
-          opacities[i] = Math.random() * MAX_OPACITY
+      ctx!.font = `${FONT_SIZE}px var(--font-geist-pixel-square), monospace`
+
+      for (let i = drops.length - 1; i >= 0; i--) {
+        const drop = drops[i]
+        drop.y += drop.speed * delta * 0.06
+
+        if (drop.y > drop.nextCharAt) {
+          drop.chars.push({
+            char: CHARS[Math.floor(Math.random() * CHARS.length)],
+            y: drop.y,
+            opacity: 0.12,
+          })
+          drop.nextCharAt = drop.y + FONT_SIZE * 1.8
         }
 
-        drops[i] += 0.5
+        for (let j = drop.chars.length - 1; j >= 0; j--) {
+          const c = drop.chars[j]
+          const age = drop.y - c.y
+          const fadeStart = drop.trail * FONT_SIZE * 1.5
 
-        opacities[i] = Math.max(0, opacities[i] - FADE_SPEED * 0.01)
-        if (opacities[i] <= 0) {
-          opacities[i] = Math.random() * MAX_OPACITY
+          if (age > fadeStart) {
+            c.opacity -= 0.0008 * delta
+          }
+
+          if (c.opacity <= 0) {
+            drop.chars.splice(j, 1)
+            continue
+          }
+
+          ctx!.fillStyle = `rgba(0, 255, 65, ${c.opacity})`
+          ctx!.fillText(c.char, drop.x, c.y)
+        }
+
+        if (drop.chars.length === 0 && drop.y > canvas!.height) {
+          drops.splice(i, 1)
         }
       }
 
@@ -66,7 +105,7 @@ export function MatrixRain() {
     }
 
     resize()
-    draw()
+    animationId = requestAnimationFrame(draw)
 
     window.addEventListener('resize', resize)
 
