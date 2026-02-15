@@ -1,0 +1,137 @@
+---
+slug: kelly-criterion-prediction-markets
+title: "Starting Kelly PM: Optimal Position Sizing for Prediction Markets"
+description: "Deriving the Kelly Criterion for prediction markets from first principles — information-theoretic foundations, the simplified market form, and why fractional Kelly is essential."
+date: 2026-02-11
+published: true
+tags: [quantitative-finance, probability, kelly-criterion, prediction-markets, mathematics]
+---
+
+## Why This Project
+
+Prediction markets are one of the purest forms of probability trading. You buy contracts at a price that implies a probability, and you profit if your estimate is closer to reality than the market's. The central question is: **given an edge, how much of your capital should you risk?**
+
+This is exactly the problem John Kelly solved in 1956 at Bell Labs. His criterion maximizes the expected logarithmic growth rate of capital — the only strategy that is both asymptotically optimal and avoids ruin with probability 1.
+
+I'm building **Kelly PM** — a position sizing engine that applies this framework to prediction markets with fractional scaling and multi-contract portfolio management.
+
+## Derivation from First Principles
+
+### The Classical Form
+
+Consider a binary outcome with odds `K` (decimal). You estimate the probability of winning at `p`. The Kelly fraction `F` — the proportion of bankroll to wager — maximizes the expected value of `log(wealth)`:
+
+```
+E[log(W)] = p · log(1 + F·(K-1)) + (1-p) · log(1 - F)
+```
+
+Taking the derivative, setting it to zero, and solving for `F`:
+
+```
+F* = (K·p - 1) / (K - 1)
+```
+
+This is the **full Kelly** optimal fraction. When `F* ≤ 0`, you have no edge — don't bet.
+
+### The Prediction Market Simplification
+
+On prediction markets, you buy contracts at price `P ∈ (0,1)`. If the outcome occurs, you receive $1. The implied odds are:
+
+```
+K = 1 / P
+```
+
+Substituting into the Kelly formula:
+
+```
+F = (p/P - 1) / (1/P - 1)
+  = (p - P) / P · P / (1 - P)
+  = (p - P) / (1 - P)
+```
+
+The simplified prediction market Kelly formula:
+
+```
+F = (p − P) / (1 − P)
+
+where:
+  F = fraction of bankroll to allocate
+  p = your estimated true probability
+  P = market price (implied probability)
+  (p − P) = your edge
+  (1 − P) = potential profit per dollar risked
+```
+
+The formula reduces to: **position size = edge / potential profit**. Elegant and intuitive.
+
+## Sensitivity Analysis
+
+### Linear Response to Edge
+
+When market price `P` is fixed and your estimated probability `p` varies, Kelly responds linearly:
+
+```
+∂F/∂p = 1 / (1 − P) = constant
+```
+
+A 10% increase in estimated probability always produces the same increase in position size, regardless of your current estimate. Kelly scales confidence into capital allocation in a perfectly proportional way.
+
+### Nonlinear Response to Market Price
+
+When your estimate `p` is fixed and market price `P` varies, the response is nonlinear:
+
+```
+∂F/∂P = (p − 1) / (1 − P)²
+```
+
+This is a rational function — as `P` decreases (cheaper contracts, higher potential payout), Kelly accelerates. This is why low-probability contracts with genuine edge produce aggressively large Kelly fractions.
+
+### The Asymmetry of Equal Ratios
+
+Two scenarios with identical `p/P` ratios produce very different Kelly fractions:
+
+| Scenario | P | p | p/P | Kelly F |
+|----------|-----|-----|-----|---------|
+| A | 0.20 | 0.40 | 2.0× | 0.250 |
+| B | 0.40 | 0.80 | 2.0× | 0.667 |
+
+Scenario B allocates 2.67× more capital despite the same probability ratio. Why? Kelly balances **win frequency** and **payout magnitude**. In B, you win 80% of the time with a solid 2.5× payout — that combination drives Kelly much higher than winning 40% of the time with a 5× payout.
+
+This is the core insight: **it's not just about how much better your estimate is than the market's — it's the joint distribution of frequency and magnitude.**
+
+## Fractional Kelly — Accounting for Estimation Error
+
+The full Kelly formula assumes your probability estimate `p` is correct. In practice, it never is. The Kelly fraction is highly sensitive to overestimation of edge:
+
+- If true edge is 5% but you estimate 10%, you bet 2× too much
+- Overbetting beyond the Kelly point increases variance faster than it increases expected growth
+- At 2× Kelly, your expected growth rate equals zero — the same as not betting at all
+
+**Fractional Kelly** scales the optimal fraction by a constant `α ∈ (0, 1)`:
+
+```
+F_fractional = α · F_kelly
+```
+
+The variance of log-wealth scales as `α²` while expected growth scales as `α(2 - α)`. At half Kelly (`α = 0.5`), you retain 75% of the growth rate with only 25% of the variance. This is a remarkably favorable trade-off.
+
+Practical guidelines for prediction markets:
+
+- **α = 0.50** — high-confidence model, backtested extensively
+- **α = 0.25** — standard approach, accounts for model uncertainty
+- **α = 0.125** — noisy or illiquid markets
+- **α < 0.125** — tail risk present, information shocks possible
+
+Most serious prediction market traders operate at ¼ Kelly or below.
+
+## What I'm Building
+
+Kelly PM will implement:
+
+1. **Edge calculator** — compare user estimates against live market prices
+2. **Fractional Kelly engine** — configurable α with regime-aware defaults
+3. **Multi-contract portfolio sizing** — correlation-adjusted Kelly across simultaneous positions
+4. **Bankroll tracker** — real-time P&L, drawdown monitoring, position history
+5. **Backtester** — validate Kelly performance against historical prediction market data
+
+The goal is a tool that turns the theory above into disciplined, systematic capital allocation — controlling greed with mathematics.

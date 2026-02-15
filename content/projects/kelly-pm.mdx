@@ -1,0 +1,80 @@
+---
+slug: kelly-pm
+title: "Kelly PM: Prediction Markets Position Sizing Engine"
+description: "Quantitative position sizing engine for prediction markets using Kelly Criterion with fractional scaling, edge detection, and bankroll management."
+date: 2026-02-11
+status: in-progress
+tags: [python, quantitative-finance, probability, statistics, prediction-markets, kelly-criterion]
+stats:
+  lines: "2K+"
+---
+
+## Overview
+
+A quantitative trading tool for prediction markets that implements the Kelly Criterion for optimal position sizing. The system converts market prices into implied probabilities, compares them against user-estimated probabilities, calculates edge, and outputs mathematically optimal position sizes with fractional Kelly scaling.
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│              MARKET DATA INGESTION                       │
+│   Price feeds → Implied probability (P = price)         │
+└────────────────────────┬────────────────────────────────┘
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│              EDGE DETECTION                              │
+│   User estimate (p) vs Market price (P)                 │
+│   Edge = p − P                                          │
+│   No edge → no position                                 │
+└────────────────────────┬────────────────────────────────┘
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│              KELLY FRACTION CALCULATOR                   │
+│   F = (p − P) / (1 − P)                                │
+│   Fractional scaling: ½K, ¼K, ⅛K                       │
+│   Regime-aware: noise level → Kelly fraction             │
+└────────────────────────┬────────────────────────────────┘
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│              POSITION SIZING & RISK                      │
+│   Bankroll allocation → Max position per contract       │
+│   Correlation adjustment for multi-market exposure      │
+│   Tail risk guardrails                                  │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Kelly Criterion — Prediction Market Form
+
+The classical Kelly formula `F = (Kp − 1) / (K − 1)` simplifies for prediction markets where odds `K = 1 / Price`:
+
+```
+F = (p − P) / (1 − P)
+
+where:
+  p = your estimated probability of the outcome
+  P = market price (implied probability)
+  F = fraction of bankroll to allocate
+```
+
+The formula encodes a single principle: **position size = edge / potential profit**. When edge increases linearly, Kelly scales linearly. When market price drops (higher potential payout), Kelly accelerates nonlinearly — cheap contracts with real edge produce aggressive sizing.
+
+## Fractional Kelly Scaling
+
+Full Kelly is mathematically optimal but assumes perfect probability estimates. In practice, fractional Kelly reduces variance at the cost of slightly lower expected growth:
+
+- **½ Kelly** — well-tested model, high confidence in estimate
+- **¼ Kelly** — standard approach for most prediction market trading
+- **⅛ Kelly** — noisy markets, uncertain information
+- **< ⅛ Kelly** — tail risk scenarios, black swan protection
+
+## Key Features
+
+- Real-time edge calculation against live market prices
+- Fractional Kelly with configurable scaling factor
+- Multi-contract portfolio with correlation-aware sizing
+- Bankroll tracking and drawdown monitoring
+- Backtesting engine against historical prediction market data
+
+## Tech Stack
+
+Python, NumPy, SciPy, FastAPI, PostgreSQL, asyncio
