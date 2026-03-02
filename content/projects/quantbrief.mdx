@@ -1,0 +1,72 @@
+---
+slug: quantbrief
+title: "QuantBrief: AI-Powered Real-Time Market Intelligence Agent"
+description: "Multi-agent financial intelligence platform built at Mistral AI Hackathon — 5-agent pipeline screening 30+ articles in <50ms each, analyzing full SEC filings in 256K context, and delivering multilingual audio briefings."
+date: 2026-02-28
+featured: true
+status: completed
+tags: [python, mistral-ai, fastapi, react, multi-agent, quantitative-finance, nlp, elevenlabs]
+github: "https://github.com/Ricko12vPL/QuantBrief"
+stats:
+  lines: "13.5K+"
+  agents: 5
+  endpoints: "25+"
+---
+
+## Overview
+
+QuantBrief is a multi-agent market intelligence platform that acts as a personal Chief Investment Officer for retail investors. It monitors markets, SEC filings, and news sources automatically — then delivers synthesized intelligence briefs on a user-defined schedule.
+
+Built in 48 hours at the **Mistral AI Worldwide Hackathon 2026** (Anything Goes track). The system leverages 4 specialized Mistral models, each chosen for a specific strength in the analysis pipeline.
+
+The core problem: 150+ million retail investors face 300+ financial articles per hour and complex 80–120 page SEC filings, yet Bloomberg Terminal costs $25,200/year. QuantBrief democratizes this intelligence.
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│               DATA INGESTION (Free APIs)                │
+│   SEC EDGAR · yfinance · RSS feeds · FRED macro data    │
+└────────────────────────┬────────────────────────────────┘
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│          5-AGENT ORCHESTRATED PIPELINE                   │
+│                                                         │
+│  ① News Screener     (Ministral 3B)     ~50ms/article  │
+│  ② Filing Analyst    (Mistral Large 3)  256K context    │
+│  ③ Reasoning Engine  (Magistral Medium) CoT analysis    │
+│  ④ Synthesizer       (Mistral Large 3)  Cross-source    │
+│  ⑤ Voice Agent       (ElevenLabs)       5 languages     │
+└────────────────────────┬────────────────────────────────┘
+                         ▼
+┌──────────────────────┬──────────────────────────────────┐
+│   REACT DASHBOARD    │         REST API (25+)           │
+│   Real-time WS       │   JWT auth · Rate limiting       │
+│   Charts · Audio     │   PostgreSQL · Redis cache        │
+└──────────────────────┴──────────────────────────────────┘
+```
+
+## Multi-Agent Pipeline
+
+Each agent uses a different Mistral model optimized for its role:
+
+- **News Screener** (Ministral 3B) — High-throughput batch screening of 30+ articles, JSON-structured relevance and sentiment scoring at ~50ms per article
+- **Filing Analyst** (Mistral Large 3, 256K) — Ingests entire 80–120 page SEC filings (10-K, 10-Q, 8-K) in a single context window — no RAG, no chunking, full document understanding
+- **Reasoning Engine** (Magistral Medium) — Chain-of-thought portfolio impact assessment with confidence scores
+- **Synthesizer** (Mistral Large 3) — Cross-source correlation into executive briefs with actionable items
+- **Voice Agent** (ElevenLabs) — Professional multilingual audio briefings in 5 languages (EN/FR/DE/PL/ES)
+
+## Key Features
+
+- Scheduled brief generation — every 4h, daily, or weekly on user-defined UTC time
+- Real-time market data with technical analysis (RSI, MACD, Bollinger Bands)
+- Interactive candlestick charts (Recharts + Lightweight Charts)
+- Earnings call transcription and analysis via Mistral multimodal
+- Portfolio and watchlist management with per-ticker news sentiment
+- Full JWT authentication with access/refresh token flow
+- WebSocket pipeline progress (real-time stage + percentage)
+- 33 automated tests with CI/CD via GitHub Actions
+
+## Tech Stack
+
+Python, FastAPI, SQLAlchemy, PostgreSQL, Redis, Mistral SDK, ElevenLabs, APScheduler, React 19, TypeScript, Vite, Zustand, Recharts, Tailwind CSS, Docker, Vercel, Railway

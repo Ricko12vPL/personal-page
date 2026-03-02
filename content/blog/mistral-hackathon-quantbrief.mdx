@@ -1,0 +1,61 @@
+---
+slug: mistral-hackathon-quantbrief
+title: "Mistral AI Worldwide Hackathon — Building QuantBrief in 48 Hours"
+description: "How I built a multi-agent market intelligence platform at the Mistral AI Hackathon 2026 — 5 specialized AI agents, 256K context SEC filing analysis, and multilingual audio briefings."
+date: 2026-02-28
+published: true
+tags: [hackathon, mistral-ai, multi-agent, quantitative-finance, ai]
+---
+
+## The Hackathon
+
+On February 28, 2026 I participated in the **Mistral AI Worldwide Hackathon 2026** (Anything Goes track). In 48 hours, I built **QuantBrief** — a full-stack multi-agent market intelligence platform that acts as a personal Chief Investment Officer for retail investors.
+
+The idea came from a simple observation: retail investors face an impossible information asymmetry. Over 300 financial articles are published every hour, SEC filings run 80–120 pages, and a Bloomberg Terminal costs $25,200/year. QuantBrief bridges that gap with AI-powered analysis on a schedule you define.
+
+## Why Multi-Agent
+
+A single LLM call can't handle financial intelligence properly. News screening requires speed (thousands of articles). Filing analysis requires depth (full document context). Reasoning requires chain-of-thought. Synthesis requires cross-source correlation. Each task has fundamentally different requirements.
+
+The solution: a 5-agent orchestrated pipeline where each agent uses a Mistral model optimized for its specific role:
+
+```
+① News Screener     → Ministral 3B        (~50ms/article, batch JSON)
+② Filing Analyst    → Mistral Large 3      (256K context, full 10-K)
+③ Reasoning Engine  → Magistral Medium     (CoT impact assessment)
+④ Synthesizer       → Mistral Large 3      (cross-source brief)
+⑤ Voice Agent       → ElevenLabs TTS       (5 languages)
+```
+
+## The 256K Advantage
+
+The most impactful technical decision was using Mistral Large 3's **256K context window** for SEC filing analysis. Traditional approaches chunk documents into 4–8K segments and use RAG for retrieval — this introduces information loss and breaks cross-referencing between sections.
+
+With 256K tokens, the entire 10-K filing fits in a single call. The model sees the full document: risk factors referencing revenue figures referencing forward guidance. No chunking artifacts, no retrieval misses, no lost context.
+
+This is particularly powerful for 8-K filings (material events) where a single sentence in a 3-page document can move a stock 10%.
+
+## Architecture Decisions
+
+**Model selection per agent** — Not every task needs the largest model. News screening with Ministral 3B runs at ~50ms per article (30 articles batch), while filing analysis with Mistral Large 3 takes 15–30 seconds but delivers institutional-quality analysis. This asymmetry is intentional: speed where it matters, depth where it counts.
+
+**Scheduled automation** — Most AI finance tools are on-demand. QuantBrief generates briefs on a schedule (every 4h, daily, weekly) via APScheduler with PostgreSQL persistence. This transforms it from a tool into an autonomous analyst.
+
+**Free data sources only** — SEC EDGAR, yfinance, RSS feeds, FRED. No paid APIs. The entire data pipeline costs $0 to operate — the only cost is Mistral API tokens.
+
+## What I Built in 48 Hours
+
+- **Backend** — FastAPI with 25+ endpoints, JWT auth, PostgreSQL, Redis, rate limiting, security headers
+- **Frontend** — React 19 + TypeScript dashboard with real-time WebSocket pipeline progress, interactive charts (Recharts + Lightweight Charts), multilingual UI (5 languages via react-i18next)
+- **Pipeline** — 5-agent orchestrator with stage-level error handling and W&B experiment tracking
+- **Infrastructure** — Docker Compose, GitHub Actions CI/CD, deployed to Vercel (frontend) + Railway (backend)
+- **Tests** — 33 automated tests covering auth, portfolio, watchlist, and schedule isolation
+
+13,500+ lines of code across 95+ files. Full-stack, production-ready, deployed and live.
+
+## Takeaways
+
+- Multi-agent architectures are worth the complexity when tasks have genuinely different compute profiles — don't force one model to do everything
+- 256K context windows change the game for document analysis — RAG is a compromise, not a solution
+- Hackathons are the best forcing function for shipping fast — constraints drive better decisions
+- The Mistral model ecosystem is mature enough to build real products on — Ministral 3B for throughput, Large 3 for depth, Magistral for reasoning
