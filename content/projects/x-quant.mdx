@@ -1,28 +1,165 @@
 ---
 slug: x-quant
-title: "X_Quant: Institutional-Grade Quantitative Trading Platform"
-description: "90K+ line Python platform for systematic quantitative trading with ML pipeline, live IBKR paper trading, and CPCV/PBO validation achieving Sharpe 1.236."
+title: "X_Quant: Autonomous Quantitative Trading Platform"
+description: "299K+ line autonomous trading system with 20 AI agents (Claude Sonnet 4), 5-member Investment Council, regime-adaptive fusion, and 9 layers of risk control — achieving Sharpe 1.708 across 664 instruments."
 date: 2024-06-15
-updated: 2025-02-10
+updated: 2026-04-05
 featured: true
 status: completed
-tags: [python, machine-learning, quantitative-finance, xgboost, lightgbm, ibkr, fastapi]
+tags: [python, machine-learning, quantitative-finance, ai-agents, claude, ibkr, fastapi, perplexity]
 github: "https://github.com/Ricko12vPL/X_Quant"
 stats:
-  lines: "90K+"
-  sharpe: 1.236
-  strategies: 18
+  lines: "299K+"
+  sharpe: 1.708
+  agents: 20
 ---
 
 ## Overview
 
-X_Quant is a production-grade quantitative trading platform designed to compete with institutional-level hedge fund systems. Built from the ground up in Python, it implements a complete algorithmic trading pipeline from data ingestion through execution to risk management.
+X_Quant is a fully autonomous quantitative trading system that runs 24/7 with zero human intervention. Every day, it analyzes 664 instruments across 15 years of hourly data, consults 20 AI agents modeled after legendary investors, deliberates through a 5-member Investment Council, and executes trades via Interactive Brokers — all within a 9.9-minute pipeline.
 
-The system achieves an **out-of-sample Sharpe Ratio of 1.236** with a CAGR of 16.97% net of costs — validated through institutional-grade statistical methods (CPCV, PBO, DSR) to guard against overfitting.
+The system achieves an **out-of-sample Sharpe Ratio of 1.708** with a CAGR of 19.71% and MaxDD of just 6.32% — a **Calmar Ratio of 3.117** (world-class by institutional standards). Validated through 12-fold walk-forward across 664 symbols over 15 years, with 7/7 hard gates and 10/11 medium gates passed.
 
-Currently running 24/7 as a live paper trading daemon connected to Interactive Brokers.
+## Architecture — 4 Layers of Intelligence
 
-## Architecture
+```
+┌─────────────────────────────────────────────────────────┐
+│         LAYER 1: QUANT ENGINE (MetaEnsemble v56)        │
+│   40 atomic alphas → 10 strategies → 6 sub-ensembles   │
+│   Regime detection: 6 market states (vol + trend)       │
+└────────────────────────┬────────────────────────────────┘
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│          LAYER 2: 20 AI AGENTS (Claude Sonnet 4)        │
+│   11 legendary investors + 9 specialist analysts        │
+│   9 data sources per ticker · batch=2 · ZERO 429s       │
+└────────────────────────┬────────────────────────────────┘
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│          LAYER 3: INVESTMENT COUNCIL                     │
+│   5 members + Chairman · 3-stage deliberation           │
+│   Peer review · Perplexity fact-check · final vote      │
+└────────────────────────┬────────────────────────────────┘
+                         ▼
+┌──────────────────────┬──────────────────────────────────┐
+│   LAYER 4: FUSION    │        RISK CONTROL (9 layers)   │
+│   Regime-dependent   │   Kill switches (daily/weekly)   │
+│   blend 90/10→70/30  │   Circuit breakers + watchdog    │
+│   LLM veto system    │   IBKR heartbeat + slippage      │
+└──────────────────────┴──────────────────────────────────┘
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│              IBKR EXECUTION + MONITORING                 │
+│   xquant-ctl.sh · 4 LaunchAgent services · 24/7         │
+│   Web terminal (React + FastAPI + WebSocket)             │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Layer 1: Quant Engine
+
+| Component | Detail |
+|-----------|--------|
+| **40 atomic alphas** | Momentum, mean-reversion, RSI, volatility, Fama-French, cross-asset, residual, FIP, structure |
+| **10 base strategies** | XS momentum, residual, dual, FIP, TS, composite, reversal, RSI, VolPrice, Structure |
+| **6 sub-ensembles** | RP12, BestOfBest, ConsBOB, HRP, RiskParity, MinVariance |
+| **Regime detection** | 6 states: BULL_QUIET, BULL_VOLATILE, BEAR_QUIET, BEAR_VOLATILE, SIDEWAYS, CRISIS |
+
+Regime is detected from SPY vs. SMA200 and 20-day annualized volatility. Every downstream decision adapts to the current regime.
+
+## Layer 2: 20 AI Agents
+
+Every ticker gets analyzed by 20 independent agents, each running Claude Sonnet 4 with a distinct investment philosophy.
+
+**11 legendary investors:** Buffett (value/moat), Burry (contrarian/short), Munger (quality + mental models), Graham (net-net), Druckenmiller (macro/flows), Cathie Wood (innovation), Lynch (GARP), Fisher (scuttlebutt), Ackman (activist value), Jhunjhunwala (emerging market value), Pabrai (concentrated value).
+
+**9 specialist analysts:** Sentiment, Regime, Risk Manager, Portfolio Manager, Valuation, Technical, Quant Interpreter, Fundamentals, Growth.
+
+Each agent receives enriched context from **9 data sources per ticker**: IBKR 15Y hourly OHLCV, FRED macro (yield curve, credit spread, CPI), SEC EDGAR insider trades, Finnhub news + earnings, FinBERT NLP sentiment (Apple Silicon GPU), and Perplexity Sonar web-grounded research.
+
+Rate-limit safe: 10 batches of 2 agents, 25s delay = ~5.6 min, zero 429 errors.
+
+## Layer 3: Investment Council
+
+3-stage deliberation modeled after a hedge fund investment committee:
+
+1. **Independent Analysis** — each of 5 members reviews the ticker with full context: 20 agent opinions, Perplexity fact-check, 20 days OHLCV, active strategies. Temperature diversity: 0.2 (conservative) → 1.0 (quantitative).
+2. **Peer Review** — anonymous cross-critique of all opinions. Ranking of strongest arguments.
+3. **Chairman's Synthesis** — final BUY/SELL/HOLD decision with stop-loss and take-profit. Must justify alignment or override of agent majority.
+
+Perplexity fact-checks agent claims against real-time web data (1h TTL) before the council deliberates.
+
+## Layer 4: Fusion + Risk
+
+**Regime-dependent blend:**
+
+| Regime | Quant | AI |
+|--------|-------|----|
+| BULL_QUIET | 90% | 10% |
+| BULL_VOLATILE | 80% | 20% |
+| BEAR_QUIET | 85% | 15% |
+| BEAR_VOLATILE | 75% | 25% |
+| CRISIS | 70% | 30% |
+
+**LLM veto system** — asymmetric override (AI can brake, not accelerate):
+- Confidence >= 80%: position reduced 50%
+- Confidence >= 90% + consensus >= 70%: position reduced 75%
+- Council SELL (conf >= 70%): ticker removed
+
+**9 risk layers:** daily kill switch (-3%), weekly (-5%), MaxDD (-15%), VIX>60 flatten, circuit breakers, duplicate order protection, slippage monitor (>50bps), IBKR heartbeat (5min TCP check), watchdog auto-restart.
+
+## Key Results
+
+| Metric | Value | Status |
+|--------|-------|--------|
+| Net Sharpe | **1.708** | EXCELLENT |
+| CAGR | **19.71%** | EXCELLENT |
+| Max Drawdown | **6.32%** | EXCELLENT |
+| Calmar Ratio | **3.117** | WORLD-CLASS |
+| Sortino Ratio | **2.369** | GOOD |
+| PBO | 0.109 | PASS |
+| DSR | 1.029 | PASS |
+| Walk-Forward | 12-fold, 664 symbols, 15Y | VALIDATED |
+| Hard Gates | 7/7 | APPROVED |
+| Pipeline | 9.9 min, ZERO errors | VERIFIED |
+
+## Daily Schedule
+
+```
+09:00 ET  Pre-market check + Perplexity morning briefing
+14:30 ET  Priority data refresh (50 symbols from IBKR)
+15:30 ET  20 AI agents analyze portfolio (~5.6 min)
+15:45 ET  Council deliberation — 3 stages + fact-check (~2.5 min)
+16:05 ET  Fusion + rebalancing via IBKR
+16:10 ET  Snapshot: NAV, positions, P&L to journal
+16:30 ET  Daily report + Telegram summary
+22:00 ET  Full data refresh (664 symbols) + AutoResearch
+```
+
+## Web Terminal
+
+Professional dashboard (React + FastAPI + WebSocket, real-time updates every 5s):
+
+Supervisor (NAV, regime, kill switches) · Portfolio (positions, P&L, exposure) · Signals (40-alpha heatmap) · Agents (20 agents with reasoning) · Council (decisions, dissent, fact-check) · Risk (VaR gauges, stress scenarios) · Research (strategy profiles) · AutoResearch (strategy discovery) · Journal (transaction history) · Control (kill switch panel, manual triggers)
+
+## Production Notes
+
+- **Deployment** — 4 macOS LaunchAgent services managed by `xquant-ctl.sh` (start/stop/restart/status)
+- **Self-healing** — watchdog process with auto-restart, zombie socket detection, Gateway monitoring
+- **Cost** — ~$8/day for full AI intelligence (20 agents + council + Perplexity)
+- **Data** — 664 instruments × 15 years hourly OHLCV (858 MB pickle store)
+- **Testing** — 13/13 critical checks PASS, end-to-end pipeline verified
+
+## Tech Stack
+
+Python, NumPy, Pandas, XGBoost, LightGBM, CatBoost, scikit-learn, Optuna, Claude Sonnet 4 (Anthropic API), Perplexity Sonar, FinBERT, asyncio, APScheduler, Interactive Brokers API, FastAPI, React, WebSocket, PostgreSQL, FRED, SEC EDGAR, Finnhub
+
+---
+
+## v1 — Original Quant Platform
+
+The original version of X_Quant was a classical quantitative trading platform focused on ML-driven signal generation without AI agents.
+
+### v1 Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -53,31 +190,21 @@ Currently running 24/7 as a live paper trading daemon connected to Interactive B
 │   TWAP / VWAP / SOR  │   5-level drawdown controls      │
 │   IBKR Live Gateway  │   Circuit breakers + regime       │
 └──────────────────────┴──────────────────────────────────┘
-                         ▼
-┌─────────────────────────────────────────────────────────┐
-│              MONITORING (24/7 daemon)                    │
-│   Prometheus metrics → Grafana dashboards               │
-│   Position tracking · PnL · Exposure · Alerts           │
-└─────────────────────────────────────────────────────────┘
 ```
 
-The platform follows a modular monolith architecture with 32 core modules.
+### v1 Results
 
-## Strategies
+| Metric | Value |
+|--------|-------|
+| Lines of code | 90K+ |
+| Sharpe Ratio | 1.236 |
+| CAGR | 16.97% |
+| Max Drawdown | 13.05% |
+| Win Rate | 68.7% |
+| Strategies | 18 |
+| Alphas | 30 |
 
-18 strategies across multiple timeframes and styles:
-
-- **Trend-following** — Moving average crossovers, breakout systems, channel strategies (daily/weekly)
-- **Mean-reversion** — Bollinger band, RSI-based, pairs trading (intraday/daily)
-- **Momentum** — Cross-sectional momentum, sector rotation (daily/weekly)
-- **Statistical arbitrage** — Cointegration-based, spread trading (intraday)
-- **ML-driven** — Ensemble predictions from the 6-model pipeline (daily)
-
-11 of 18 strategies pass all 12 institutional validation checks.
-
-## Validation
-
-The system uses institutional-grade statistical validation:
+### v1 Validation
 
 - **CPCV** — Combinatorial Purged Cross-Validation (12 folds, 5-day purge)
 - **PBO** — Probability of Backtest Overfitting: 0.01 (target < 0.30)
@@ -85,21 +212,19 @@ The system uses institutional-grade statistical validation:
 - **Hansen's SPA Test** — Superior Predictive Ability
 - **Walk-Forward Efficiency** — 71.18% (target > 70%)
 
-## Key Results
+### v1 → v2 Evolution
 
-- Out-of-Sample Sharpe Ratio: **1.236**
-- CAGR (net of costs): **16.97%**
-- Maximum Drawdown: **13.05%**
-- Win Rate: **68.7%**
-
-## Production Notes
-
-- **Monitoring** — Prometheus metrics exported for Grafana dashboards: PnL, exposure, drawdown, signal quality
-- **Testing** — 450+ pytest tests, CI via GitHub Actions on every push
-- **Deployment** — Docker containerized, runs as systemd daemon on dedicated server
-- **Live trading** — 24/7 paper trading on IBKR with automated position reconciliation
-- **Alerting** — Slack notifications for circuit breaker triggers, drawdown warnings, system errors
-
-## Tech Stack
-
-Python, NumPy, Pandas, XGBoost, LightGBM, CatBoost, scikit-learn, Optuna, asyncio, multiprocessing, Interactive Brokers API, PostgreSQL, Docker, Prometheus, Grafana, pytest
+| Metric | v1 | v2 |
+|--------|----|----|
+| Lines of code | 90K+ | **299K+** |
+| Sharpe | 1.236 | **1.708** |
+| CAGR | 16.97% | **19.71%** |
+| Max Drawdown | 13.05% | **6.32%** |
+| Calmar | — | **3.117** |
+| Alphas | 30 | **40** |
+| Strategies | 18 | **10 + 6 sub-ensembles** |
+| AI agents | 0 | **20** |
+| Risk layers | 5 | **9** |
+| Data sources | 1 | **9 per ticker** |
+| Instruments | — | **664** |
+| Autonomy | Semi-manual | **Fully autonomous 24/7** |
