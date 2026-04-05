@@ -1,0 +1,171 @@
+---
+slug: x-quant-v2
+title: "X_Quant v2: From ML Pipeline to Autonomous AI Hedge Fund"
+description: "How X_Quant evolved from a 90K-line quant platform to a 299K-line autonomous trading system with 20 AI agents, a 5-member Investment Council, regime-adaptive fusion, and 9 layers of risk control — achieving Sharpe 1.708."
+date: 2026-04-05
+published: true
+tags: [quantitative-finance, ai-agents, machine-learning, claude, trading, python]
+---
+
+## From v1 to v2
+
+X_Quant started as a classical quantitative trading platform — an ML ensemble (XGBoost, LightGBM, CatBoost) generating signals from technical alphas, validated through institutional statistics (CPCV, PBO, DSR), and executing via Interactive Brokers. It worked. Sharpe 1.236, CAGR 16.97%, 90K lines of Python.
+
+But quantitative signals alone have a ceiling. They see price, volume, volatility. They don't read SEC filings. They don't understand macro regime shifts. They can't reason about geopolitical risk or supply chain disruptions. The information set is fundamentally incomplete.
+
+v2 adds three layers of intelligence on top of the quant engine — 20 AI agents that analyze every ticker from different investment philosophies, a 5-member Investment Council that deliberates like a hedge fund committee, and a regime-adaptive fusion system that dynamically blends quantitative and AI signals. The result: **Sharpe 1.708, CAGR 19.71%, MaxDD 6.32%, Calmar 3.117** — validated across 664 instruments over 15 years of hourly data.
+
+299,000+ lines of code. Zero human intervention. Running 24/7.
+
+## Architecture — 4 Layers of Intelligence
+
+```
+LAYER 1: QUANT ENGINE (MetaEnsemble v56)
+  40 atomic alphas → 10 strategies → 6 sub-ensembles
+  Regime detection: 6 market states
+                    ▼
+LAYER 2: 20 AI AGENTS (Claude Sonnet 4)
+  11 legendary investors + 9 specialist analysts
+  9 data sources per ticker (FRED, SEC, Finnhub, FinBERT, Perplexity)
+                    ▼
+LAYER 3: INVESTMENT COUNCIL
+  5 AI members + Chairman — 3-stage deliberation
+  Perplexity fact-check on agent claims
+                    ▼
+LAYER 4: FUSION + EXECUTION
+  Regime-dependent blend (90/10 bull → 70/30 crisis)
+  LLM veto system + 9 risk layers + IBKR execution
+```
+
+Each layer adds a different type of intelligence. The quant engine sees patterns in price. The agents see fundamentals, sentiment, and macro. The council resolves disagreements. The fusion layer decides how much to trust each source.
+
+## Layer 1: MetaEnsemble v56
+
+The quant engine expanded from 30 to **40 atomic alphas** covering momentum, mean-reversion, RSI, volatility, Fama-French factors, cross-asset signals, residual alpha, and structural patterns. These feed into **10 base strategies** combined through **6 sub-ensemble methods** — Risk Parity, HRP (Hierarchical Risk Parity), MinVariance, BestOfBest, Conservative BestOfBest, and RP12.
+
+The critical addition is **regime detection**. The system classifies the market into 6 states based on SPY vs. SMA200 and 20-day annualized volatility:
+
+| Regime | Condition |
+|--------|-----------|
+| BULL_QUIET | SPY > SMA200, vol < 20% |
+| BULL_VOLATILE | SPY > SMA200, vol > 20% |
+| BEAR_QUIET | SPY < SMA200, vol < 20% |
+| BEAR_VOLATILE | SPY < SMA200, vol > 20% |
+| SIDEWAYS | SPY within 2% of SMA200, vol < 18% |
+| CRISIS | vol > 35% |
+
+Every downstream decision — signal weights, risk limits, quant/AI blend ratios — adapts to the current regime.
+
+## Layer 2: 20 AI Agents
+
+This is where v2 diverges fundamentally from classical quant. Every ticker in the portfolio gets analyzed by **20 independent AI agents**, each running Claude Sonnet 4 with a distinct investment philosophy.
+
+11 agents model legendary investors — Buffett (value/moat), Burry (contrarian/short thesis), Munger (quality + mental models), Graham (net-net/earnings stability), Druckenmiller (macro/flows), Cathie Wood (innovation/growth), Lynch (GARP), Fisher (scuttlebutt), Ackman (activist value), Jhunjhunwala (emerging market value), Pabrai (concentrated value).
+
+9 agents are specialist analysts — Sentiment (news + social), Regime (macro assessment), Risk Manager (VaR/drawdown), Portfolio Manager (allocation), Valuation (DCF/multiples), Technical (patterns/levels), Quant Interpreter (MetaEnsemble signals), Fundamentals (ROE/margins/debt), Growth (momentum trajectory).
+
+Each agent receives an enriched context from **9 data sources per ticker**: IBKR historical data (15Y hourly OHLCV), FRED macro indicators (yield curve, credit spread, CPI), SEC EDGAR insider trades (Form 4), Finnhub news and earnings calendar, FinBERT NLP sentiment (running locally on Apple Silicon GPU), and Perplexity Sonar web-grounded research with 6-hour TTL cache.
+
+Rate limiting was a hard engineering problem. 20 agents hitting the Anthropic API in parallel would generate 429 errors instantly. The solution: **batch processing** — 10 batches of 2 agents with 25-second delays between batches. Total agent analysis time: ~5.6 minutes. Zero rate limit errors.
+
+## Layer 3: Investment Council
+
+The council is where X_Quant most closely resembles a real hedge fund. Five AI members deliberate in a **3-stage process**:
+
+**Stage 1 — Independent Analysis.** Each member independently reviews the ticker with full context: all 20 agent opinions, Perplexity fact-check results, 20 days of OHLCV price data, and active strategies. Five different temperature settings (0.2 conservative → 1.0 quantitative) ensure diversity of perspective.
+
+**Stage 2 — Peer Review.** Anonymous cross-critique. Each member reviews the other four opinions and ranks the strongest arguments. This forces engagement with opposing views rather than anchoring on the initial position.
+
+**Stage 3 — Chairman's Synthesis.** The Chairman (Claude Sonnet 4, temp 0.3) renders a final decision — BUY, SELL, or HOLD — with specific stop-loss and take-profit levels. The Chairman must explicitly justify whether the decision aligns with or overrides the agent majority.
+
+The critical innovation is **Perplexity fact-checking**. Before the council deliberates, agent claims are verified against real-time web data (1-hour TTL). If an agent claims "NVIDIA just announced a stock split" — Perplexity confirms or denies it. The council sees the fact-check results before voting.
+
+Rate limiting: semaphore=2, ensuring never more than 2 concurrent council API calls.
+
+## Layer 4: Regime-Adaptive Fusion
+
+The fusion layer blends quantitative signals and AI consensus with **regime-dependent weights**:
+
+| Regime | Quant Weight | AI Weight |
+|--------|-------------|-----------|
+| BULL_QUIET | 90% | 10% |
+| BULL_VOLATILE | 80% | 20% |
+| BEAR_QUIET | 85% | 15% |
+| BEAR_VOLATILE | 75% | 25% |
+| SIDEWAYS | 85% | 15% |
+| CRISIS | 70% | 30% |
+
+The intuition: in calm bull markets, price patterns are reliable — trust the quant. In crisis, price patterns break down — the AI's ability to reason about news, filings, and macro context becomes more valuable.
+
+The **LLM veto system** provides asymmetric override. When the AI has high-confidence bearish conviction, it can reduce or eliminate positions:
+
+- Confidence >= 80%: position reduced by 50%
+- Confidence >= 90% + consensus >= 70%: position reduced by 75%
+- Council SELL (confidence >= 70%): ticker removed from portfolio
+
+This is intentionally asymmetric. The AI can pull the emergency brake but can't floor the accelerator — preventing overconfidence from amplifying risk.
+
+## Risk Control — 9 Layers
+
+| Layer | Trigger | Action |
+|-------|---------|--------|
+| Daily kill switch | -3% daily P&L | Halt all trading until next day |
+| Weekly kill switch | -5% weekly P&L | Halt until Monday |
+| MaxDD kill switch | -15% drawdown | Full liquidation + alert |
+| VIX kill switch | VIX > 60 | Flatten all positions |
+| Circuit breakers | IBKR/LLM failures | Exponential backoff |
+| Duplicate protection | Same order within 60s | Block |
+| Slippage monitor | > 50bps fill slippage | Alert |
+| IBKR heartbeat | Every 5 min | TCP socket verification (zombie detection) |
+| Watchdog process | Continuous | Auto-restart daemon, Gateway alerts |
+
+## Daily Pipeline — 9.9 Minutes, Zero Errors
+
+The entire system runs autonomously on a daily schedule:
+
+```
+09:00 ET  Pre-market check + Perplexity morning briefing     ~30s
+14:30 ET  Priority data refresh (50 symbols from IBKR)       ~4 min
+15:30 ET  20 AI agents analyze portfolio                     ~5.6 min
+15:45 ET  Council deliberation (3 stages + fact-check)       ~2.5 min
+16:05 ET  Fusion + rebalancing via IBKR                      ~2 min
+16:10 ET  Snapshot: NAV, positions, P&L to journal            ~30s
+16:30 ET  Daily report + Telegram summary                     ~1 min
+22:00 ET  Full data refresh (all 664 symbols)                ~55 min
+22:00 ET  AutoResearch: autonomous strategy discovery          parallel
+```
+
+End-to-end pipeline verified on 2026-04-05: **9.9 minutes, zero errors, zero 429 rate limit hits.**
+
+Running as 4 macOS LaunchAgent services managed by `xquant-ctl.sh` — the daemon, API backend, watchdog, and IB Gateway. Self-healing, auto-restart, unified control.
+
+## Results
+
+| Metric | v1 | v2 |
+|--------|----|----|
+| Lines of code | 90K+ | 299K+ |
+| Sharpe Ratio | 1.236 | **1.708** |
+| CAGR | 16.97% | **19.71%** |
+| Max Drawdown | 13.05% | **6.32%** |
+| Calmar Ratio | — | **3.117** |
+| Sortino Ratio | — | **2.369** |
+| Instruments | — | **664** |
+| Data history | — | **15 years (hourly)** |
+| Strategies | 18 | **10 base + 6 sub-ensembles** |
+| Alphas | 30 | **40** |
+| AI agents | 0 | **20** |
+| Risk layers | 5 | **9** |
+| Data sources | 1 | **9 per ticker** |
+
+The most significant improvement isn't Sharpe (1.236 → 1.708) — it's drawdown. MaxDD dropped from 13.05% to 6.32%, more than halved. The Calmar ratio (CAGR/MaxDD) of 3.117 is world-class by institutional standards. The system makes more money while losing less.
+
+## What's Next
+
+The system is live and autonomous. The focus now shifts to:
+
+- **Live performance tracking** — paper trading results vs. backtest expectations
+- **AutoResearch pipeline** — autonomous discovery of new strategy variants (runs nightly)
+- **Expanding the agent roster** — sector-specific analysts (semiconductors, energy, biotech)
+- **Real capital deployment** — transitioning from paper to live trading after 6-month validation
+
+The thesis is simple: quantitative signals tell you what the market has done. AI agents tell you what the market might do. The fusion of both — weighted by regime, constrained by risk, validated by institutional statistics — is how you build an autonomous system you can actually trust with capital.
