@@ -1,0 +1,59 @@
+---
+slug: validation-crisis-research
+title: "Starting the Validation Crisis: Auditing AGI Forecasts with Quant Finance Tools"
+description: "Beginning a research project that imports the overfitting-detection tools quantitative finance built between 2014 and 2018 — and applies them to the major AGI timeline forecasts shaping how capital and talent get allocated."
+date: 2026-05-14
+published: true
+tags: [research, quantitative-finance, ai-forecasting, statistics, validation]
+---
+
+## Where This Came From
+
+I spent the last two years building X_Quant — a quantitative trading system. The single most important thing I learned there was not a strategy or a model. It was a discipline: the difference between a backtest that looks excellent and a backtest that means something.
+
+Quantitative finance learned that difference the hard way. Between roughly 2014 and 2018, the field built a set of tools — the deflated Sharpe ratio, the probability of backtest overfitting, walk-forward validation — for one reason: capital was being lost to strategies whose track records were artifacts of search, not skill. A backtest that searches a thousand configurations and reports the best one is not reporting a result. It's reporting the maximum of a thousand draws, and the sampling distribution of a maximum sits well above that of a single trial. If you don't correct for that, you bet real money on noise.
+
+Recently I started reading the major AGI timeline forecasts the same way I'd read a hedge fund's pitch deck. And I kept seeing the same structure: a measured window, a curve fit to it, an extension forward, and a confidence interval that had not been deflated for the number of model variations implicitly searched in producing it.
+
+That is the same error. So today I'm starting a research project to make the argument precisely.
+
+## The Argument
+
+The claim is narrow, and I think that's its strength: the current debate over AGI timelines suffers from the same methodological errors quantitative finance diagnosed and partially solved a decade ago — in-sample extrapolation, multiple testing without correction, the absence of walk-forward validation, and selection bias toward success.
+
+These are not exotic failures. They are the failures a hedge fund learns to detect *before* it is allowed to manage external capital, because each reliably produces a track record that looks excellent and means nothing. The tests that exposed overfitting in financial backtests can be applied, with care, to capability projections.
+
+I want to be exact about what this project will **not** claim, because the refusals separate a methodological critique from a competing prophecy:
+
+- It will not argue that AGI will not arrive.
+- It will not argue the forecasters are dishonest or incompetent — I'm critiquing methodology, not people, and the work I'm examining is serious. That seriousness is exactly why its methodological exposure is worth the effort.
+- It will not offer my own, better date. To do so would repeat the precise error I'm identifying.
+- It will not claim finance has solved its own validation problems — only that finance has *paid*, in real capital over real years, for a discipline capability forecasting has not yet adopted.
+
+## The Plan
+
+Three tools, adapted from finance to the capability domain:
+
+1. **Deflated Sharpe Ratio** — correct each forecast's reported precision for the implicit best-of-N search behind it.
+2. **Probability of Forecast Overfitting** — adapt the combinatorial PBO into a sequential test that respects publication-time information sets (a 2022 forecast had access to evidence a 2020 forecast did not — they are not exchangeable).
+3. **Walk-forward retrodiction** — the tool that does the most work. It manufactures the held-out sample a forecast never reserved: reconstruct the forecast as of its publication date, freeze the information set to what was then available, and score it against the period that has since elapsed. Several of these forecasts have been public long enough that this held-out sample already exists. It simply hasn't been used.
+
+These compose into a method I'm calling the **Deflated Capability Forecast (DCF)**: take a forecast's point estimate and too-narrow interval, widen the interval by the amount the methodology warrants, and return a distribution with explicit treatment of the tails instead of unearned precision.
+
+## The Adaptations Are Not Free
+
+I'm not going to wave past the concessions. The transfer rests on three of them, and each will be carried as an explicit honesty statement rather than buried:
+
+- **Non-stationarity.** The deflated Sharpe ratio's variance assumes IID returns. Capability-progress series violate that — secular compute trends, algorithmic efficiency gains, autocorrelated clusters. I'll swap in a stationary bootstrap, but its consistency is only validated at sample sizes the surveyed series sit below. So that adaptation is labeled *speculative* by default.
+- **Undisclosed search count.** The number of configurations searched drives the deflation — and it's rarely disclosed. So I'll *range* the effective trial count rather than assert a point.
+- **Missing performance statistic.** The Sharpe ratio has no off-the-shelf capability analog. I'll evaluate a panel — Brier score, log-loss, calibration error, interval coverage — and select per forecast, with the selection preregistered.
+
+Every magnitude will carry an epistemic label: *(established)*, *(speculative)*, or *(speculative — derived)*. The composition does not launder those labels into certainty.
+
+## The Part That Matters Most
+
+Here is the commitment I'm making before I compute anything: I will preregister a specific, falsifiable prediction about what my own framework will produce, lock it cryptographically, and report the result in the same plain terms I'd demand of any forecast I examine — **even if my own prediction fails.**
+
+A forecast that quietly updates its commitments after seeing how they fare is the exact failure mode this project exists to name. If I get to apply that standard to others, I have to wear it first. The whole project is worthless if the author exempts himself from it.
+
+I don't know yet how that self-audit will turn out. That's the point of writing the prediction down before I run the numbers. More to come.

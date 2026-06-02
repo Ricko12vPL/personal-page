@@ -1,0 +1,87 @@
+---
+slug: validation-crisis
+title: "The Validation Crisis in AGI Capability Forecasting"
+description: "A research paper importing quantitative-finance overfitting tools — the deflated Sharpe ratio, probability of backtest overfitting, and walk-forward retrodiction — to evaluate major AGI timeline forecasts. Introduces the Deflated Capability Forecast (DCF)."
+date: 2026-05-14
+updated: 2026-06-02
+featured: true
+status: completed
+tags: [research, quantitative-finance, statistics, ai-forecasting, python, latex]
+stats:
+  sources: 186
+---
+
+## Overview
+
+A research preprint (21 pages, 186 references) arguing that the confidence attached to AGI timeline forecasts exceeds what the methods producing them can support — and that the gap is measurable using validation tools quantitative finance built for the same problem between 2014 and 2018.
+
+The central argument is narrow and hard to dismiss: the major published capability forecasts repeat the exact methodological errors that hedge-fund backtests were caught making — in-sample extrapolation, multiple testing without correction, the absence of walk-forward validation, and selection bias toward success. The paper imports three finance tools to quantify the problem, then introduces a new method — the **Deflated Capability Forecast (DCF)** — that widens a forecast's stated interval by the amount its underlying methodology actually warrants.
+
+The work critiques *methodology, not people*: it cites the forecasters without a single pejorative adjective, because the work is serious and that seriousness is exactly why its methodological exposure is worth examining.
+
+## Method
+
+```
+┌─────────────────────────────────────────────────────────┐
+│         THE PROBLEM: in-sample extrapolation            │
+│   measure a window → fit a model → project forward      │
+│   read the confidence interval as if the future were    │
+│   a continuation of the sample (it is not)              │
+└────────────────────────┬────────────────────────────────┘
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│        THREE TOOLS FROM QUANTITATIVE FINANCE            │
+│                                                         │
+│  DSR  Deflated Sharpe Ratio                             │
+│       corrects the reported statistic for best-of-N     │
+│       (Bailey & López de Prado 2014)                    │
+│                                                         │
+│  PFO  Probability of Forecast Overfitting               │
+│       adapted from PBO via sequential-test partition    │
+│       under the publication-time filtration             │
+│                                                         │
+│  WFR  Walk-Forward Retrodiction                         │
+│       manufactures the held-out sample the forecast     │
+│       never reserved — freeze the info set, score the   │
+│       elapsed period                                    │
+└────────────────────────┬────────────────────────────────┘
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│        DCF — Deflated Capability Forecast               │
+│   Equation 14.1': deflate the point estimate, weight    │
+│   by overfitting probability, then widen + shift by a   │
+│   certification-friction factor (φ, δ).                 │
+│   Normal spine + generalized-Pareto right tail (EVT)    │
+│   → a distribution with honest tails, not a point.      │
+└─────────────────────────────────────────────────────────┘
+```
+
+The financial tools do not transfer for free. Three adaptations are carried as explicit honesty statements: capability series are **non-stationary** (the IID variance assumption is replaced with a stationary bootstrap), the **search count is undisclosed** (the effective trial count is ranged, not asserted), and the **performance statistic has no off-the-shelf analog** (a five-candidate panel — Brier score, log-loss, calibration error, interval coverage, capability-Sharpe — is selected per forecast). Each adaptation is labeled *(speculative)* by default rather than waved past.
+
+## Results
+
+The DCF was computed for five forecasts. Across the surveyed set, deflation factors cluster between **1.28× and 2.02×** — the stated intervals are systematically too narrow.
+
+| Forecast | Reported 95% CI | Deflation ratio |
+|----------|-----------------|-----------------|
+| Aschenbrenner (OOM, 2027) | `[2025, 2029]` | 1.285× / 1.539× |
+| Cotra 2020 (anchors, 2052) | `[2031, 2100]` | 1.531× |
+| Cotra 2022 (anchors, 2040) | `[2030, 2100]` | 1.732× |
+| Davidson (takeoff duration) | `[1, 10]` yr | 2.021× |
+| Self-prediction (preregistered) | `[10, 82.5]` % | 1.320× |
+
+## The Integrity Capstone
+
+The strongest element of the paper is turned on the author. Before computing anything, the work **preregistered** a specific prediction: that applying the deflated Sharpe ratio to one landmark forecast would widen its interval by at least 2.3×.
+
+It produced **1.285×**. The prediction **failed**.
+
+The paper reports the failure rather than revising the threshold. The failure lies not in the framework — which computed correctly and deflated each interval exactly as its derivation specifies — but in a prior set by intuition *before* the deflation it should have been derived from. That is precisely the error this work exists to identify, surfaced now against the author's own number. A discipline of honest validation is supposed to surface exactly this. The preregistration is cryptographically locked (git tag `preregistration-v3-locked`, SHA-256 sidecar fingerprint) so verification proceeds against the immutable record rather than against prose that could drift from it.
+
+## What the Paper Refuses to Claim
+
+The refusals matter as much as the claims. The paper does **not** argue that AGI will not arrive. It does **not** argue that the forecasters are dishonest or incompetent. It does **not** offer its own, better date — to do so would repeat the exact error it identifies. And it does **not** claim that quantitative finance has solved its own validation problems — only that finance has paid, in real capital over real years, for a discipline capability forecasting has not yet adopted.
+
+## Method & Tooling
+
+LaTeX (arXiv single-column preprint), Python reference implementation (`deflated-capability-forecast` package), Jupyter reproducibility notebooks (every plotted value re-verified against the package to 1e-3 tolerance), git-tagged cryptographic preregistration, trace-to-source discipline (every paragraph cites a primary source), explicit epistemic labeling: *(established)* / *(speculative)* / *(speculative — derived)*.
