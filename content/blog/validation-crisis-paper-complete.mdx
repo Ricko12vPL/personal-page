@@ -1,0 +1,60 @@
+---
+slug: validation-crisis-paper-complete
+title: "The Validation Crisis Paper Is Done — and My Own Prediction Failed"
+description: "The short version of the validation-crisis paper is finished: a 21-page arXiv preprint. Across the surveyed AGI forecasts, deflation factors cluster between 1.28× and 2.02× — and the preregistered self-prediction I locked before computing anything failed at 1.285×."
+date: 2026-06-02
+published: true
+tags: [research, quantitative-finance, ai-forecasting, statistics, validation]
+---
+
+## It's Finished
+
+A few weeks ago I [started a research project](/blog/validation-crisis-research) arguing that the confidence attached to AGI timeline forecasts exceeds what the methods producing them can support — and that the gap is measurable with tools quantitative finance built for exactly this problem.
+
+The short version is now done: a **21-page arXiv preprint**, 186 references, with a Python reference implementation and reproducibility notebooks that re-verify every plotted number against the package to 1e-3 tolerance. I ended the first post with a commitment and a cliffhanger — I'd preregister a falsifiable prediction about what my own framework would produce, lock it cryptographically, and report the result honestly even if it failed.
+
+This post is me keeping that promise. The short answer: **my prediction failed, and I'm reporting it as a fact.**
+
+## What the Method Produced
+
+The paper composes three finance tools — the deflated Sharpe ratio, the probability of forecast overfitting, and walk-forward retrodiction — into a method I call the **Deflated Capability Forecast (DCF)**. It takes a forecast's too-narrow interval and widens it by the amount the underlying methodology actually warrants.
+
+I computed it for five forecasts. The result is consistent enough to state as a single pattern: deflation factors cluster between **1.28× and 2.02×**. Every stated interval was too narrow. None of them by a catastrophic amount — but all of them, in the same direction.
+
+| Forecast | Reported 95% CI | Deflation |
+|----------|-----------------|-----------|
+| Aschenbrenner (OOM, 2027) | `[2025, 2029]` | 1.285× / 1.539× |
+| Cotra 2020 (anchors) | `[2031, 2100]` | 1.531× |
+| Cotra 2022 (anchors) | `[2030, 2100]` | 1.732× |
+| Davidson (takeoff duration) | `[1, 10]` yr | 2.021× |
+| My own self-prediction | `[10, 82.5]` % | 1.320× |
+
+## The Prediction I Got Wrong
+
+Before computing anything, I preregistered a specific claim: that applying the deflated Sharpe ratio to one landmark forecast would widen its interval by at least **2.3×**. I locked it in a git tag with a SHA-256 fingerprint so it couldn't drift.
+
+The framework produced **1.285×**.
+
+The prediction failed. The threshold I named works out to the year 2034.2; the deflated upper bound landed at 2030.1 — a gap of **4.06 years** short of my own preregistered line.
+
+I want to locate the failure precisely, because the precision is the entire point. It is *not* a failure of the framework. The framework computed correctly and deflated the interval exactly as its derivation specifies. It is a failure of **my prior** — I set the 2.3× threshold by intuition, before computing the deflation it should have been derived from. The number was a guess dressed up as a hypothesis.
+
+And it wasn't a one-row fluke. Across all five forecasts, *nothing* reached 2.3×. My expectation about what my own method would do was uniformly too high. The overconfidence was systematic — and the method is what surfaced it.
+
+That is, with some discomfort, the exact error the paper exists to identify. I built a tool to catch people reading more confidence into a projection than the method supports, and the first place it found that error was in me.
+
+## Why I Didn't Just Change the Number
+
+The honest move and the easy move pointed in opposite directions. The easy move was to quietly lower the threshold to 2.0× after seeing the results and call it a successful prediction. Nobody would have known.
+
+But a forecast that quietly updates its commitments after seeing how they fare is the precise failure mode the paper exists to name. If I'd done that, the whole project would be worthless — the author exempting himself from the one standard he's asking everyone else to wear. So the preregistered content is fixed. The failed prediction is in the paper, in the same plain terms and at the same precision as the four external forecasts it accompanies.
+
+A discipline of honest validation is supposed to surface exactly this: an uncomfortable truth about the author's own judgment, rather than a result that flatters the framework bearing his name.
+
+## What I'm Actually Claiming
+
+To be exact about the scope, because the refusals matter as much as the claims. This paper does **not** argue AGI won't arrive. It does **not** argue the forecasters are dishonest or incompetent — the work I examined is serious, and that's why its methodological exposure is worth the effort. It does **not** offer my own, better date — that would repeat the exact error I'm identifying.
+
+The larger claim is this: the tools quantitative finance built between 2014 and 2018 weren't built for elegance. They were built because capital was being lost to backtests that looked excellent and meant nothing. Capability forecasting isn't under that kind of pressure yet — but the decisions riding on its forecasts (what to build, what to fear, what to regulate, where to place a generation of talent and a trillion dollars of compute) are consequential enough that the same discipline is warranted *before* the losses force it.
+
+Whatever you believe about the timeline, the belief should be held only as tightly as the method behind it allows. The failed self-prediction is my attempt to prove I meant it.
