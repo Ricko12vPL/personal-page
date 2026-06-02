@@ -112,16 +112,28 @@ export default async function ProjectPage({ params }: PageProps) {
           ))}
         </div>
 
-        {project.github && (
-          <a
-            href={project.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-accent text-[13px] hover:opacity-70 transition-opacity"
-          >
-            View on GitHub &rarr;
-          </a>
-        )}
+        <div className="flex flex-wrap items-center gap-4">
+          {project.paper && (
+            <a
+              href={project.paper}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-[13px] rounded-md border border-accent text-accent hover:bg-accent hover:text-background transition-colors"
+            >
+              Read the paper (PDF) &darr;
+            </a>
+          )}
+          {project.github && (
+            <a
+              href={project.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-accent text-[13px] hover:opacity-70 transition-opacity"
+            >
+              View on GitHub &rarr;
+            </a>
+          )}
+        </div>
       </header>
 
       <MDXContent code={project.body} />

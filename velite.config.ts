@@ -14,6 +14,7 @@ const projects = defineCollection({
     tags: s.array(s.string()),
     github: s.string().optional(),
     live: s.string().optional(),
+    paper: s.string().optional(),
     stats: s
       .object({
         lines: s.string().optional(),
