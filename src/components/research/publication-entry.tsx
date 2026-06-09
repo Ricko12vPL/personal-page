@@ -11,6 +11,7 @@ export interface Publication {
   abstract: string
   tags: string[]
   pdf?: string
+  website?: string
   arxiv?: string
   code?: string
 }
@@ -76,6 +77,16 @@ export function PublicationEntry({ paper, index }: PublicationEntryProps) {
       </p>
 
       <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mb-5 text-[13px]">
+        {paper.website && (
+          <a
+            href={paper.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-accent hover:opacity-70 transition-opacity"
+          >
+            Read online &rarr;
+          </a>
+        )}
         {paper.pdf && (
           <a
             href={paper.pdf}

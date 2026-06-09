@@ -82,6 +82,16 @@ export default async function PaperPage({ params }: PageProps) {
         </p>
 
         <div className="flex flex-wrap items-center gap-4">
+          {paper.website && (
+            <a
+              href={paper.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-[13px] rounded-md bg-accent text-background hover:opacity-90 transition-opacity"
+            >
+              Read online &rarr;
+            </a>
+          )}
           {paper.pdf && (
             <a
               href={paper.pdf}

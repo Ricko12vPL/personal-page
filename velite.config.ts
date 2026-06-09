@@ -59,6 +59,7 @@ const papers = defineCollection({
     tags: s.array(s.string()),
     featured: s.boolean().default(false),
     pdf: s.string().optional(),
+    website: s.string().optional(),
     arxiv: s.string().optional(),
     code: s.string().optional(),
     doi: s.string().optional(),
