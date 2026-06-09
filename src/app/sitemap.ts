@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next'
-import { getProjects, getPublishedPosts } from '@/lib/content'
+import { getProjects, getPublishedPosts, getPapers } from '@/lib/content'
 import { siteConfig } from '@/config/site'
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -13,12 +13,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: new Date(p.updated ?? p.date),
   }))
 
+  const research = getPapers().map((p) => ({
+    url: `${siteConfig.url}/research/${p.slug}`,
+    lastModified: new Date(p.updated ?? p.date),
+  }))
+
   return [
     { url: siteConfig.url, lastModified: new Date() },
     { url: `${siteConfig.url}/projects`, lastModified: new Date() },
+    { url: `${siteConfig.url}/research`, lastModified: new Date() },
     { url: `${siteConfig.url}/blog`, lastModified: new Date() },
     { url: `${siteConfig.url}/cv`, lastModified: new Date() },
     ...projects,
+    ...research,
     ...posts,
   ]
 }

@@ -1,26 +1,33 @@
 ---
 slug: validation-crisis
 title: "The Validation Crisis in AGI Capability Forecasting"
-description: "A research paper importing quantitative-finance overfitting tools — the deflated Sharpe ratio, probability of backtest overfitting, and walk-forward retrodiction — to evaluate major AGI timeline forecasts. Introduces the Deflated Capability Forecast (DCF)."
+authors: ["Kacper Saks"]
 date: 2026-05-14
 updated: 2026-06-02
+venue: "Self-archived preprint"
+status: preprint
+abstract: "Forecasts of when artificial general intelligence will arrive increasingly shape capital allocation, regulation, and where a generation of talent is placed — yet the confidence attached to them exceeds what the methods producing them can support. This paper argues the gap is structural: the predictable consequence of fitting a model to a measured window and projecting it forward without the validation discipline other quantitative fields require. We import that discipline from quantitative finance — the deflated Sharpe ratio, the probability of backtest overfitting, and a walk-forward retrodiction protocol — and introduce the Deflated Capability Forecast (DCF), a method that widens a forecast's stated interval by the amount its underlying methodology warrants, returning a distribution with explicit treatment of the tails in place of a point estimate carrying unearned precision. Across the forecasts where the method could be fully computed, deflation factors cluster between 1.3× and 2.0× — the stated intervals are systematically too narrow. We then turn the method on this work itself: a preregistered prediction that one landmark forecast's interval would widen by at least 2.3× produced 1.285×. We report the failure rather than revise the threshold — a discipline of honest validation is supposed to surface exactly this."
+tags: [quantitative-finance, statistics, ai-forecasting, validation, methodology]
 featured: true
-status: completed
-tags: [research, quantitative-finance, statistics, ai-forecasting, python, latex]
-paper: /papers/validation-crisis-paper.pdf
-stats:
-  sources: 186
+pdf: /papers/validation-crisis-paper.pdf
+bibtex: |
+  @misc{saks2026validation,
+    title        = {The Validation Crisis in AGI Capability Forecasting},
+    author       = {Saks, Kacper},
+    year         = {2026},
+    howpublished = {Self-archived preprint},
+    url          = {https://kacpersaks.dev/research/validation-crisis},
+    note         = {21 pp., 186 references}
+  }
 ---
-
-> **📄 Read the full paper:** [Download the PDF](/papers/validation-crisis-paper.pdf) — 21 pages, 186 references. Every numerical result is reproduced by the accompanying Python package to a 1e-3 tolerance.
 
 ## Overview
 
-A research preprint (21 pages, 186 references) arguing that the confidence attached to AGI timeline forecasts exceeds what the methods producing them can support — and that the gap is measurable using validation tools quantitative finance built for the same problem between 2014 and 2018.
+The major published AGI timeline forecasts share a methodological foundation that would not survive scrutiny in a mature quantitative discipline. This is not a claim about whether they are right; it is a claim about how they are made. Each extrapolates from a measured window, fits a curve to it, and reads the confidence around the extension as though the future were a continuation of the sample. Quantitative finance has a name for this and a set of tools built specifically to defend against it. The forecasting community has, for the most part, neither.
 
-The central argument is narrow and hard to dismiss: the major published capability forecasts repeat the exact methodological errors that hedge-fund backtests were caught making — in-sample extrapolation, multiple testing without correction, the absence of walk-forward validation, and selection bias toward success. The paper imports three finance tools to quantify the problem, then introduces a new method — the **Deflated Capability Forecast (DCF)** — that widens a forecast's stated interval by the amount its underlying methodology actually warrants.
+The central argument is narrow: the current debate over AGI timelines suffers from the same methodological errors quantitative finance diagnosed and partially solved between 2014 and 2018 — in-sample extrapolation, multiple testing without correction, the absence of walk-forward validation, and selection bias toward success. These are the failures a hedge fund learns to detect before it is allowed to manage external capital, because each reliably produces a track record that looks excellent and means nothing.
 
-The work critiques *methodology, not people*: it cites the forecasters without a single pejorative adjective, because the work is serious and that seriousness is exactly why its methodological exposure is worth examining.
+The work critiques *methodology, not people* — it cites the forecasters without a single pejorative adjective, because the work is serious and that seriousness is exactly why its methodological exposure is worth examining.
 
 ## Method
 
@@ -85,6 +92,6 @@ The paper reports the failure rather than revising the threshold. The failure li
 
 The refusals matter as much as the claims. The paper does **not** argue that AGI will not arrive. It does **not** argue that the forecasters are dishonest or incompetent. It does **not** offer its own, better date — to do so would repeat the exact error it identifies. And it does **not** claim that quantitative finance has solved its own validation problems — only that finance has paid, in real capital over real years, for a discipline capability forecasting has not yet adopted.
 
-## Method & Tooling
+## Reproducibility
 
-LaTeX (arXiv single-column preprint), Python reference implementation (`deflated-capability-forecast` package), Jupyter reproducibility notebooks (every plotted value re-verified against the package to 1e-3 tolerance), git-tagged cryptographic preregistration, trace-to-source discipline (every paragraph cites a primary source), explicit epistemic labeling: *(established)* / *(speculative)* / *(speculative — derived)*.
+LaTeX (single-column preprint), Python reference implementation (`deflated-capability-forecast` package), Jupyter notebooks that re-verify every plotted value against the package to a 1e-3 tolerance, git-tagged cryptographic preregistration, trace-to-source discipline (every paragraph cites a primary source), and explicit epistemic labeling throughout: *(established)* / *(speculative)* / *(speculative — derived)*.

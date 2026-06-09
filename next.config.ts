@@ -5,6 +5,15 @@ const nextConfig: NextConfig = {
     config.plugins.push(new VeliteWebpackPlugin())
     return config
   },
+  async redirects() {
+    return [
+      {
+        source: '/projects/validation-crisis',
+        destination: '/research/validation-crisis',
+        permanent: true,
+      },
+    ]
+  },
 }
 
 class VeliteWebpackPlugin {

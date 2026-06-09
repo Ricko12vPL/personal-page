@@ -1,4 +1,4 @@
-import { projects, posts } from '#site/content'
+import { projects, posts, papers } from '#site/content'
 
 export function getProjects() {
   return [...projects].sort(
@@ -24,6 +24,16 @@ export function getPublishedPosts() {
 
 export function getPostBySlug(slug: string) {
   return posts.find((p) => p.slug === slug) ?? null
+}
+
+export function getPapers() {
+  return [...papers].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  )
+}
+
+export function getPaperBySlug(slug: string) {
+  return papers.find((p) => p.slug === slug) ?? null
 }
 
 export function getAllTags(): string[] {

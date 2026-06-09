@@ -44,6 +44,29 @@ const posts = defineCollection({
   }),
 })
 
+const papers = defineCollection({
+  name: 'Paper',
+  pattern: 'papers/*.mdx',
+  schema: s.object({
+    slug: s.slug('papers'),
+    title: s.string().max(200),
+    authors: s.array(s.string()),
+    date: s.isodate(),
+    updated: s.isodate().optional(),
+    venue: s.string(),
+    status: s.enum(['preprint', 'published', 'working-paper']),
+    abstract: s.string().max(2500),
+    tags: s.array(s.string()),
+    featured: s.boolean().default(false),
+    pdf: s.string().optional(),
+    arxiv: s.string().optional(),
+    code: s.string().optional(),
+    doi: s.string().optional(),
+    bibtex: s.string().optional(),
+    body: s.mdx(),
+  }),
+})
+
 export default defineConfig({
   root: 'content',
   output: {
@@ -53,5 +76,5 @@ export default defineConfig({
     name: '[name]-[hash:6].[ext]',
     clean: true,
   },
-  collections: { projects, posts },
+  collections: { projects, posts, papers },
 })
