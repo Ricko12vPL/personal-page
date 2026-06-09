@@ -37,6 +37,15 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Justified body text across the whole site.
+   Element-level selector so Tailwind text-{left,center,right} utility
+   classes (higher specificity) still override it where set. */
+p {
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+}
+
 ::selection {
   background: rgba(0, 255, 65, 0.2);
   color: #00ff41;
@@ -116,6 +125,9 @@ html {
   font-size: 1rem;
   line-height: 1.85;
   margin-bottom: 1.5rem;
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
 }
 
 .mdx-content ul {
@@ -131,6 +143,9 @@ html {
   position: relative;
   padding-left: 1.5rem;
   margin-bottom: 0.25rem;
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
 }
 
 .mdx-content ul li::before {
@@ -160,6 +175,16 @@ html {
 .mdx-content pre code {
   background: none;
   padding: 0;
+}
+
+/* Never justify preformatted ASCII diagrams or table cells */
+.mdx-content pre,
+.mdx-content pre code,
+.mdx-content table,
+.mdx-content th,
+.mdx-content td {
+  text-align: left;
+  hyphens: none;
 }
 
 .mdx-content a {
