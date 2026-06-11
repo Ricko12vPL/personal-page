@@ -1,0 +1,64 @@
+---
+slug: executable-gate-research-org
+title: "An Executable-Gate Multi-Agent Research Organization: Artifact, Case Study, and a Pre-Registered Gate-Calibration Study"
+authors: ["Kacper Saks"]
+date: 2026-06-09
+updated: 2026-06-11
+venue: "Zenodo · archived research artifact"
+status: published
+abstract: "Multi-agent systems are increasingly proposed as autonomous research organizations, yet their quality-control mechanisms are rarely measured. This work releases a domain-agnostic, 39-role multi-agent research organization in which every role output must pass an executable gate and adversarial sign-off — nothing self-certifies — together with two empirical records of its behavior. First, a limitations-forward case study of the initial end-to-end run (v0.1.0), in which the organization abandoned all five candidate research directions and retracted its own flagship integrity exhibit after it failed its verifier. Second, a pre-registered, blinded, seeded gate-calibration study (v0.2.0) answering the question the first run left open: do the gates discriminate between sound and flawed research, or do they uniformly reject? On a corpus of 20 theses (10 known-flawed with planted defects, 10 known-sound reproductions, SHA-256 sealed labels), the gates detected 15 of 15 planted flaws and cited the correct reason in 13–14 of 15 cases. An ablation isolated the round-1 auto-fail prior as the dominant false-positive source: it reduced pooled validity-gate specificity from 0.96 [0.86, 1.00] to 0.72 [0.58, 0.84] and killed 8 of 10 known-sound theses with no sensitivity benefit. The release includes a Citation Fidelity Protocol with SHA-256-pinned verbatim anchors, a full reproducibility harness (make reproduce / make verify), and seven named limitations stated in full."
+tags: [multi-agent, research-automation, evaluation, pre-registration, calibration, reproducibility]
+featured: true
+website: https://zenodo.org/records/20645678
+code: https://github.com/Ricko12vPL/worldclass-research-org
+doi: https://doi.org/10.5281/zenodo.20645678
+bibtex: |
+  @software{saks_2026_20645678,
+    author    = {Saks, Kacper},
+    title     = {An Executable-Gate Multi-Agent Research Organization:
+                 Artifact, Case Study, and a Pre-Registered
+                 Gate-Calibration Study},
+    month     = jun,
+    year      = 2026,
+    publisher = {Zenodo},
+    version   = {v0.2.0},
+    doi       = {10.5281/zenodo.20645678},
+    url       = {https://doi.org/10.5281/zenodo.20645678}
+  }
+---
+
+## Overview
+
+The artifact is a complete research organization expressed as 39 Claude agent roles across 13 divisions — leadership, frontier research, theory and statistics, interpretability, research engineering, evaluation and red team, safety and governance, literature, scientific writing, visualization, program management, publication, and a self-improvement loop — operating over a 9-phase lifecycle with 4 human checkpoints.
+
+The structural rule that defines the system: **nothing self-certifies**. Every role output passes an executable gate (tests, `make verify`, citation checks, grep gates) plus adversarial sign-off from a paired critic role holding kill authority.
+
+## The Two Empirical Records
+
+**Record 1 — the v0.1.0 run.** The organization examined five candidate research directions and abandoned all five at the gates. Its flagship integrity exhibit was retracted after failing its own verifier. Zero theses survived. This is reported as a finding, not buried: a single run (n = 1) consistent with either working quality control or uniform rejection.
+
+**Record 2 — the calibration study.** A pre-registered (git tag `calibration-prereg-v1`), blinded, seeded study distinguished the two hypotheses. Twenty theses — ten with planted defects across six flaw classes, ten known-sound reproductions — were evaluated under salted filenames with SHA-256 sealed labels, in two arms: M1-ON (round-1 auto-fail prior active) and M1-OFF (ablation).
+
+## Headline Results
+
+| Metric | M1-ON | M1-OFF (ablation) |
+|--------|-------|-------------------|
+| Sensitivity (correct-reason) | 13/15 = 0.87 [0.60, 0.98] | 14/15 = 0.93 [0.68, 1.00] |
+| Pooled validity-gate specificity | 36/50 = 0.72 [0.58, 0.84] | 48/50 = 0.96 [0.86, 1.00] |
+| Known-sound theses killed | 8 of 10 | 1 of 10 |
+| Known-flawed theses killed | 10 of 10 | 10 of 10 |
+| Plants missed entirely | 0 of 15 | 0 of 15 |
+
+Intervals are 95% exact Clopper–Pearson. The round-1 auto-fail prior — "nothing passes review on the first try," a plausible-sounding skeptical default — was the dominant source of false positives: it cost 0.24 of specificity and killed 8 sound theses while adding nothing to sensitivity. The default was flipped to off in v0.2.0; the flip is itself flagged as unvalidated on fresh data (the calibration corpus is spent).
+
+## Citation Fidelity Protocol
+
+Three of the five v0.1.0 abandonment citations were found misread on audit (scope overclaim, a smoothing bandwidth read as a block length, a risk metric read as a validation protocol). The v0.2.0 fix is structural: every citation carries a typed claim card — claimed object type, scope conditions, and a verbatim anchor pinned by SHA-256 to its source — verified mechanically and by a dedicated `citation-object-adversary` role.
+
+## Limitations
+
+Seven limitations are stated in full in the release (L1–L7), including: single run + small-n calibration (wide intervals reported in full), seeder and evaluator drawn from the same model family, two flaw classes detected at chance under M1-ON, single-model dependence, the spent corpus behind the M1 default flip, historical citation defects, and the retracted exhibit shipped provenance-only.
+
+## Reproducibility
+
+A fresh clone plus `make reproduce` regenerates all figures and headline numbers (pinned seeds; verification against a frozen reference with Monte-Carlo tolerance). The calibration corpus, all 40 verdicts, sealed-label hashes, pre-registration, and full provenance trail for every abandonment ship in the release. Code is MIT; documentation is CC BY 4.0.

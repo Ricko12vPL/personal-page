@@ -1,0 +1,78 @@
+---
+slug: worldclass-research-org
+title: "Worldclass Research Org: An Executable-Gate Multi-Agent Research Organization"
+description: "A 39-role multi-agent research organization where every output must pass executable gates and adversarial review. Its first run killed all 5 research directions — a pre-registered calibration study then measured whether the gates discriminate or just reject everything."
+date: 2026-06-07
+updated: 2026-06-11
+featured: true
+status: completed
+tags: [multi-agent, ai-agents, research-automation, python, claude, reproducibility, pre-registration]
+github: "https://github.com/Ricko12vPL/worldclass-research-org"
+stats:
+  modules: 39
+---
+
+## Overview
+
+A domain-agnostic, multi-agent research automation system designed to conduct frontier research from ideation through submission — with one structural rule: **nothing self-certifies**. Every role output must pass an executable (machine-checkable) gate plus adversarial sign-off from a paired critic role.
+
+The project is a dual artifact: a reusable organizational structure (39 roles across 13 divisions, 9-phase lifecycle) and an empirical record of what happened when it ran — including the uncomfortable parts. Released on GitHub and archived on Zenodo with DOI [10.5281/zenodo.20645678](https://doi.org/10.5281/zenodo.20645678).
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│        13 DIVISIONS · 39 ROLES (Claude agents)          │
+│                                                         │
+│  Leadership · Frontier Research · Theory & Statistics   │
+│  Interpretability · Research Engineering · Eval/Red Team│
+│  Safety & Governance · Literature · Scientific Writing  │
+│  Visualization · Program Mgmt · Publication · Self-Impr │
+└────────────────────────┬────────────────────────────────┘
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│         9-PHASE LIFECYCLE (P0–P8) + 4 CHECKPOINTS       │
+│   Ideation → Thesis Lock ⛳ → Literature → Prereg ⛳     │
+│   → Execution → Drafting → Red Team ⛳ → Production      │
+│   → Submission ⛳   (Self-improvement runs in parallel)  │
+└────────────────────────┬────────────────────────────────┘
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│              THE GATE RULE: nothing self-certifies      │
+│                                                         │
+│   role output → executable gate (make verify, tests,    │
+│   citation checks, grep gates) → adversarial sign-off   │
+│   → paired critic with KILL AUTHORITY                   │
+└─────────────────────────────────────────────────────────┘
+```
+
+## What Happened When It Ran
+
+**v0.1.0 (first end-to-end run):** the organization examined 5 candidate research directions and **abandoned all 5** at the gates. The flagship integrity exhibit was itself **retracted** after failing its own verifier. Zero surviving theses.
+
+That result left a critical question open: were the gates correctly identifying flaws — or was the system just a uniform rejector that kills everything it touches?
+
+**v0.2.0 (the calibration study):** a pre-registered, blinded, seeded study answered it. A corpus of 20 theses — 10 known-flawed (with planted defects across 6 flaw classes) and 10 known-sound reproductions — was evaluated under salted filenames with SHA-256 sealed labels.
+
+## Calibration Results
+
+| Metric | M1-ON (round-1 auto-fail) | M1-OFF (ablation) |
+|--------|---------------------------|-------------------|
+| Sensitivity (correct-reason) | 0.87 [0.60, 0.98] | 0.93 [0.68, 1.00] |
+| Validity-gate specificity | 0.72 [0.58, 0.84] | **0.96 [0.86, 1.00]** |
+| Known-sound theses killed | 8 of 10 | 1 of 10 |
+| Known-flawed theses killed | 10 of 10 | 10 of 10 |
+| Plants missed entirely | 0 of 15 | 0 of 15 |
+
+The headline finding: the **round-1 auto-fail prior** ("nothing passes review on the first try") tanked specificity from 0.96 to 0.72 and killed 8 of 10 known-sound theses — with no sensitivity benefit. Institutionalized skepticism, hard-coded as a prior, destroyed the system's ability to recognize good work. The default was flipped, and the limitation that the new default remains unvalidated on fresh data is stated in the release rather than hidden.
+
+## Engineering Highlights
+
+- **Citation Fidelity Protocol (CFP)** — every citation carries a typed claim card with scope conditions and a SHA-256-pinned verbatim anchor; a dedicated `citation-object-adversary` role verifies each card. Built after 3 of 5 v0.1.0 abandonment citations were found misread.
+- **Reproducibility harness** — `make reproduce` regenerates all figures and headline numbers from a fresh clone; `make verify` checks against a frozen reference with Monte-Carlo tolerance; pinned seeds throughout.
+- **Pre-registration discipline** — predictions frozen at git tag `calibration-prereg-v1` before any evaluation ran.
+- **Limitations-forward reporting** — 7 named limitations (L1–L7) stated in full, including small-n, same-model-family evaluation, and the spent corpus.
+
+## Tech Stack
+
+Python, Claude (38 agent role definitions), Makefile reproducibility gates, SHA-256 sealed-label blinding, Clopper–Pearson exact intervals, git-tagged pre-registration, MIT (code) + CC BY 4.0 (docs)

@@ -1,0 +1,66 @@
+---
+slug: executable-gate-research-org
+title: "I Built a 39-Role AI Research Organization — Its First Run Killed Every Idea"
+description: "I built a multi-agent research organization with executable quality gates. Its first full run abandoned every candidate thesis. So I ran a pre-registered, blinded calibration study to find out whether the gates discriminate between sound and flawed research — or just kill everything."
+date: 2026-06-11
+published: true
+tags: [multi-agent, ai-agents, research-automation, pre-registration, claude]
+---
+
+## The Idea
+
+Multi-agent "AI research organizations" are everywhere right now: give a swarm of agents the roles of a lab — scientists, reviewers, engineers, writers — and let them do research end-to-end. The demos look great. The question nobody seems to measure: **is the quality control real?** When an agent reviewer approves an agent scientist's work, is that a meaningful check or theater?
+
+I built the organization to find out. Thirty-nine roles across thirteen divisions — research leadership, frontier research, theory and statistics, evaluation and red team, scientific writing, publication, a self-improvement loop — running a 9-phase lifecycle from ideation to submission, as Claude agent definitions. One structural rule separates it from the demos:
+
+**Nothing self-certifies.** Every role output must pass an executable gate — tests, `make verify`, citation checks, grep gates — plus adversarial sign-off from a paired critic role with kill authority. An agent saying "looks good to me" counts for nothing unless the machine-checkable gate passes too.
+
+## The First Run Killed Everything
+
+v0.1.0 ran end-to-end on five candidate research directions in post-selection inference.
+
+It abandoned **all five**. At the gates, with documented reasons. Then the flagship integrity exhibit — the simulation meant to showcase the system — failed its own verifier and was **retracted**. The publication plan was downgraded from a methods paper to an open-source release with a case study.
+
+I shipped that result as-is, because it's the honest record. But it left a question I couldn't answer from one run: are the gates *working* — correctly identifying flawed research — or did I just build a very elaborate machine that rejects everything it touches? A system that kills 5 of 5 is consistent with both hypotheses. n = 1 tells you nothing about discrimination.
+
+## So I Measured It
+
+The only way to distinguish a discriminator from a uniform rejector is ground truth. v0.2.0 is a **pre-registered, blinded, seeded calibration study**:
+
+- A corpus of **20 theses**: 10 known-flawed (with defects planted across 6 flaw classes — circularity, irreproducibility, scope overclaims, and others) and 10 known-sound reproductions of established results.
+- **Blinded** — salted filenames, labels sealed with SHA-256 hash commitments before any evaluation ran.
+- **Pre-registered** — predictions frozen at git tag `calibration-prereg-v1` before the first verdict.
+- **Two arms** — the system as-shipped (M1-ON: a "round-1 auto-fail" prior meaning nothing passes first review) and an ablation with that prior off (M1-OFF).
+
+## What the Gates Actually Do
+
+| Metric | M1-ON | M1-OFF |
+|--------|-------|--------|
+| Sensitivity (flaw caught, correct reason) | 0.87 | 0.93 |
+| Validity-gate specificity | 0.72 | **0.96** |
+| Known-sound theses killed | 8 / 10 | 1 / 10 |
+| Known-flawed theses killed | 10 / 10 | 10 / 10 |
+| Plants missed entirely | 0 / 15 | 0 / 15 |
+
+(95% exact Clopper–Pearson intervals in the release; they are wide — n is small and reported in full.)
+
+Two things came out of this. The first is reassuring: **the gates discriminate**. Every planted flaw was detected in both arms, with the correct reason cited in 13–14 of 15 cases. The system is not a uniform rejector.
+
+The second is the actual lesson. The **round-1 auto-fail prior** — "nothing passes review on the first try," which sounds like admirable skepticism — was the dominant source of false positives. It dragged specificity from 0.96 down to 0.72 and killed **8 of 10 known-sound theses**, while adding exactly nothing to sensitivity. Hard-coded skepticism didn't make the system more rigorous. It made it blind to good work.
+
+That retroactively explains the v0.1.0 massacre: some of those five abandonments were probably the prior, not the gates. The default is now flipped — and because the calibration corpus is spent, the release states plainly that the new default is unvalidated on fresh data. That limitation is L5 of seven, all stated in full.
+
+## The Citation Lesson
+
+A side finding worth its own mention: on audit, **3 of the 5** v0.1.0 abandonment citations were misread — a scope overclaim, a smoothing bandwidth read as a block length, a risk metric read as a validation protocol. Agents kill theses citing literature they misunderstood, with full confidence.
+
+The structural fix is the **Citation Fidelity Protocol**: every citation now carries a typed claim card — what kind of object is being claimed, under what scope conditions — with a verbatim anchor pinned by SHA-256 to the source, verified mechanically and by a dedicated citation adversary role. A citation that can't produce its anchor doesn't pass.
+
+## Takeaways
+
+- **Measure your gates or you don't have gates.** An agent organization that has never been calibrated against ground truth is a vibe, not a quality-control system. Seeded corpora with sealed labels are cheap to build relative to what they tell you.
+- **Skeptical priors are not free.** "Reject by default" feels rigorous and silently destroys specificity. If a rule can't show a sensitivity benefit, its only output is killed good work.
+- **Pre-register against yourself.** Same discipline as my validation-crisis paper: predictions frozen before results, failures reported in the same units as successes. The system retracted its own showcase exhibit. That's the gate rule applied to its author.
+- **Agents misread citations confidently.** Pin every citation to a verbatim, hash-anchored quote or assume some fraction of your literature grounding is wrong.
+
+The full artifact — all 39 roles, the calibration corpus, every verdict, the pre-registration, the provenance trail for every abandonment — is open: [GitHub](https://github.com/Ricko12vPL/worldclass-research-org), archived with DOI [10.5281/zenodo.20645678](https://doi.org/10.5281/zenodo.20645678). Code MIT, docs CC BY 4.0. A fresh clone plus `make reproduce` regenerates every number above.
