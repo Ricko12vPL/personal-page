@@ -1,9 +1,9 @@
 ---
 slug: worldclass-research-org
 title: "Worldclass Research Org: An Executable-Gate Multi-Agent Research Organization"
-description: "A 39-role multi-agent research organization where every output must pass executable gates and adversarial review. Its first run killed all 5 research directions — a pre-registered calibration study then measured whether the gates discriminate or just reject everything."
+description: "A 39-role multi-agent research organization where every output must pass executable gates and adversarial review. After a pre-registered calibration study, it now runs its own frontier research program (C1) and a second adversarial pre-review org (System B)."
 date: 2026-06-07
-updated: 2026-06-11
+updated: 2026-06-20
 featured: true
 status: completed
 tags: [multi-agent, ai-agents, research-automation, python, claude, reproducibility, pre-registration]
@@ -16,7 +16,7 @@ stats:
 
 A domain-agnostic, multi-agent research automation system designed to conduct frontier research from ideation through submission — with one structural rule: **nothing self-certifies**. Every role output must pass an executable (machine-checkable) gate plus adversarial sign-off from a paired critic role.
 
-The project is a dual artifact: a reusable organizational structure (39 roles across 13 divisions, 9-phase lifecycle) and an empirical record of what happened when it ran — including the uncomfortable parts. Released on GitHub and archived on Zenodo with DOI [10.5281/zenodo.20645678](https://doi.org/10.5281/zenodo.20645678).
+The project began as a dual artifact — a reusable organizational structure (39 roles across 13 divisions, 9-phase lifecycle) and an empirical record of what happened when it ran. It has since grown into a three-part research pipeline: the **writing org** (this artifact), a real **research program** it is now executing (C1), and a separate **adversarial pre-review org** (System B) that hardens a paper before any human submits it. Released on GitHub and archived on Zenodo with DOI [10.5281/zenodo.20645678](https://doi.org/10.5281/zenodo.20645678).
 
 ## Architecture
 
@@ -66,13 +66,35 @@ That result left a critical question open: were the gates correctly identifying 
 
 The headline finding: the **round-1 auto-fail prior** ("nothing passes review on the first try") tanked specificity from 0.96 to 0.72 and killed 8 of 10 known-sound theses — with no sensitivity benefit. Institutionalized skepticism, hard-coded as a prior, destroyed the system's ability to recognize good work. The default was flipped, and the limitation that the new default remains unvalidated on fresh data is stated in the release rather than hidden.
 
+## From Artifact to Operator: A Real Research Program (C1)
+
+After the calibration study the organization stopped being a demo and started doing the job it was built for. In **research-program-2026** it ran its own selection process — generating a 12-candidate slate, freezing it before any judgment (commit `64763e7`), then killing 10 candidates at four non-compensatory gates (asset, falsifier, feasibility, novelty). One survived: **C1 — "Evaluator Calibration at Scale."**
+
+C1 turns the v0.2.0 idea outward. Instead of measuring the org's own gates, it measures *the field's*: a pre-registered, cross-model benchmark of whether third-party LLM paper-review systems reject flawed research **for the right reasons**.
+
+- **Cross-model, cross-family.** ≥3 third-party evaluator families (OpenAI, Google, Meta-Llama). The author's own model family is barred from every confirmatory cell — it may *seed* flaws, never *judge* them.
+- **Matched-pair, single-flaw corpus.** Each flawed document is twinned with a sound version differing only in one planted, externally certified defect, across six flaw classes (mechanical vs epistemic).
+- **Attribution, not just rejection.** It separates "rejected" from "rejected for the correct reason," measures false-kills on the sound twins, and tests a **same-family seeding effect** — the construction-validity axes that SoundnessBench (arXiv:2605.30329, the predecessor that established the bare deficit) structurally lacks.
+- **External human ground truth.** Every plant is certified by ≥2 independent non-author raters under a frozen rubric (Cohen's κ ≥ 0.70), recruited with an *unconditional* co-authorship offer made before any rating begins — so the certification cannot be biased by the result.
+
+The governance is the point. An independent circularity ("F6") review imposed 8 binding conditions; a deviations log, a budget ledger ($0 of a $7,000 cap), and a standing prior-art "collision watch" run continuously. When four independent reviewers flagged "no independent baseline detector" as the predecessor's #1 weakness, a **single-judge baseline arm** was added *before* any confirmatory run — and an earlier "multi-gate wall" description was **retracted** as inaccurate (the only real structural multiplicity is cross-model majority voting).
+
+The program is currently **halted at its pre-registration checkpoint**, blocked on third-party API access: pilots are run, the freeze is not. Reported as status, not spun — every planning number stays explicitly provisional until the cross-model power run can execute.
+
+## System B: Adversarial Pre-Review
+
+A second, separate organization now sits between writing and submission. Where the research org *produces* work, **System B** tries to *destroy* it — a simulated hostile reviewer (7 agents: a rubric-internalizer, five specialist reviewers, and an area chair) that reviews a paper against the **real, frozen rubric of its target venue** before any human submits.
+
+It deliberately **inverts the M1 lesson**: not "reject everything," but high *recall* of flaws with a comfortable accept bar — because the cost asymmetry is reversed (a false accept costs months to a desk-reject; a false reject costs a day of revision). Two rules are non-negotiable: System B can never emit a "submit" — the human gate is non-removable — and because it shares the author's model family, its accept is **necessary but not sufficient**: the external venue is the only terminal authority. Every verdict logs a prediction of the real outcome, so the pipeline calibrates itself against actual peer review over time. Self-test: 13/13 injected flaws caught, 3/3 sound control papers accepted.
+
 ## Engineering Highlights
 
 - **Citation Fidelity Protocol (CFP)** — every citation carries a typed claim card with scope conditions and a SHA-256-pinned verbatim anchor; a dedicated `citation-object-adversary` role verifies each card. Built after 3 of 5 v0.1.0 abandonment citations were found misread.
+- **Public erratum (v0.2.1)** — when later work showed the specificity numbers were engine-specific, they were downgraded to exploratory *on the public repo*, so the public record matches what the program privately knows before any new freeze.
 - **Reproducibility harness** — `make reproduce` regenerates all figures and headline numbers from a fresh clone; `make verify` checks against a frozen reference with Monte-Carlo tolerance; pinned seeds throughout.
-- **Pre-registration discipline** — predictions frozen at git tag `calibration-prereg-v1` before any evaluation ran.
-- **Limitations-forward reporting** — 7 named limitations (L1–L7) stated in full, including small-n, same-model-family evaluation, and the spent corpus.
+- **Pre-registration discipline** — predictions frozen at git tags before any evaluation ran; deviations logged pre-factually, never retrofitted.
+- **Limitations-forward reporting** — named limitations stated in full, including small-n, same-model-family evaluation, and the spent corpus.
 
 ## Tech Stack
 
-Python, Claude (38 agent role definitions), Makefile reproducibility gates, SHA-256 sealed-label blinding, Clopper–Pearson exact intervals, git-tagged pre-registration, MIT (code) + CC BY 4.0 (docs)
+Python, Claude (38+ agent role definitions, ROS v3 operating standard), cross-model evaluation (OpenAI · Google · Meta-Llama), Makefile reproducibility gates, SHA-256 sealed-label blinding, external human certification (Cohen's κ), Clopper–Pearson exact intervals, git-tagged pre-registration, MIT (code) + CC BY 4.0 (docs)

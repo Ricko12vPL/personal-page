@@ -1,0 +1,63 @@
+---
+slug: research-org-runs-real-research
+title: "From Demo to Operator: My AI Research Org Now Runs Real Research — and Reviews Its Own Papers Before I Do"
+description: "I took the multi-agent research organization that killed all five of its own ideas, pointed it at a real problem, and let it run its own selection, pre-registration, and pilots. Then I built a second org whose only job is to tear the resulting papers apart before a human submits them."
+date: 2026-06-20
+published: true
+tags: [multi-agent, ai-agents, research-automation, pre-registration, evaluation, claude]
+---
+
+## Where We Left Off
+
+A couple of weeks ago I [shipped a 39-role multi-agent research organization](/blog/executable-gate-research-org) with one rule — *nothing self-certifies* — and reported the uncomfortable result: on its first real run it abandoned all five candidate research directions, and retracted its own showcase exhibit when it failed its verifier. A pre-registered calibration study then showed the gates *do* discriminate (they caught every planted flaw), but that a "reject by default" prior was quietly destroying specificity.
+
+That was the artifact. The obvious next question: can it actually *do research* — not study itself, but run a real frontier project end to end? This post is what happened when I let it try.
+
+## It Selected Its Own Project
+
+I didn't hand it a thesis. I let the organization run its own selection. It generated a 12-candidate slate, froze it before any judgment (a single commit, so I couldn't quietly reshuffle later), then ran each candidate through four non-compensatory gates — does it have a real asset, a real falsifier, real feasibility, real novelty. Ten of the twelve were killed. One survived: a project I'll call **C1 — "Evaluator Calibration at Scale."**
+
+C1 is pleasingly recursive. The artifact's whole premise is that AI evaluators need to be measured, not trusted. C1 turns that lens outward, onto the field: **do third-party LLM paper-review systems reject flawed research for the *right reasons* — or do they reject the right papers by accident, citing the wrong flaw?**
+
+That distinction is the entire contribution. "Rejected" is cheap. "Rejected, and correctly identified *why*" is the thing a reviewer is actually for. The design measures both, plus how often each system false-kills sound work:
+
+- **Cross-family.** At least three evaluator families (OpenAI, Google, Meta-Llama). My own model family is *banned from every confirmatory cell* — it can plant flaws, never judge them. The most important reviewer in the study is the one I don't control.
+- **Matched pairs, one flaw each.** Every flawed document has a sound twin differing only in a single planted, externally certified defect. No confounds.
+- **Humans hold the ground truth.** Every plant is certified by two independent non-author raters under a frozen rubric — recruited with an *unconditional* co-authorship offer made before they rate anything, so their judgment can't be bent by the result.
+
+The honest framing also means crediting the predecessor: [SoundnessBench](https://arxiv.org/abs/2605.30329) already established that current LLMs aren't reliable first-gate reviewers (a 74% mean false-positive rate across 12 models). C1 doesn't re-discover that — it adds the construction-validity controls SoundnessBench structurally lacks (seeded ground truth, matched pairs, attribution scoring, cross-family seeding).
+
+## The Governance Did Its Job — On Me
+
+The interesting part isn't the design. It's watching the integrity machinery bite its own author.
+
+- An independent **circularity review** ("can the author certify his own ground truth?") imposed eight binding conditions before the project could proceed. Two are fatal-if-dropped: the matched-pair corpus and the external human certification.
+- Four independent reviewers — two outside my model family — read the *first* paper and all named the same weakness #1: "no independent baseline detector." So before running anything confirmatory, I added a **single-judge baseline arm**: you can't claim cross-model aggregation helps unless you measure a single model alone as the control.
+- While specifying that baseline, I had to **retract a claim from my own earlier writeup**: I'd described the detector as a "multi-gate wall." It isn't. The only real structural multiplicity is cross-model majority voting. The inaccurate description is now logged as a correction, not silently edited away.
+- And the specificity numbers from the calibration study (the 0.96 / 0.72 result) turned out to be engine-specific. So I shipped a **public erratum** downgrading them to exploratory *on the public repo* — before any new freeze — so the public record matches what I privately know.
+
+The pilots, meanwhile, are quietly threatening the headline hypothesis. At pilot scale the "wrong-reason gap" I expected to find is sitting near *zero*, and raw flaw-detection sensitivity is around 0.4–0.5. That might kill the primary framing. It's pre-registered anyway — a clean, publishable null about the *structure* of evaluator failure beats a result I fished for. (Same lesson as my [validation-crisis paper](/research/validation-crisis): the prediction is frozen before the data, and a failed prediction gets reported in the same units as a successful one.)
+
+Right now C1 is **halted at its pre-registration checkpoint**, blocked on third-party API access. Pilots are run; the confirmatory freeze is not. Every planning number is explicitly provisional. I'd rather report a blocked program honestly than a finished one I rushed.
+
+## System B: An Org Whose Job Is to Destroy My Papers
+
+The other new piece is a second organization that does the opposite of the first.
+
+The research org *writes*. **System B** *attacks*. It's a separate 7-agent org — a rubric-internalizer, five specialist reviewers, and an area chair — that reviews a paper against the **real, frozen reviewer rubric of its target venue** before a human ever submits. A simulated hostile reviewer, calibrated to the actual bar.
+
+It deliberately **inverts the lesson from the calibration study**. The first org's failure was a "reject everything" prior. System B is *supposed* to have a low bar for raising flaws — high recall — because the cost asymmetry is reversed: a false accept costs me two-to-four months waiting for a desk-reject, while a false reject costs a day of revision. Two rules are hard-coded:
+
+1. **It can never click submit.** No agent, script, or Makefile can emit a "submit" action. The human gate is non-removable.
+2. **Its approval is necessary but not sufficient.** System B is the same model family as the writer, so it's blind to whatever that family is blind to. Its "accept" only ever means "accept against the cached rubric → human gate." The external venue is the only terminal authority.
+
+And it calibrates itself: every verdict logs a prediction of the real outcome, so over time I can measure whether multi-agent pre-review actually predicts peer review. The first paper has already gone through it to a round-2 accept, targeting a workshop at EMNLP 2026.
+
+## Takeaways
+
+- **Letting the system choose the problem is the real test.** A research org that can only execute a thesis you hand it is an editor. One that runs its own gated selection — and kills 10 of its own 12 ideas — is closer to a researcher.
+- **The hardest gates are the ones aimed at you.** External certification, an independent circularity review, a baseline arm demanded by outside reviewers, a public erratum, a logged retraction. None of it is comfortable; all of it is the point.
+- **Build the adversary as a separate org.** A reviewer that shares the writer's incentives isn't a reviewer. System B is deliberately separate, deliberately hostile, and structurally barred from ever submitting.
+- **Report the blocked state.** C1 is stuck at a checkpoint waiting on API keys, and a pilot is threatening its headline. Saying so plainly is the same discipline as everything above.
+
+The system, the C1 program, and System B are written up in the [project page](/projects/worldclass-research-org); the original artifact is archived with a [DOI](https://doi.org/10.5281/zenodo.20645678).
