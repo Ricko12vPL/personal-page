@@ -11,49 +11,88 @@ export function generateMetadata(): Metadata {
   return {
     title: 'CV',
     description:
-      'Curriculum Vitae of Kacper Saks - ML/Backend Engineer specializing in quantitative finance, institutional-grade backtesting, and production ML systems.',
+      'Curriculum Vitae of Kacper Saks — aerospace process engineer at Airbus Defence and Space with an independent applied-AI/ML research track in modelling, verification and validation.',
   }
 }
 
 const experience = [
   {
-    period: 'Jan 2024 — Present',
-    title: 'Junior Process Engineer',
+    period: 'Sep 2023 — Present',
+    title: 'Process Engineer',
     organization: 'Airbus Defence and Space',
     location: 'Warsaw, Poland',
     current: true,
     description: [
-      'Led cross-team process optimization; automated documentation flow and reduced assembly time by 30% (~€50K/yr) via standardized procedures and scripts',
-      'Created standardized technical documentation ensuring compliance across production workflows',
-      'Applied rigorous aerospace engineering discipline to software development and system design',
+      'Progression: Intern (Sep 2023) → Junior Process Engineer (Jan 2024) → Process Engineer (May 2026)',
+      'Develop technological processes, assembly sequences and control cards for parts and subassemblies in prototype and serial aircraft production (Airbus Poland and CASA/Airbus cooperative programmes)',
+      'Optimised production workflows and material/fastener allocation — up to 30% efficiency improvement and ~€50K annual cost savings',
+      'Verify processes against new technical developments, inspection-monitor workstation compliance, and implement design-office changes',
+      'Define tooling, fixture and metrology assumptions; select tools on techno-economic criteria; normalise working time',
+      'Deliver internal training on design & technological documentation; apply Lean standardisation and FOD discipline daily (CATIA V5, SAP ERP, GD&T)',
     ],
   },
   {
-    period: 'Sep 2023 — Jan 2024',
-    title: 'Process Engineering Intern',
-    organization: 'Airbus Defence and Space',
+    period: '2024 — Present',
+    title: 'Co-founder & CTO',
+    organization: 'K&S Venture Group — Clashpoint.me',
     location: 'Warsaw, Poland',
+    current: true,
     description: [
-      'Assisted in documentation optimization and cross-functional collaboration',
+      'Designed, built and operate an AI-driven sales-coaching platform end to end — FastAPI, PostgreSQL, Next.js/React, LLM features',
     ],
+  },
+]
+
+const research = [
+  {
+    title: 'The Validation Crisis in AGI-Timeline Forecasting',
+    meta: 'Public preprint · 2026',
+    description:
+      'Deflated performance metrics, PBO/CSCV, combinatorial purged cross-validation and walk-forward to quantify the out-of-sample reliability of published forecasts — fully reproducible, pre-registered pipeline.',
+    href: '/research/validation-crisis',
+    external: false,
+  },
+  {
+    title: 'worldclass-research-org — 38-agent autonomous research organisation',
+    meta: 'Open source · Zenodo DOI 10.5281/zenodo.20645678',
+    description:
+      'Multi-agent pipeline enforcing pre-registration and reproducibility across the research lifecycle; centrepiece pre-registered gate-calibration study with honest reporting of threshold failures.',
+    href: '/research/executable-gate-research-org',
+    external: false,
+  },
+  {
+    title: 'X_Quant — large-scale model-selection & validation system',
+    meta: 'Solo research codebase · ≈274K LOC',
+    description:
+      'Out-of-sample validation over 529 instruments and 15 years of hourly data; DSR 2.73, PBO 0.025, 11/11 positive walk-forward folds with transparent reporting of remaining failure modes.',
+    href: '/projects/x-quant',
+    external: false,
+  },
+  {
+    title: 'neo-triage — hierarchical Bayesian classification',
+    meta: 'Manuscript in preparation',
+    description:
+      'NumPyro hierarchical Bayesian classifier with a LightGBM baseline for near-Earth-object triage; calibration, uncertainty quantification and a reproducible training pipeline.',
+    href: 'https://github.com/Ricko12vPL/neo-triage',
+    external: true,
   },
 ]
 
 const education = [
   {
     period: 'Oct 2024 — Aug 2026',
-    title: 'MSc Project and Process Management',
+    title: 'MSc Project & Process Management',
     organization: 'Collegium Civitas',
     location: 'Warsaw',
     current: true,
   },
   {
-    period: 'Jan 2024 — Jun 2024',
-    title: '42 School Warsaw',
-    organization: 'Peer-to-Peer Coding Program',
+    period: 'Project-based',
+    title: 'Software Engineering — 42 Warsaw',
+    organization: 'Peer-to-peer coding program',
     location: 'Warsaw',
     description: [
-      'Intensive C programming, algorithms, Unix systems while working full-time and pursuing Master\'s',
+      'Project-based, peer-to-peer software engineering — C, algorithms, Unix systems',
     ],
   },
   {
@@ -61,76 +100,83 @@ const education = [
     title: 'BEng Mechanical Engineering',
     organization: 'Silesian University of Technology',
     location: 'Gliwice',
-    description: ['GPA: 4.17 / 5.00'],
+    description: [
+      'Thesis: feed mechanism of mining rigs and bolting machines · Major GPA 4.17 / 5.00',
+    ],
   },
 ]
 
 const skillCategories = [
   {
-    name: 'Languages',
-    skills: ['Python (Expert)', 'JavaScript/TypeScript', 'SQL', 'C'],
+    name: 'Verification & Validation',
+    skills: [
+      'Combinatorial Purged CV',
+      'Deflated Metrics (DSR)',
+      'PBO / CSCV',
+      'Walk-Forward',
+      'Calibration & UQ',
+      'Pre-registration',
+      'Reproducible Pipelines',
+      'SPC / Control Cards',
+    ],
   },
   {
-    name: 'ML / AI',
+    name: 'AI / ML',
     skills: [
-      'TensorFlow',
-      'PyTorch',
+      'Bayesian Modelling (NumPyro)',
+      'LightGBM / Gradient Boosting',
       'scikit-learn',
-      'XGBoost',
-      'LightGBM',
-      'CatBoost',
-      'Multi-agent LLM',
+      'PyTorch',
+      'SHAP',
+      'LLM & Multi-agent Pipelines',
       'RAG',
     ],
   },
   {
-    name: 'Quantitative Finance',
+    name: 'Modelling & Simulation',
     skills: [
-      'Institutional Backtesting',
-      'CPCV/DSR/PBO',
-      'VectorBT',
-      'Financial ML',
-      'Algorithmic Trading',
+      'FEM — Linear & Nonlinear (certified)',
+      'Convergence / Mesh-independence',
+      'CATIA V5',
+      'Autodesk Inventor',
+      'Python numerical stack',
     ],
   },
   {
-    name: 'Data Science',
-    skills: ['NumPy', 'Pandas', 'SciPy', 'Statistical Analysis', 'Tableau', 'R'],
+    name: 'Manufacturing Engineering',
+    skills: [
+      'Technological Process Design',
+      'Assembly Sequencing',
+      'Tooling & Metrology',
+      'GD&T',
+      'SAP ERP',
+      'Lean / Continuous Improvement',
+      'FOD',
+    ],
   },
   {
-    name: 'Backend / DevOps',
+    name: 'Backend & Programming',
     skills: [
+      'Python',
+      'SQL',
+      'TypeScript / JavaScript',
       'FastAPI',
-      'asyncio',
-      'multiprocessing',
       'PostgreSQL',
+      'Next.js / React',
       'Docker',
-      'CI/CD',
-      'pytest',
       'Git',
-    ],
-  },
-  {
-    name: 'Optimization',
-    skills: [
-      'Optuna',
-      'Genetic Algorithms',
-      'Bayesian Optimization',
-      'Sobol Sampling',
-      'HPC (Google Cloud)',
     ],
   },
 ]
 
 const certifications = [
-  { name: 'Project Management', source: 'Google', year: '2025' },
-  { name: 'Data Analytics', source: 'Google', year: '2025' },
-  { name: 'Python Data Structures', source: 'Univ. of Michigan', year: '2024' },
-  { name: 'Python for Everybody', source: 'Univ. of Michigan', year: '2024' },
-  { name: 'Orbital Mechanics', source: 'Udemy', year: '' },
-  { name: 'Spacecraft Engineering', source: 'Udemy', year: '' },
-  { name: 'FEM Analysis', source: 'Coursera', year: '' },
+  { name: 'FEA Convergence & Mesh Independence', source: 'Coursera', year: '' },
+  { name: 'FEM — Linear, Nonlinear Analysis & Post-Processing', source: 'Coursera', year: '' },
   { name: 'Certified User: Inventor', source: 'Autodesk', year: '' },
+  { name: 'Introduction to Orbital Mechanics', source: 'Udemy', year: '' },
+  { name: 'Interplanetary Spacecraft & Satellite Engineering', source: 'Udemy', year: '' },
+  { name: 'Google Data Analytics', source: 'Google', year: '' },
+  { name: 'Python for Everybody', source: 'Univ. of Michigan', year: '' },
 ]
 
 export default function CvPage() {
@@ -141,35 +187,20 @@ export default function CvPage() {
       {/* Summary */}
       <section className="mb-32">
         <SectionHeading title="summary" />
-        <p className="text-neutral-300 text-[15px] leading-[1.9] max-w-2xl">
-          ML / Backend Engineer with experience building production ML
-          pipelines, institutional backtesting systems and secure offline AI
-          tools. Strong discipline from aerospace engineering applied to system
-          design, testing and CI/CD.
+        <p className="text-accent/80 text-[13px] uppercase tracking-wider mb-5">
+          Process &amp; Manufacturing Engineer (Aerospace) · Applied AI/ML — Modelling, Verification &amp; Validation
         </p>
-        <div className="flex flex-wrap gap-4 mt-6">
-          <span className="text-neutral-600 text-[12px] uppercase tracking-wider self-center">
-            Selected projects:
-          </span>
-          <Link
-            href="/projects/x-quant"
-            className="text-accent text-[13px] hover:opacity-70 transition-opacity"
-          >
-            X_QUANT
-          </Link>
-          <Link
-            href="/projects/esg-compliance-agent"
-            className="text-accent text-[13px] hover:opacity-70 transition-opacity"
-          >
-            ESG Agent
-          </Link>
-          <Link
-            href="/projects/airbus-document-analyzer"
-            className="text-accent text-[13px] hover:opacity-70 transition-opacity"
-          >
-            Airbus Analyzer
-          </Link>
-        </div>
+        <p className="text-neutral-300 text-[15px] leading-[1.9] max-w-2xl">
+          Aerospace process engineer at Airbus Defence and Space with an
+          independent applied-AI/ML research track centred on verification and
+          validation. Three years developing technological processes, assembly
+          sequences and control documentation for prototype and serial aircraft
+          production; in parallel, building probabilistic models and reproducible
+          validation pipelines — deflated performance metrics, combinatorial
+          purged cross-validation, calibration and uncertainty quantification —
+          and publishing the results (public preprint; Zenodo DOI). FEM-certified;
+          CATIA V5, SAP ERP and Python in daily use.
+        </p>
       </section>
 
       {/* Experience */}
@@ -178,16 +209,52 @@ export default function CvPage() {
         <Timeline items={experience} />
       </section>
 
-      {/* Education */}
+      {/* Research */}
       <section className="mb-32">
-        <SectionHeading title="education" />
-        <Timeline items={education} />
+        <SectionHeading title="research & publications" />
+        <div className="space-y-8">
+          {research.map((item) => (
+            <div key={item.title} className="border-l-2 border-accent/30 pl-6">
+              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-1">
+                {item.external ? (
+                  <a
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-neutral-100 text-[15px] font-medium hover:text-accent transition-colors"
+                  >
+                    {item.title}
+                  </a>
+                ) : (
+                  <Link
+                    href={item.href}
+                    className="text-neutral-100 text-[15px] font-medium hover:text-accent transition-colors"
+                  >
+                    {item.title}
+                  </Link>
+                )}
+              </div>
+              <p className="text-accent/60 text-[12px] uppercase tracking-wider mb-2">
+                {item.meta}
+              </p>
+              <p className="text-neutral-400 text-[14px] leading-[1.8]">
+                {item.description}
+              </p>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* Skills */}
       <section className="mb-32">
         <SectionHeading title="skills" />
         <SkillSection categories={skillCategories} />
+      </section>
+
+      {/* Education */}
+      <section className="mb-32">
+        <SectionHeading title="education" />
+        <Timeline items={education} />
       </section>
 
       {/* Certifications */}
@@ -215,6 +282,18 @@ export default function CvPage() {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* Languages & Eligibility */}
+      <section className="mb-32">
+        <SectionHeading title="languages & eligibility" />
+        <p className="text-neutral-300 text-[14px] leading-[1.9] max-w-2xl">
+          <span className="text-neutral-100">Polish</span> (native) ·{' '}
+          <span className="text-neutral-100">English</span> (professional working
+          proficiency — daily working language at Airbus). Holder of a Polish
+          national personnel security clearance; experienced with export-control
+          and classified-information regimes.
+        </p>
       </section>
 
       {/* LeetCode */}
