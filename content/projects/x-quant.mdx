@@ -1,230 +1,87 @@
 ---
 slug: x-quant
-title: "X_Quant: Autonomous Quantitative Trading Platform"
-description: "299K+ line autonomous trading system with 20 AI agents (Claude Sonnet 4), 5-member Investment Council, regime-adaptive fusion, and 9 layers of risk control — achieving Sharpe 1.708 across 664 instruments."
+title: "X_Quant: Institutional-Grade Quantitative Trading Platform"
+description: "A single-operator quant platform trading one frozen, CSCV-validated momentum strategy (cfg_00 / MetaEnsemble v56, PBO 0.0108), wrapped in Aladdin-grade risk & compliance layers — with pre-registration discipline and an honest validated-vs-traded distinction. On IBKR paper; live pending."
 date: 2024-06-15
-updated: 2026-04-05
+updated: 2026-07-22
 featured: true
-status: completed
-tags: [python, machine-learning, quantitative-finance, ai-agents, claude, ibkr, fastapi, perplexity]
+status: in-progress
+tags: [python, quantitative-finance, momentum, cscv, risk-management, compliance, ibkr, pre-registration]
 github: "https://github.com/Ricko12vPL/X_Quant"
-stats:
-  lines: "299K+"
-  sharpe: 1.708
-  agents: 20
 ---
 
 ## Overview
 
-X_Quant is a fully autonomous quantitative trading system that runs 24/7 with zero human intervention. Every day, it analyzes 664 instruments across 15 years of hourly data, consults 20 AI agents modeled after legendary investors, deliberates through a 5-member Investment Council, and executes trades via Interactive Brokers — all within a 9.9-minute pipeline.
+X_Quant is a single-operator quantitative trading platform built around **one frozen strategy** — `cfg_00` / **MetaEnsemble v56**, a long-only momentum system trained on ~15 years of hourly US-equity data. The strategy is locked (no live re-fitting); the engineering effort goes into *validating* it honestly and wrapping it in institutional-grade risk, compliance, and execution infrastructure.
 
-The system achieves an **out-of-sample Sharpe Ratio of 1.708** with a CAGR of 19.71% and MaxDD of just 6.32% — a **Calmar Ratio of 3.117** (world-class by institutional standards). Validated through 12-fold walk-forward across 664 symbols over 15 years, with 7/7 hard gates and 10/11 medium gates passed.
+Its defining trait is intellectual honesty about its own state. The codebase draws a hard line between **the strategy that was validated** and **the strategy that is actually trading** — and reports the gap rather than papering over it. It trades on an IBKR paper account today; live is gated behind account permissions and a certified-engine deploy.
 
-## Architecture — 4 Layers of Intelligence
+## The Honest Core: Validated ≠ Traded
 
-```
-┌─────────────────────────────────────────────────────────┐
-│         LAYER 1: QUANT ENGINE (MetaEnsemble v56)        │
-│   40 atomic alphas → 10 strategies → 6 sub-ensembles   │
-│   Regime detection: 6 market states (vol + trend)       │
-└────────────────────────┬────────────────────────────────┘
-                         ▼
-┌─────────────────────────────────────────────────────────┐
-│          LAYER 2: 20 AI AGENTS (Claude Sonnet 4)        │
-│   11 legendary investors + 9 specialist analysts        │
-│   9 data sources per ticker · batch=2 · ZERO 429s       │
-└────────────────────────┬────────────────────────────────┘
-                         ▼
-┌─────────────────────────────────────────────────────────┐
-│          LAYER 3: INVESTMENT COUNCIL                     │
-│   5 members + Chairman · 3-stage deliberation           │
-│   Peer review · Perplexity fact-check · final vote      │
-└────────────────────────┬────────────────────────────────┘
-                         ▼
-┌──────────────────────┬──────────────────────────────────┐
-│   LAYER 4: FUSION    │        RISK CONTROL (9 layers)   │
-│   Regime-dependent   │   Kill switches (daily/weekly)   │
-│   blend 90/10→70/30  │   Circuit breakers + watchdog    │
-│   LLM veto system    │   IBKR heartbeat + slippage      │
-└──────────────────────┴──────────────────────────────────┘
-                         ▼
-┌─────────────────────────────────────────────────────────┐
-│              IBKR EXECUTION + MONITORING                 │
-│   xquant-ctl.sh · 4 LaunchAgent services · 24/7         │
-│   Web terminal (React + FastAPI + WebSocket)             │
-└─────────────────────────────────────────────────────────┘
-```
+Most trading systems present a backtest and imply it is what runs in production. X_Quant refuses to.
 
-## Layer 1: Quant Engine
+- The **validated engine** (cfg_00) lives in the CSCV harness: inverse-volatility sizing, a 5% position cap, a rolling beta-neutral SPY hedge, and vol-target / drawdown / crash overlays.
+- The **live daemon still executes a simpler LEGACY engine**: top-≤98 signal-proportional weights, with *no* hedge, *no* cap, and *no* overlays.
 
-| Component | Detail |
-|-----------|--------|
-| **40 atomic alphas** | Momentum, mean-reversion, RSI, volatility, Fama-French, cross-asset, residual, FIP, structure |
-| **10 base strategies** | XS momentum, residual, dual, FIP, TS, composite, reversal, RSI, VolPrice, Structure |
-| **6 sub-ensembles** | RP12, BestOfBest, ConsBOB, HRP, RiskParity, MinVariance |
-| **Regime detection** | 6 states: BULL_QUIET, BULL_VOLATILE, BEAR_QUIET, BEAR_VOLATILE, SIDEWAYS, CRISIS |
+So the current paper track record measures the **legacy** engine — not cfg_00 — and the CSCV certificate (PBO = 0.0108) does **not** certify what is in production. The remediation (porting production onto the certified engine) is an explicit, gated phase; when it deploys, the Phase-1 clock **restarts from zero**, because the pre-deploy paper data is a different regime. This is logged as **Incident P-2** — one of a standing register of incidents the project keeps in the open.
 
-Regime is detected from SPY vs. SMA200 and 20-day annualized volatility. Every downstream decision adapts to the current regime.
+## Validation & the R1 Campaign
 
-## Layer 2: 20 AI Agents
+The strategy is defended against overfitting the way a hedge fund defends external capital:
 
-Every ticker gets analyzed by 20 independent agents, each running Claude Sonnet 4 with a distinct investment philosophy.
+- **CSCV** — Combinatorial Symmetric Cross-Validation with a canonical power test.
+- **PBO** — Probability of Backtest Overfitting: **0.0108** for cfg_00 (Sharpe 5.24 out-of-sample, through COVID).
+- **Pre-registration** — every validation campaign is committed *before* it runs; a FAIL is a legal outcome.
 
-**11 legendary investors:** Buffett (value/moat), Burry (contrarian/short), Munger (quality + mental models), Graham (net-net), Druckenmiller (macro/flows), Cathie Wood (innovation), Lynch (GARP), Fisher (scuttlebutt), Ackman (activist value), Jhunjhunwala (emerging market value), Pabrai (concentrated value).
+The latest campaign, **R1**, just completed (2026-07-22) — re-validating cfg_00 on the live-tradable universe. The raw result: **PBO = 0.0000** (0 of 462 overfit configurations at both k=5 and k=6). But the campaign flagged its own **fragility caveat** — a leave-one-out PBO swing of 0.1126 (> 0.10), meaning the result leans on a single configuration. Per the project's own rule, **no PASS is declared until the formal wrap-up report is written** — so the verdict is deliberately still pending. Reporting the caveat and withholding the verdict is the discipline working as intended.
 
-**9 specialist analysts:** Sentiment, Regime, Risk Manager, Portfolio Manager, Valuation, Technical, Quant Interpreter, Fundamentals, Growth.
+## Universe & Constraints
 
-Each agent receives enriched context from **9 data sources per ticker**: IBKR 15Y hourly OHLCV, FRED macro (yield curve, credit spread, CPI), SEC EDGAR insider trades, Finnhub news + earnings, FinBERT NLP sentiment (Apple Silicon GPU), and Perplexity Sonar web-grounded research.
+The live-tradable universe is **424 instruments** (∪ SPY) — 590 candidates minus **159 PRIIPS-blocked US ETFs** (no EU-retail KID) minus 7 delisted. Different pipeline stages legitimately use different counts (529 legacy-prod, 619 / 615 / 562 in validation at different history thresholds), and a reconciliation report tracks each — including flagging a stale "534" left in older docs. Code is the source of truth over documentation.
 
-Rate-limit safe: 10 batches of 2 agents, 25s delay = ~5.6 min, zero 429 errors.
+## Effective Risk Controls (code = truth)
 
-## Layer 3: Investment Council
+The system audits what the code *actually* enforces, not what the docs claim:
 
-3-stage deliberation modeled after a hedge fund investment committee:
+- **Position cap = 5%** effective (a config-declared 4% is a dead value, floored to 5%); the legacy engine has no cap at all.
+- **Kill switches** — daily −3% / weekly −5% / **max-drawdown −10%** (tightened from an aspirational 15% down to the backtest's 6.59% envelope), wired into the money-path.
+- **VIX ≥ 60 = alert-only** — an auto-flatten path exists but is deliberately gated dormant, after a history of feedback-loop bugs.
+- **Deadman + launchd KeepAlive** — a 300s deadman switch plus process respawn; recovery after an alert is deliberately **manual**, not automatic.
 
-1. **Independent Analysis** — each of 5 members reviews the ticker with full context: 20 agent opinions, Perplexity fact-check, 20 days OHLCV, active strategies. Temperature diversity: 0.2 (conservative) → 1.0 (quantitative).
-2. **Peer Review** — anonymous cross-critique of all opinions. Ranking of strongest arguments.
-3. **Chairman's Synthesis** — final BUY/SELL/HOLD decision with stop-loss and take-profit. Must justify alignment or override of agent majority.
+## Aladdin-Grade Layers
 
-Perplexity fact-checks agent claims against real-time web data (1h TTL) before the council deliberates.
+The platform is being built toward the institutional risk/compliance stack that systems like BlackRock's Aladdin provide — mapped deliberately, with an explicit anti-roadmap for what a single-operator system should *not* build:
 
-## Layer 4: Fusion + Risk
+| Institutional function | X_Quant equivalent | Status |
+|------------------------|--------------------|--------|
+| Risk analytics (ex-ante VaR) | VaR backtest — Kupiec POF, Christoffersen, Basel traffic-light | deploy-ready (behind flag) |
+| Compliance engine | Rulebook + advisory rule-engine (codifies existing limits, adds none) | deploy-ready (behind flag) |
+| Factor model | Fama-French factor risk decomposition | planned |
+| Pre-trade what-if | Calls the certified core, not a separate engine | planned |
+| Cost model / TCA | Transaction-cost analyzer + TCA loop | planned |
+| Book of record (IBOR) | `journal.db` (trades, snapshots, signals) | live |
+| Front-to-back | One certified core consumed by research *and* production | pending deploy |
 
-**Regime-dependent blend:**
+The risk and compliance layers pass **19/19 independent + 12 baseline verification checks**; both ship disabled behind flags, and compliance runs **advisory-only** (it logs would-block events, it never blocks) until the certified engine has cleared multiple clean rebalances.
 
-| Regime | Quant | AI |
-|--------|-------|----|
-| BULL_QUIET | 90% | 10% |
-| BULL_VOLATILE | 80% | 20% |
-| BEAR_QUIET | 85% | 15% |
-| BEAR_VOLATILE | 75% | 25% |
-| CRISIS | 70% | 30% |
+**Anti-roadmap** — consciously *not* built: multi-asset, an accounting book-of-record, multi-tenancy, and a meta capital-allocator (which only makes sense across many strategies; cfg_00 is one).
 
-**LLM veto system** — asymmetric override (AI can brake, not accelerate):
-- Confidence >= 80%: position reduced 50%
-- Confidence >= 90% + consensus >= 70%: position reduced 75%
-- Council SELL (conf >= 70%): ticker removed
+## What It Has That Aladdin Doesn't
 
-**9 risk layers:** daily kill switch (-3%), weekly (-5%), MaxDD (-15%), VIX>60 flatten, circuit breakers, duplicate order protection, slippage monitor (>50bps), IBKR heartbeat (5min TCP check), watchdog auto-restart.
-
-## Key Results
-
-| Metric | Value | Status |
-|--------|-------|--------|
-| Net Sharpe | **1.708** | EXCELLENT |
-| CAGR | **19.71%** | EXCELLENT |
-| Max Drawdown | **6.32%** | EXCELLENT |
-| Calmar Ratio | **3.117** | WORLD-CLASS |
-| Sortino Ratio | **2.369** | GOOD |
-| PBO | 0.109 | PASS |
-| DSR | 1.029 | PASS |
-| Walk-Forward | 12-fold, 664 symbols, 15Y | VALIDATED |
-| Hard Gates | 7/7 | APPROVED |
-| Pipeline | 9.9 min, ZERO errors | VERIFIED |
-
-## Daily Schedule
-
-```
-09:00 ET  Pre-market check + Perplexity morning briefing
-14:30 ET  Priority data refresh (50 symbols from IBKR)
-15:30 ET  20 AI agents analyze portfolio (~5.6 min)
-15:45 ET  Council deliberation — 3 stages + fact-check (~2.5 min)
-16:05 ET  Fusion + rebalancing via IBKR
-16:10 ET  Snapshot: NAV, positions, P&L to journal
-16:30 ET  Daily report + Telegram summary
-22:00 ET  Full data refresh (664 symbols) + AutoResearch
-```
-
-## Web Terminal
-
-Professional dashboard (React + FastAPI + WebSocket, real-time updates every 5s):
-
-Supervisor (NAV, regime, kill switches) · Portfolio (positions, P&L, exposure) · Signals (40-alpha heatmap) · Agents (20 agents with reasoning) · Council (decisions, dissent, fact-check) · Risk (VaR gauges, stress scenarios) · Research (strategy profiles) · AutoResearch (strategy discovery) · Journal (transaction history) · Control (kill switch panel, manual triggers)
+- **Campaign pre-registration** — commitments locked before a run; a documented FAIL is legal.
+- **PBO / DSR / canonical CSCV power test** — an explicit, quantified defense against overfitting.
+- **A public incident register** — P-1 (config-as-deploy), P-2 (validated ≠ traded), P-3 (money-path outside version control), P-4 (private-repo journal exposure) — each with an evidence class and a status, closed or in remediation.
 
 ## Production Notes
 
-- **Deployment** — 4 macOS LaunchAgent services managed by `xquant-ctl.sh` (start/stop/restart/status)
-- **Self-healing** — watchdog process with auto-restart, zombie socket detection, Gateway monitoring
-- **Cost** — ~$8/day for full AI intelligence (20 agents + council + Perplexity)
-- **Data** — 664 instruments × 15 years hourly OHLCV (858 MB pickle store)
-- **Testing** — 13/13 critical checks PASS, end-to-end pipeline verified
+- **Operations** — a nightly coordinator (23:40 CEST) does a clean IBKR bootout → reset → bootstrap; rebalance, snapshot, and daily-report run on fixed slots. Deploys go only through the nightly window to avoid wedging the IBKR Gateway API.
+- **Evidence discipline** — every claim in the system briefing carries an evidence class: `[VERIFIED-smoke]` (actually run), `[VERIFIED-static]` (code-verified with file:line), `[DORMANT]`, `[PENDING-DEPLOY]`. Documentation that drifts from the code is flagged, not trusted.
+- **Trading** — IBKR paper account (Gateway port 4002); the live account waits on permissions and the certified-engine deploy.
 
 ## Tech Stack
 
-Python, NumPy, Pandas, XGBoost, LightGBM, CatBoost, scikit-learn, Optuna, Claude Sonnet 4 (Anthropic API), Perplexity Sonar, FinBERT, asyncio, APScheduler, Interactive Brokers API, FastAPI, React, WebSocket, PostgreSQL, FRED, SEC EDGAR, Finnhub
+Python, NumPy, Pandas, a CSCV / PBO / DSR validation harness, Interactive Brokers API (IBKR Gateway), inverse-volatility sizing, beta-neutral hedging, VaR (Kupiec / Christoffersen / Basel), macOS launchd services, SQLite (`journal.db` as IBOR), git-tagged pre-registration.
 
----
+## Evolution
 
-## v1 — Original Quant Platform
-
-The original version of X_Quant was a classical quantitative trading platform focused on ML-driven signal generation without AI agents.
-
-### v1 Architecture
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    DATA INGESTION                       │
-│   Market Data API → Normalization → Feature Store       │
-└────────────────────────┬────────────────────────────────┘
-                         ▼
-┌─────────────────────────────────────────────────────────┐
-│              ALPHA GENERATION (30 signals)               │
-│   Technical · Microstructure · Fundamental · Cross-Asset │
-│   Universal shift(1) anti-lookahead guard               │
-└────────────────────────┬────────────────────────────────┘
-                         ▼
-┌─────────────────────────────────────────────────────────┐
-│           ML PIPELINE v4.3 (6-model ensemble)           │
-│   137 raw → 411 normalized → IC selection → ensemble    │
-│   XGBoost · LightGBM · CatBoost · Ridge · Lasso · EN   │
-└────────────────────────┬────────────────────────────────┘
-                         ▼
-┌─────────────────────────────────────────────────────────┐
-│              SIGNAL GENERATION (MetaEnsemble)            │
-│   7 base strategies → 6 sub-ensembles → IR-boost        │
-└────────────────────────┬────────────────────────────────┘
-                         ▼
-┌──────────────────────┬──────────────────────────────────┐
-│   EXECUTION ENGINE   │        RISK MANAGEMENT           │
-│   Almgren-Chriss     │   VaR/CVaR (4 methods)           │
-│   TWAP / VWAP / SOR  │   5-level drawdown controls      │
-│   IBKR Live Gateway  │   Circuit breakers + regime       │
-└──────────────────────┴──────────────────────────────────┘
-```
-
-### v1 Results
-
-| Metric | Value |
-|--------|-------|
-| Lines of code | 90K+ |
-| Sharpe Ratio | 1.236 |
-| CAGR | 16.97% |
-| Max Drawdown | 13.05% |
-| Win Rate | 68.7% |
-| Strategies | 18 |
-| Alphas | 30 |
-
-### v1 Validation
-
-- **CPCV** — Combinatorial Purged Cross-Validation (12 folds, 5-day purge)
-- **PBO** — Probability of Backtest Overfitting: 0.01 (target < 0.30)
-- **DSR** — Deflated Sharpe Ratio: 1.189 (target > 1.0)
-- **Hansen's SPA Test** — Superior Predictive Ability
-- **Walk-Forward Efficiency** — 71.18% (target > 70%)
-
-### v1 → v2 Evolution
-
-| Metric | v1 | v2 |
-|--------|----|----|
-| Lines of code | 90K+ | **299K+** |
-| Sharpe | 1.236 | **1.708** |
-| CAGR | 16.97% | **19.71%** |
-| Max Drawdown | 13.05% | **6.32%** |
-| Calmar | — | **3.117** |
-| Alphas | 30 | **40** |
-| Strategies | 18 | **10 + 6 sub-ensembles** |
-| AI agents | 0 | **20** |
-| Risk layers | 5 | **9** |
-| Data sources | 1 | **9 per ticker** |
-| Instruments | — | **664** |
-| Autonomy | Semi-manual | **Fully autonomous 24/7** |
+X_Quant began as a classical ML-driven signal pipeline (v1: ~30 alphas, a 6-model XGBoost / LightGBM / CatBoost ensemble, CPCV validation) and consolidated over time into the single frozen **MetaEnsemble v56** strategy it validates and trades today. The through-line across every version is the same: *validate honestly, then defend the validation.*
