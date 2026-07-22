@@ -64,7 +64,7 @@ const research = [
     title: 'X_Quant — large-scale model-selection & validation system',
     meta: 'Solo research codebase · ≈274K LOC',
     description:
-      'Out-of-sample validation over 529 instruments and 15 years of hourly data; DSR 2.73, PBO 0.025, 11/11 positive walk-forward folds with transparent reporting of remaining failure modes.',
+      'A single frozen, CSCV-validated momentum strategy (cfg_00 / MetaEnsemble v56) over ~15 years of hourly US-equity data — PBO 0.0108, Sharpe 5.24 out-of-sample (through COVID), 424 live-tradable universe. Pre-registered validation with an honest validated-vs-traded distinction and transparent reporting of failure modes.',
     href: '/projects/x-quant',
     external: false,
   },
