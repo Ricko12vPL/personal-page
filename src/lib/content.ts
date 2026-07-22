@@ -1,15 +1,24 @@
 import { projects, posts, papers } from '#site/content'
 
+type Sortable = { date: string; priority?: number }
+
+// Pinned projects (with an explicit `priority`) come first in ascending
+// priority order; everything else falls back to newest-date-first.
+function byPriorityThenDate(a: Sortable, b: Sortable) {
+  const ap = a.priority
+  const bp = b.priority
+  if (ap != null && bp != null) return ap - bp
+  if (ap != null) return -1
+  if (bp != null) return 1
+  return new Date(b.date).getTime() - new Date(a.date).getTime()
+}
+
 export function getProjects() {
-  return [...projects].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  )
+  return [...projects].sort(byPriorityThenDate)
 }
 
 export function getFeaturedProjects() {
-  return projects
-    .filter((p) => p.featured)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  return projects.filter((p) => p.featured).sort(byPriorityThenDate)
 }
 
 export function getProjectBySlug(slug: string) {
