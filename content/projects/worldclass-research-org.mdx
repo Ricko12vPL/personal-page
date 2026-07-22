@@ -3,7 +3,7 @@ slug: worldclass-research-org
 title: "Worldclass Research Org: An Executable-Gate Multi-Agent Research Organization"
 description: "A 39-role multi-agent research organization where every output must pass executable gates and adversarial review. After a pre-registered calibration study, it now runs its own frontier research program (C1) and a second adversarial pre-review org (System B)."
 date: 2026-06-07
-updated: 2026-06-20
+updated: 2026-07-22
 featured: true
 status: completed
 tags: [multi-agent, ai-agents, research-automation, python, claude, reproducibility, pre-registration]
@@ -79,7 +79,23 @@ C1 turns the v0.2.0 idea outward. Instead of measuring the org's own gates, it m
 
 The governance is the point. An independent circularity ("F6") review imposed 8 binding conditions; a deviations log, a budget ledger ($0 of a $7,000 cap), and a standing prior-art "collision watch" run continuously. When four independent reviewers flagged "no independent baseline detector" as the predecessor's #1 weakness, a **single-judge baseline arm** was added *before* any confirmatory run — and an earlier "multi-gate wall" description was **retracted** as inaccurate (the only real structural multiplicity is cross-model majority voting).
 
-The program is currently **halted at its pre-registration checkpoint**, blocked on third-party API access: pilots are run, the freeze is not. Reported as status, not spun — every planning number stays explicitly provisional until the cross-model power run can execute.
+### The Cross-Model Pilot — and What It Found
+
+The API blocker cleared. Real third-party keys were provisioned and a directional power-input pilot ran across three reasoning families — **OpenAI GPT-5, Google Gemini 3.1 Pro, and DeepSeek-R1** (all cleared the ≥80% structured-output feasibility filter; OpenReviewer, Qwen, and Kimi-K2 were tested and rejected as infeasible or degenerate). The pilot is explicitly a power input, never a finding — but the spread it surfaced is exactly what the benchmark exists to measure:
+
+| Evaluator (pilot, n=15/arm) | Correct-reason | Wrong-reason | False-kill (sound) |
+|-----------------------------|----------------|--------------|--------------------|
+| Gemini 3.1 Pro | **0.93** | 0.07 | 0.60 |
+| GPT-5 | 0.47 | 0.20 | 0.40 |
+| DeepSeek-R1 | 0.47 | 0.13 | 0.13 |
+
+That 2× attribution spread did real work. It **killed the original primary hypothesis** — H1 ("systems reject flawed work for the *wrong* reason") required ≥2 of 3 evaluators above a 0.15 wrong-reason gap, and only one cleared it. The primary was re-selected to **H1″**: the per-system, per-flaw-class *calibration card* itself — which is precisely what a spread this wide makes worth publishing. Confirmatory sample size was ratified at **~300 per arm per system** (±0.057). The author's own timed adjudication packet clocked ~12 min/item at a perfect 32/32 accuracy (an upper bound), selecting the robust Variant-B design.
+
+### The Governance Halting the Author — Again
+
+The pre-registration lock was attempted on 2026-07-01 — and **halted itself at the roster-eligibility gate**. DeepSeek-R1's license and 2026 operational context (EU data-protection probes, an Australian government restriction, a pending US Entity-List review) meant a confirmatory run built on it could become *unexecutable* mid-study. Rather than freeze anyway, the third evaluator slot was swapped to **Mistral** (Apache 2.0, open weights, EU, self-hostable — "execution-proof"), logged as a pre-factual deviation, and driven back through the repair cycles.
+
+As of the latest state the program is **still halted at its pre-registration checkpoint** — now on a single, precise blocker: one API key the author must provision. **$0 of the confirmatory budget has been spent** ($5.81 of a $7,000 cap, all on pilots); nothing is frozen, no confirmatory tag applied. That is the whole thesis restated in miniature: report the halt in full rather than ship a study you couldn't stand behind.
 
 ## System B: Adversarial Pre-Review
 
