@@ -182,7 +182,16 @@ const certifications = [
 export default function CvPage() {
   return (
     <div className="max-w-[800px] mx-auto px-8 py-24">
-      <PrintButton />
+      <div className="print-hidden flex justify-end items-center gap-3 mb-6">
+        <a
+          href="/cv/kacper-saks-cv.pdf"
+          download="Kacper-Saks-CV.pdf"
+          className="inline-flex items-center gap-2 text-[12px] px-3 py-1.5 rounded border border-accent text-accent hover:bg-accent hover:text-background transition-colors"
+        >
+          Download PDF &darr;
+        </a>
+        <PrintButton />
+      </div>
 
       {/* Summary */}
       <section className="mb-32">
