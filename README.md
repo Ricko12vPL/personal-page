@@ -34,3 +34,15 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Visitor counter (`/api/seen`)
+
+The status-bar visitor counter needs, in the Vercel **Production** environment only
+(so preview deployments and `vercel env pull` never write to the production counter):
+
+- `KV_REST_API_URL` + `KV_REST_API_TOKEN` (or `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`)
+- `VISITOR_SALT` — a separate secret of at least 32 characters, e.g. `openssl rand -hex 32`.
+  It is never derived from the Redis token; without it the route answers 503 and the widget shows `—`.
+
+Recommended: a Vercel Firewall rate-limit rule on `/api/seen` (e.g. 20 requests/min per IP, deny),
+since every request costs at least one Upstash command.

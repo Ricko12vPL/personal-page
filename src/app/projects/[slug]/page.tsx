@@ -2,10 +2,11 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getProjects, getProjectBySlug } from '@/lib/content'
 import { MDXContent } from '@/components/mdx/mdx-components'
-import { TechTag } from '@/components/projects/tech-tag'
-import { formatDate } from '@/lib/utils'
-import { projectStatus } from '@/lib/status'
-import Link from 'next/link'
+import { ProjectPager, adjacentProjects } from '@/components/projects/project-pager'
+import { ProjectRecord } from '@/components/projects/project-record'
+import { toSummary } from '@/components/projects/project-summary'
+import { DETAIL_TITLE, DetailLayout } from '@/components/ui/detail-layout'
+import { PathCrumb } from '@/components/ui/path-crumb'
 import { pageMetadata } from '@/lib/metadata'
 
 interface PageProps {
@@ -32,108 +33,22 @@ export default async function ProjectPage({ params }: PageProps) {
   const project = getProjectBySlug(slug)
   if (!project) notFound()
 
+  const summary = toSummary(project)
+  const { prev, next } = adjacentProjects(getProjects(), project.slug)
+
   return (
-    <div className="max-w-[800px] mx-auto px-8 py-20">
-      <Link
-        href="/projects"
-        className="text-neutral-500 text-[13px] hover:text-accent transition-colors mb-12 inline-block"
-      >
-        &larr; Back to projects
-      </Link>
-
-      <header className="mb-16">
-        <div className="flex items-center gap-4 mb-6">
-          <span
-            className={`text-[11px] tracking-wider uppercase ${projectStatus(project.status).className}`}
-          >
-            {projectStatus(project.status).label}
-          </span>
-          <span className="text-neutral-600 text-[12px]">
-            {formatDate(project.date)}
-            {project.updated && ` — updated ${formatDate(project.updated)}`}
-          </span>
-        </div>
-
-        <h1 className="font-pixel text-neutral-100 text-3xl sm:text-4xl mb-6 tracking-tight">
-          {project.title.toUpperCase()}
-        </h1>
-
-        <p className="text-neutral-400 text-[15px] leading-relaxed mb-8 max-w-2xl">
-          {project.description}
-        </p>
-
-        {project.stats && (
-          <div className="flex flex-wrap gap-6 text-[13px] mb-8">
-            {project.stats.lines && (
-              <span className="text-neutral-300">
-                <span className="text-accent/60">lines</span>{' '}
-                {project.stats.lines}
-              </span>
-            )}
-            {project.stats.sharpe && (
-              <span className="text-neutral-300">
-                <span className="text-accent/60">sharpe</span>{' '}
-                {project.stats.sharpe}
-              </span>
-            )}
-            {project.stats.strategies && (
-              <span className="text-neutral-300">
-                <span className="text-accent/60">strategies</span>{' '}
-                {project.stats.strategies}
-              </span>
-            )}
-            {project.stats.sources && (
-              <span className="text-neutral-300">
-                <span className="text-accent/60">sources</span>{' '}
-                {project.stats.sources}
-              </span>
-            )}
-            {project.stats.modules && (
-              <span className="text-neutral-300">
-                <span className="text-accent/60">modules</span>{' '}
-                {project.stats.modules}
-              </span>
-            )}
-            {project.stats.stars && (
-              <span className="text-neutral-300">
-                <span className="text-accent/60">stars</span>{' '}
-                {project.stats.stars}
-              </span>
-            )}
-          </div>
-        )}
-
-        <div className="flex flex-wrap gap-2 mb-8">
-          {project.tags.map((tag) => (
-            <TechTag key={tag} tag={tag} />
-          ))}
-        </div>
-
-        <div className="flex flex-wrap items-center gap-4">
-          {project.paper && (
-            <a
-              href={project.paper}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 text-[13px] rounded-md border border-accent text-accent hover:bg-accent hover:text-background transition-colors"
-            >
-              Read the paper (PDF) &darr;
-            </a>
-          )}
-          {project.github && (
-            <a
-              href={project.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-accent text-[13px] hover:opacity-70 transition-opacity"
-            >
-              View on GitHub &rarr;
-            </a>
-          )}
-        </div>
-      </header>
-
+    <DetailLayout
+      header={
+        <>
+          <PathCrumb segments={[{ label: 'projects', href: '/projects' }]} leaf={`${project.slug}.mdx`} />
+          <h1 className={DETAIL_TITLE}>{project.title}</h1>
+          <p className="text-neutral-400 text-[15px] leading-relaxed">{project.description}</p>
+        </>
+      }
+      record={<ProjectRecord project={summary} />}
+    >
       <MDXContent code={project.body} />
-    </div>
+      <ProjectPager prev={prev} next={next} />
+    </DetailLayout>
   )
 }

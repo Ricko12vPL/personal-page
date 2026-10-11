@@ -2,17 +2,28 @@ import Link from 'next/link'
 import { siteConfig } from '@/config/site'
 import { NavLink } from './nav-link'
 
+const HOST = new URL(siteConfig.url).host
+
 export function Header() {
   return (
-    <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-neutral-800/50">
-      <div className="max-w-[1100px] mx-auto px-8 h-16 flex items-center justify-between">
+    <header className="sticky top-0 z-40 border-b hairline bg-background/90 backdrop-blur-md">
+      <div className="mx-auto flex h-12 max-w-[1100px] items-center justify-between gap-4 px-4 sm:px-8">
         <Link
           href="/"
-          className="font-pixel text-accent text-lg tracking-tight hover:opacity-70 transition-opacity"
+          aria-label={`${siteConfig.name} — home`}
+          className="chrome-focus group flex shrink-0 items-center gap-2.5"
         >
-          KS
+          <span className="font-pixel text-[17px] leading-none tracking-tight text-accent transition-opacity group-hover:opacity-70">
+            KS
+          </span>
+          <span className="hidden text-[12px] text-neutral-400 transition-colors group-hover:text-neutral-200 sm:inline">
+            {HOST}
+          </span>
         </Link>
-        <nav className="flex items-center gap-8">
+        <nav
+          aria-label="Primary"
+          className="chrome-scroll-x flex min-w-0 items-center gap-3 overflow-x-auto whitespace-nowrap sm:gap-6"
+        >
           {siteConfig.nav.map((item) => (
             <NavLink key={item.href} href={item.href} label={item.label} />
           ))}

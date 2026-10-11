@@ -1,20 +1,19 @@
+import type { ReactNode } from 'react'
+
 interface TerminalWindowProps {
   title?: string
-  children: React.ReactNode
+  children: ReactNode
 }
 
-export function TerminalWindow({
-  title,
-  children,
-}: TerminalWindowProps) {
+// Hairline panel with corner ticks and a small tracked title, matching the
+// site's instrument primitives (.panel / .panel-ticks / .label).
+export function TerminalWindow({ title, children }: TerminalWindowProps) {
   return (
-    <div className="border border-neutral-800 rounded-lg p-8 bg-neutral-900/50">
+    <div className="panel panel-ticks">
       {title && (
-        <p className="font-pixel text-neutral-600 text-[11px] tracking-wider mb-6 uppercase">
-          {title}
-        </p>
+        <div className="label border-b hairline px-4 py-2">{title}</div>
       )}
-      {children}
+      <div className="p-4 sm:p-6">{children}</div>
     </div>
   )
 }

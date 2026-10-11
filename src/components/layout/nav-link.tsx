@@ -16,11 +16,10 @@ export function NavLink({ href, label }: NavLinkProps) {
   return (
     <Link
       href={href}
+      aria-current={isActive ? 'page' : undefined}
       className={cn(
-        'text-[14px] transition-colors',
-        isActive
-          ? 'text-accent'
-          : 'text-neutral-500 hover:text-neutral-200'
+        'chrome-focus py-1 text-[12px] transition-colors sm:text-[13px]',
+        isActive ? 'text-accent' : 'text-neutral-400 hover:text-neutral-100'
       )}
     >
       {label}

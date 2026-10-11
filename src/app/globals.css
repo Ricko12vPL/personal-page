@@ -33,17 +33,43 @@
   font-family: var(--font-geist-pixel-line) !important;
 }
 
-html {
-  scroll-behavior: smooth;
+/* Smooth in-page jumps (skip link, anchors) only for people who want motion. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
-/* Justified body text across the whole site.
-   Element-level selector so Tailwind text-{left,center,right} utility
-   classes (higher specificity) still override it where set. */
-p {
-  text-align: justify;
-  text-justify: inter-word;
-  hyphens: auto;
+/* One focus ring for every interactive element: a 1px accent outline instead of
+   the browser's blue. In the base layer, so components that draw their own
+   focus state with utilities (focus-visible:outline-none, -outline-offset-1 …)
+   still win. */
+@layer base {
+  a:focus-visible,
+  button:focus-visible,
+  summary:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 1px solid #00ff41;
+    outline-offset: 2px;
+  }
+}
+
+/* Justified body text across the whole site, ragged-right on phones where a
+   narrow monospace measure turns justification into rivers. In the base layer
+   so Tailwind text-{left,center,right} utilities override it where set (an
+   unlayered rule would beat every utility). */
+@layer base {
+  p {
+    text-align: justify;
+    text-justify: inter-word;
+    hyphens: auto;
+  }
+  @media (max-width: 639px) {
+    p {
+      text-align: left;
+      hyphens: manual;
+    }
+  }
 }
 
 ::selection {
@@ -97,26 +123,114 @@ p {
 .animate-in-delay-3 { animation-delay: 0.3s; }
 .animate-in-delay-4 { animation-delay: 0.4s; }
 
+/* ── Instrument primitives (shared by every page) ─────────────────────────
+   Small tracked labels over values, hairline panels with corner ticks,
+   accent numbers. Keep these the only way panels are drawn so pages stay
+   consistent. */
+:root {
+  /* 34px: room for the stacked visitors widget (12px label + 1px + 14px
+     sparkline) with ~3px above and below, like the reference statusline. */
+  --statusbar-h: 34px;
+  --hairline: #1c1c1c;
+}
+
+.label {
+  font-size: 10px;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  /* #7a7a7a: 4.75:1 on the page, 4.69:1 on .panel (WCAG AA for small text). */
+  color: #7a7a7a;
+}
+
+.num {
+  color: #00ff41;
+  font-variant-numeric: tabular-nums;
+}
+
+.hairline {
+  border-color: var(--hairline);
+}
+
+.panel {
+  position: relative;
+  border: 1px solid var(--hairline);
+  background: #070707;
+}
+
+/* Corner ticks: four 6px L-marks on the panel corners, like a drawing frame. */
+.panel-ticks {
+  --tick: rgba(0, 255, 65, 0.55);
+  background:
+    linear-gradient(var(--tick), var(--tick)) top left / 6px 1px,
+    linear-gradient(var(--tick), var(--tick)) top left / 1px 6px,
+    linear-gradient(var(--tick), var(--tick)) top right / 6px 1px,
+    linear-gradient(var(--tick), var(--tick)) top right / 1px 6px,
+    linear-gradient(var(--tick), var(--tick)) bottom left / 6px 1px,
+    linear-gradient(var(--tick), var(--tick)) bottom left / 1px 6px,
+    linear-gradient(var(--tick), var(--tick)) bottom right / 6px 1px,
+    linear-gradient(var(--tick), var(--tick)) bottom right / 1px 6px,
+    #070707;
+  background-repeat: no-repeat;
+}
+
+.prompt-user { color: #00ff41; }
+.prompt-path { color: #737373; }
+.prompt-caret { color: #00cc33; }
+
+.kbd {
+  display: inline-block;
+  min-width: 1.4em;
+  padding: 0 0.35em;
+  border: 1px solid #262626;
+  color: #a3a3a3;
+  font-size: 10px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.dotted-leader {
+  flex: 1;
+  min-width: 1rem;
+  border-bottom: 1px dotted #262626;
+  transform: translateY(-0.3em);
+}
+
+.cursor-block {
+  display: inline-block;
+  width: 0.6em;
+  height: 1.1em;
+  vertical-align: text-bottom;
+  background: #00ff41;
+  animation: blink 1s step-end infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-block, .animate-blink { animation: none; }
+  .animate-in { animation: none; }
+}
+
 /* MDX content styles */
+/* Section heads sit below the page H1 in weight: 22px over a hairline. */
 .mdx-content h2 {
   color: #f5f5f5;
   font-family: var(--font-geist-pixel-square);
-  font-size: 1.75rem;
+  font-size: 1.375rem;
   font-weight: 500;
-  margin-top: 4rem;
+  margin-top: 3rem;
   margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #262626;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--hairline);
   text-transform: uppercase;
 }
 
 .mdx-content h3 {
   color: #00ff41;
   font-family: var(--font-geist-pixel-square);
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 500;
-  margin-top: 3rem;
-  margin-bottom: 1.25rem;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
   text-transform: uppercase;
 }
 
@@ -159,17 +273,18 @@ p {
   background: #171717;
   color: #00ff41;
   padding: 0.2rem 0.5rem;
-  border-radius: 3px;
+  border-radius: 0;
   font-size: 0.875rem;
 }
 
+/* Same square hairline box as .panel, so diagrams match the rest of the UI. */
 .mdx-content pre {
-  background: #0a0a0a;
-  border: 1px solid #262626;
+  background: #070707;
+  border: 1px solid var(--hairline);
   padding: 1.5rem;
   overflow-x: auto;
   margin-bottom: 1.5rem;
-  border-radius: 4px;
+  border-radius: 0;
 }
 
 .mdx-content pre code {
@@ -185,6 +300,56 @@ p {
 .mdx-content td {
   text-align: left;
   hyphens: none;
+}
+
+/* Tables read like the instrument panels: tracked header, hairline rows,
+   tabular numbers. */
+.mdx-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 1.5rem;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.mdx-content thead th {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #7a7a7a;
+  font-weight: 400;
+  border-bottom: 1px solid #262626;
+}
+.mdx-content th,
+.mdx-content td {
+  padding: 0.5rem 1rem 0.5rem 0;
+  border-bottom: 1px solid var(--hairline);
+  vertical-align: top;
+}
+.mdx-content td {
+  color: #a3a3a3;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Phones: the table scrolls inside itself instead of breaking every word. */
+@media (max-width: 639px) {
+  .mdx-content table {
+    display: block;
+    overflow-x: auto;
+    font-size: 12px;
+  }
+  .mdx-content th,
+  .mdx-content td {
+    min-width: 9rem;
+  }
+}
+
+/* Justified monospace leaves rivers in a narrow measure: ragged-right on phones. */
+@media (max-width: 639px) {
+  .mdx-content p,
+  .mdx-content ul li {
+    text-align: left;
+    hyphens: manual;
+  }
 }
 
 .mdx-content a {
@@ -210,6 +375,63 @@ p {
   margin-bottom: 1.5rem;
   color: #737373;
 }
+
+/* ── chrome ───────────────────────────────────────────────────────────────
+   Site header, fixed bottom status bar, command line and help dialog.
+   Everything here is neutralised in print (see the @media print at the end
+   of this section) so the CV PDF layout is unchanged. */
+html {
+  scroll-padding-top: 3rem; /* sticky header (h-12) */
+  scroll-padding-bottom: var(--statusbar-h);
+}
+
+body {
+  padding-bottom: var(--statusbar-h);
+}
+
+.statusbar {
+  height: var(--statusbar-h);
+}
+
+/* Horizontal overflow fallbacks (mobile nav, wildmenu) scroll without a bar. */
+.chrome-scroll-x {
+  scrollbar-width: none;
+}
+.chrome-scroll-x::-webkit-scrollbar {
+  display: none;
+}
+
+.chrome-focus:focus-visible {
+  outline: 1px solid #00ff41;
+  outline-offset: 2px;
+}
+
+/* NORMAL/COMMAND block sits on the accent, so its ring is drawn inside in black. */
+.chrome-mode:focus-visible {
+  outline: 2px solid #050505;
+  outline-offset: -4px;
+}
+
+.chrome-help-btn:hover .kbd,
+.chrome-help-btn:focus-visible .kbd {
+  border-color: #00ff41;
+  color: #00ff41;
+}
+
+.help-dialog::backdrop {
+  background: rgba(5, 5, 5, 0.82);
+}
+
+@media print {
+  body {
+    padding-bottom: 0 !important;
+  }
+  .statusbar,
+  .help-dialog {
+    display: none !important;
+  }
+}
+/* ── end chrome ─────────────────────────────────────────────────────────── */
 
 /* Print styles for CV PDF export — fits on 2 pages */
 @media print {
@@ -244,7 +466,9 @@ p {
   .gap-4 { gap: 4px !important; }
   .gap-2 { gap: 3px !important; }
 
-  /* Container */
+  /* Container. .cv-frame is the screen-only grid around the CV column: it
+     must add nothing in print, so the column renders exactly as before. */
+  .cv-frame { display: block !important; max-width: none !important; padding: 0 !important; margin: 0 !important; }
   .max-w-\[800px\] { max-width: 100% !important; padding: 8px 20px !important; }
 
   /* Colors */

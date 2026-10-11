@@ -4,7 +4,8 @@ import { GeistPixelSquare, GeistPixelGrid, GeistPixelLine } from 'geist/font/pix
 import { siteConfig } from '@/config/site'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
-import { MatrixRain } from '@/components/ascii/matrix-rain'
+import { StatusBar } from '@/components/layout/status-bar/status-bar'
+import { getStatusData } from '@/components/layout/status-bar/status-data'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -91,6 +92,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const { counts, entries } = getStatusData()
+
   return (
     <html lang="en" className="dark">
       <head>
@@ -102,10 +105,18 @@ export default function RootLayout({
       <body
         className={`${GeistMono.variable} ${GeistPixelSquare.variable} ${GeistPixelGrid.variable} ${GeistPixelLine.variable} font-mono antialiased bg-background text-foreground min-h-screen flex flex-col`}
       >
-        <MatrixRain />
+        <a
+          href="#main"
+          className="chrome-focus print-hidden sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-2 focus:z-50 focus:bg-accent focus:px-3 focus:py-1.5 focus:text-[12px] focus:text-black"
+        >
+          Skip to content
+        </a>
         <Header />
-        <main className="flex-1 relative z-10">{children}</main>
+        <main id="main" className="flex-1 relative">
+          {children}
+        </main>
         <Footer />
+        <StatusBar counts={counts} entries={entries} />
       </body>
     </html>
   )

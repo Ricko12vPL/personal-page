@@ -4,8 +4,11 @@ import { SectionHeading } from '@/components/ui/section-heading'
 import { Timeline } from '@/components/cv/timeline'
 import { SkillSection } from '@/components/cv/skill-section'
 import { LeetcodeStats } from '@/components/cv/leetcode-stats'
-import { PrintButton } from '@/components/cv/print-button'
-import Link from 'next/link'
+import { CV_CONTACTS } from '@/components/cv/contacts'
+import { CvActions } from '@/components/cv/cv-actions'
+import { CvRail, type CvSection } from '@/components/cv/cv-rail'
+import { ResearchList, type CvResearchItem } from '@/components/cv/research-list'
+import { PathCrumb } from '@/components/ui/path-crumb'
 import { pageMetadata } from '@/lib/metadata'
 
 export function generateMetadata(): Metadata {
@@ -45,7 +48,7 @@ const experience = [
   },
 ]
 
-const research = [
+const research: readonly CvResearchItem[] = [
   {
     title: 'The Validation Crisis in AI Forecasting',
     meta: 'Self-archived preprint · 2026',
@@ -193,204 +196,160 @@ const certifications = [
   { name: 'Python for Everybody', source: 'Univ. of Michigan', year: '' },
 ]
 
+const SECTIONS: readonly CvSection[] = [
+  { id: 'summary', label: 'summary' },
+  { id: 'experience', label: 'experience' },
+  { id: 'research', label: 'research & publications' },
+  { id: 'skills', label: 'skills' },
+  { id: 'education', label: 'education' },
+  { id: 'certifications', label: 'certifications' },
+  { id: 'languages', label: 'languages & eligibility' },
+  { id: 'leetcode', label: 'leetcode' },
+  { id: 'contact', label: 'contact' },
+]
+
+// Screen layout: the site's 1100px grid with a sticky record rail at lg.
+// Print: `.cv-frame` and the grid collapse (globals.css), the rail is
+// print-hidden, and the inner column keeps its literal `max-w-[800px] py-24`
+// classes because the print stylesheet keys on them — so the PDF is unchanged.
+// Screen-only spacing overrides are safe: the print rules for `.mb-32`, `.mb-16`
+// and `.max-w-[800px]` are !important and win over any (non-important) utility.
 export default function CvPage() {
   return (
-    <div className="max-w-[800px] mx-auto px-8 py-24">
-      <div className="print-hidden flex justify-end items-center gap-3 mb-6">
-        <a
-          href="/cv/kacper-saks-cv.pdf"
-          download="Kacper-Saks-CV.pdf"
-          className="inline-flex items-center gap-2 text-[12px] px-3 py-1.5 rounded border border-accent text-accent hover:bg-accent hover:text-background transition-colors"
-        >
-          Download PDF &darr;
-        </a>
-        <PrintButton />
-      </div>
+    <div className="cv-frame mx-auto max-w-[1100px] px-4 sm:px-8 lg:grid lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-x-12">
+      <div className="max-w-[800px] min-w-0 py-24 max-lg:pt-12 lg:pt-16">
+        <div className="print-hidden mb-12 flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
+          <PathCrumb segments={[]} leaf="cv" />
+          <CvActions className="lg:hidden" />
+        </div>
 
-      {/* Name block — only in print / PDF, where the site header is hidden */}
-      <div className="hidden print:block mb-4">
-        <p className="cv-print-name font-pixel text-neutral-100">Kacper Saks</p>
-        <p className="cv-print-contact text-neutral-400 text-[13px]">
-          Warsaw, Poland · {siteConfig.links.email} ·{' '}
-          {[siteConfig.url, siteConfig.links.github, siteConfig.links.linkedin].map((url, i) => (
-            <span key={url}>
-              {i > 0 && ' · '}
-              <a href={url}>{url.replace(/^https?:\/\//, '')}</a>
-            </span>
-          ))}
-        </p>
-      </div>
+        {/* Name block — only in print / PDF, where the site header is hidden */}
+        <div className="hidden print:block mb-4">
+          <p className="cv-print-name font-pixel text-neutral-100">Kacper Saks</p>
+          <p className="cv-print-contact text-neutral-400 text-[13px]">
+            Warsaw, Poland · {siteConfig.links.email} ·{' '}
+            {[siteConfig.url, siteConfig.links.github, siteConfig.links.linkedin].map((url, i) => (
+              <span key={url}>
+                {i > 0 && ' · '}
+                <a href={url}>{url.replace(/^https?:\/\//, '')}</a>
+              </span>
+            ))}
+          </p>
+        </div>
 
-      {/* Summary */}
-      <section className="mb-32">
-        <SectionHeading title="summary" />
-        <p className="text-accent/80 text-[13px] uppercase tracking-wider mb-5">
-          Process &amp; Manufacturing Engineer (Aerospace) · Applied AI/ML — Modelling, Verification &amp; Validation
-        </p>
-        <p className="text-neutral-300 text-[15px] leading-[1.9] max-w-2xl">
-          Aerospace process engineer at Airbus Defence and Space with an
-          independent applied-AI/ML research track centred on verification and
-          validation. Three years developing technological processes, assembly
-          sequences and control documentation for prototype and serial aircraft
-          production; in parallel, building probabilistic models and reproducible
-          validation pipelines — deflated performance metrics, combinatorial
-          purged cross-validation, calibration and uncertainty quantification —
-          and publishing the results (a self-archived preprint; an open-source research artifact with a Zenodo DOI). FEM-certified;
-          CATIA V5, SAP ERP and Python in daily use.
-        </p>
-      </section>
+        {/* Summary */}
+        <section id="summary" className="mb-32 max-lg:mb-20 lg:mb-24">
+          <SectionHeading title="summary" className="max-lg:mb-8 lg:mb-10" />
+          <p className="text-accent/80 text-[13px] uppercase tracking-wider mb-5">
+            Process &amp; Manufacturing Engineer (Aerospace) · Applied AI/ML — Modelling, Verification &amp; Validation
+          </p>
+          <p className="text-neutral-300 text-[15px] leading-[1.9] max-w-2xl">
+            Aerospace process engineer at Airbus Defence and Space with an
+            independent applied-AI/ML research track centred on verification and
+            validation. Three years developing technological processes, assembly
+            sequences and control documentation for prototype and serial aircraft
+            production; in parallel, building probabilistic models and reproducible
+            validation pipelines — deflated performance metrics, combinatorial
+            purged cross-validation, calibration and uncertainty quantification —
+            and publishing the results (a self-archived preprint; an open-source research artifact with a Zenodo DOI). FEM-certified;
+            CATIA V5, SAP ERP and Python in daily use.
+          </p>
+        </section>
 
-      {/* Experience */}
-      <section className="mb-32">
-        <SectionHeading title="experience" />
-        <Timeline items={experience} />
-      </section>
+        {/* Experience */}
+        <section id="experience" className="mb-32 max-lg:mb-20 lg:mb-24">
+          <SectionHeading title="experience" className="max-lg:mb-8 lg:mb-10" />
+          <Timeline items={experience} />
+        </section>
 
-      {/* Research */}
-      <section className="mb-32">
-        <SectionHeading title="research & publications" />
-        <div className="space-y-8">
-          {research.map((item) => (
-            <div key={item.title} className="border-l-2 border-accent/30 pl-6">
-              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-1">
-                {item.external ? (
-                  <a
-                    href={item.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-neutral-100 text-[15px] font-medium hover:text-accent transition-colors"
-                  >
-                    {item.title}
-                  </a>
-                ) : (
-                  <Link
-                    href={item.href}
-                    className="text-neutral-100 text-[15px] font-medium hover:text-accent transition-colors"
-                  >
-                    {item.title}
-                  </Link>
+        {/* Research */}
+        <section id="research" className="mb-32 max-lg:mb-20 lg:mb-24">
+          <SectionHeading title="research & publications" className="max-lg:mb-8 lg:mb-10" />
+          <ResearchList items={research} />
+        </section>
+
+        {/* Skills */}
+        <section id="skills" className="mb-32 max-lg:mb-20 lg:mb-24">
+          <SectionHeading title="skills" className="max-lg:mb-8 lg:mb-10" />
+          <SkillSection categories={skillCategories} />
+        </section>
+
+        {/* Education */}
+        <section id="education" className="mb-32 max-lg:mb-20 lg:mb-24">
+          <SectionHeading title="education" className="max-lg:mb-8 lg:mb-10" />
+          <Timeline items={education} />
+        </section>
+
+        {/* Certifications */}
+        <section id="certifications" className="mb-32 max-lg:mb-20 lg:mb-24">
+          <SectionHeading title="certifications" className="max-lg:mb-8 lg:mb-10" />
+          <div className="space-y-3">
+            {certifications.map((cert) => (
+              <div
+                key={`${cert.source}-${cert.name}`}
+                className="flex items-baseline justify-between py-2 border-b border-neutral-800/50"
+              >
+                <div className="flex items-baseline gap-3">
+                  <span className="text-neutral-200 text-[14px]">
+                    {cert.name}
+                  </span>
+                  <span className="text-accent/50 text-[12px]">
+                    {cert.source}
+                  </span>
+                </div>
+                {cert.year && (
+                  <span className="text-neutral-600 text-[12px]">
+                    {cert.year}
+                  </span>
                 )}
               </div>
-              <p className="text-accent/60 text-[12px] uppercase tracking-wider mb-2">
-                {'metaHref' in item && item.metaHref ? (
-                  <a
-                    href={item.metaHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="print-no-url hover:text-accent transition-colors"
-                  >
-                    {item.meta}
-                  </a>
-                ) : (
-                  item.meta
-                )}
-                {'repoHref' in item && item.repoHref && (
-                  <>
-                    {' · '}
-                    <a
-                      href={item.repoHref}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="print-no-url hover:text-accent transition-colors"
-                    >
-                      GitHub ({item.repoHref.replace(/^https?:\/\//, '')})
-                    </a>
-                  </>
-                )}
-              </p>
-              <p className="text-neutral-400 text-[14px] leading-[1.8]">
-                {item.description}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
 
-      {/* Skills */}
-      <section className="mb-32">
-        <SectionHeading title="skills" />
-        <SkillSection categories={skillCategories} />
-      </section>
+        {/* Languages & Eligibility */}
+        <section id="languages" className="mb-32 max-lg:mb-20 lg:mb-24">
+          <SectionHeading title="languages & eligibility" className="max-lg:mb-8 lg:mb-10" />
+          <p className="text-neutral-300 text-[14px] leading-[1.9] max-w-2xl">
+            <span className="text-neutral-100">Polish</span> (native) ·{' '}
+            <span className="text-neutral-100">English</span> (professional working
+            proficiency — daily working language at Airbus). Polish national (EU /
+            ESA Member State). Holder of a Polish national personnel security
+            clearance; experienced with export-control and classified-information
+            regimes.
+          </p>
+        </section>
 
-      {/* Education */}
-      <section className="mb-32">
-        <SectionHeading title="education" />
-        <Timeline items={education} />
-      </section>
+        {/* LeetCode */}
+        <section id="leetcode" className="mb-32 max-lg:mb-20 lg:mb-24 print-hidden">
+          <SectionHeading title="leetcode" className="max-lg:mb-8 lg:mb-10" />
+          <LeetcodeStats />
+        </section>
 
-      {/* Certifications */}
-      <section className="mb-32">
-        <SectionHeading title="certifications" />
-        <div className="space-y-3">
-          {certifications.map((cert) => (
-            <div
-              key={`${cert.source}-${cert.name}`}
-              className="flex items-baseline justify-between py-2 border-b border-neutral-800/50"
-            >
-              <div className="flex items-baseline gap-3">
-                <span className="text-neutral-200 text-[14px]">
-                  {cert.name}
+        {/* Contact */}
+        <section id="contact" className="print-hidden">
+          <SectionHeading title="contact" className="max-lg:mb-8 lg:mb-10" />
+          <div className="flex flex-wrap gap-8">
+            {CV_CONTACTS.map((contact) => (
+              <a
+                key={contact.label}
+                href={contact.href}
+                target={contact.external ? '_blank' : undefined}
+                rel={contact.external ? 'noopener noreferrer' : undefined}
+                className="group"
+              >
+                <span className="label block mb-1">
+                  {contact.label}
                 </span>
-                <span className="text-accent/50 text-[12px]">
-                  {cert.source}
+                <span className="text-accent text-[13px] group-hover:opacity-70 transition-opacity">
+                  {contact.text}
                 </span>
-              </div>
-              {cert.year && (
-                <span className="text-neutral-600 text-[12px]">
-                  {cert.year}
-                </span>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Languages & Eligibility */}
-      <section className="mb-32">
-        <SectionHeading title="languages & eligibility" />
-        <p className="text-neutral-300 text-[14px] leading-[1.9] max-w-2xl">
-          <span className="text-neutral-100">Polish</span> (native) ·{' '}
-          <span className="text-neutral-100">English</span> (professional working
-          proficiency — daily working language at Airbus). Polish national (EU /
-          ESA Member State). Holder of a Polish national personnel security
-          clearance; experienced with export-control and classified-information
-          regimes.
-        </p>
-      </section>
-
-      {/* LeetCode */}
-      <section className="mb-32 print-hidden">
-        <SectionHeading title="leetcode" />
-        <LeetcodeStats />
-      </section>
-
-      {/* Contact */}
-      <section className="print-hidden">
-        <SectionHeading title="contact" />
-        <div className="flex flex-wrap gap-8">
-          {[
-            { label: 'Email', href: `mailto:${siteConfig.links.email}`, text: siteConfig.links.email },
-            { label: 'GitHub', href: siteConfig.links.github, text: 'Ricko12vPL' },
-            { label: 'LinkedIn', href: siteConfig.links.linkedin, text: 'kacpersakspe' },
-            { label: 'LeetCode', href: siteConfig.links.leetcode, text: 'ricko12vpl' },
-          ].map((contact) => (
-            <a
-              key={contact.label}
-              href={contact.href}
-              target={contact.label === 'Email' ? undefined : '_blank'}
-              rel={contact.label === 'Email' ? undefined : 'noopener noreferrer'}
-              className="group"
-            >
-              <span className="text-neutral-600 text-[11px] uppercase tracking-wider block mb-1">
-                {contact.label}
-              </span>
-              <span className="text-accent text-[13px] group-hover:opacity-70 transition-opacity">
-                {contact.text}
-              </span>
-            </a>
-          ))}
-        </div>
-      </section>
+              </a>
+            ))}
+          </div>
+        </section>
+      </div>
+      <CvRail sections={SECTIONS} />
     </div>
   )
 }

@@ -1,135 +1,73 @@
 import Link from 'next/link'
-import { TechTag } from '@/components/projects/tech-tag'
+import type { Paper } from '#site/content'
+import { summarize } from '@/lib/metadata'
+import { AuthorList } from './author-list'
+import { CiteBlock } from './cite-block'
+import { PaperLinks } from './paper-links'
+import { paperYear, statusLabel } from './status'
 
-export interface Publication {
-  slug: string
-  title: string
-  authors: string[]
-  date: string
-  venue: string
-  status: string
-  abstract: string
-  tags: string[]
-  pdf?: string
-  website?: string
-  arxiv?: string
-  code?: string
-}
-
-const STATUS_LABEL: Record<string, string> = {
-  preprint: 'Preprint',
-  published: 'Published',
-  'working-paper': 'Working Paper',
-}
+const EXCERPT_CHARS = 360
 
 interface PublicationEntryProps {
-  paper: Publication
+  paper: Paper
   index: number
 }
 
+// One paper as a citation panel: authors · year · venue, status, title,
+// abstract excerpt, links, and a collapsible BibTeX block.
 export function PublicationEntry({ paper, index }: PublicationEntryProps) {
-  const year = new Date(paper.date).getFullYear()
-  const statusLabel = STATUS_LABEL[paper.status] ?? paper.status
+  const ref = String(index + 1).padStart(2, '0')
+  const href = `/research/${paper.slug}`
 
   return (
-    <article className="relative pl-10 sm:pl-14">
-      <span className="absolute left-0 top-1 font-pixel text-neutral-700 text-sm tabular-nums">
-        [{String(index + 1).padStart(2, '0')}]
-      </span>
-
-      <div className="flex items-center gap-3 mb-3">
-        <span className="text-[11px] tracking-wider uppercase text-accent">
-          {statusLabel}
-        </span>
-        <span className="text-neutral-600 text-[12px]">{year}</span>
-        <span className="text-neutral-600 text-[12px]">·</span>
-        <span className="text-neutral-500 text-[12px]">{paper.venue}</span>
+    <article className="panel panel-ticks min-w-0 p-5 sm:p-6" aria-labelledby={`paper-${paper.slug}`}>
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <div className="label min-w-0 break-words">
+          <span className="text-neutral-600">[{ref}]</span> <AuthorList authors={paper.authors} />
+          {' · '}
+          <span className="num">{paperYear(paper.date)}</span>
+          {' · '}
+          {paper.venue}
+        </div>
+        <span className="label text-accent!">{statusLabel(paper.status)}</span>
       </div>
 
-      <h3 className="mb-2">
+      <h3 id={`paper-${paper.slug}`} className="mt-4">
         <Link
-          href={`/research/${paper.slug}`}
-          className="font-pixel text-neutral-100 text-lg sm:text-xl leading-snug hover:text-accent transition-colors"
+          href={href}
+          className="font-pixel text-neutral-100 text-lg sm:text-xl leading-snug break-words underline-offset-4 hover:text-accent focus-visible:text-accent focus-visible:underline focus-visible:outline-none transition-colors"
         >
           {paper.title}
         </Link>
       </h3>
 
-      <p className="text-neutral-400 text-[14px] mb-4">
-        {paper.authors.map((author, i) => (
-          <span key={author}>
-            <span
-              className={
-                author === 'Kacper Saks'
-                  ? 'text-neutral-100 font-medium'
-                  : undefined
-              }
-            >
-              {author}
-            </span>
-            {i < paper.authors.length - 1 && ', '}
-          </span>
-        ))}
+      <p className="mt-3 text-neutral-400 text-[14px] leading-[1.8] max-sm:text-left!">
+        {summarize(paper.abstract, EXCERPT_CHARS)}
       </p>
 
-      <p className="text-neutral-400 text-[15px] leading-[1.8] mb-5">
-        {paper.abstract}
-      </p>
-
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mb-5 text-[13px]">
-        {paper.website && (
-          <a
-            href={paper.website}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-accent hover:opacity-70 transition-opacity"
-          >
-            Read online &rarr;
-          </a>
-        )}
-        {paper.pdf && (
-          <a
-            href={paper.pdf}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-accent hover:opacity-70 transition-opacity"
-          >
-            PDF &darr;
-          </a>
-        )}
-        {paper.arxiv && (
-          <a
-            href={paper.arxiv}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-accent hover:opacity-70 transition-opacity"
-          >
-            arXiv &rarr;
-          </a>
-        )}
-        {paper.code && (
-          <a
-            href={paper.code}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-accent hover:opacity-70 transition-opacity"
-          >
-            Code &rarr;
-          </a>
-        )}
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t hairline pt-4">
+        <PaperLinks paper={paper} />
         <Link
-          href={`/research/${paper.slug}`}
-          className="text-neutral-300 hover:text-accent transition-colors"
+          href={href}
+          className="text-[12px] text-neutral-300 hover:text-accent focus-visible:text-accent focus-visible:outline-none transition-colors"
         >
-          Abstract &amp; details &rarr;
+          abstract &amp; details →
         </Link>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        {paper.tags.slice(0, 6).map((tag) => (
-          <TechTag key={tag} tag={tag} />
-        ))}
-      </div>
+      {paper.bibtex && (
+        <details className="group mt-4">
+          <summary className="label cursor-pointer select-none list-none hover:text-neutral-300! focus-visible:text-accent! focus-visible:outline-none [&::-webkit-details-marker]:hidden">
+            <span aria-hidden="true" className="inline-block w-3 group-open:rotate-90 transition-transform">
+              ›
+            </span>
+            cite · bibtex
+          </summary>
+          <div className="mt-3">
+            <CiteBlock bibtex={paper.bibtex} />
+          </div>
+        </details>
+      )}
     </article>
   )
 }

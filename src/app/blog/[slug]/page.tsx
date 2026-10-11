@@ -2,9 +2,11 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getPublishedPosts, getPostBySlug } from '@/lib/content'
 import { MDXContent } from '@/components/mdx/mdx-components'
-import { TechTag } from '@/components/projects/tech-tag'
-import { formatDate } from '@/lib/utils'
-import Link from 'next/link'
+import { PostHeader } from '@/components/blog/post-header'
+import { PostNav } from '@/components/blog/post-nav'
+import { PostRecord } from '@/components/blog/post-record'
+import { findNeighbours } from '@/components/blog/post-meta'
+import { DetailLayout } from '@/components/ui/detail-layout'
 import { pageMetadata } from '@/lib/metadata'
 
 interface PageProps {
@@ -34,32 +36,12 @@ export default async function BlogPostPage({ params }: PageProps) {
   const post = getPostBySlug(slug)
   if (!post) notFound()
 
+  const neighbours = findNeighbours(getPublishedPosts(), post.slug)
+
   return (
-    <div className="max-w-[800px] mx-auto px-8 py-24">
-      <Link
-        href="/blog"
-        className="text-neutral-500 text-[13px] hover:text-accent transition-colors mb-12 inline-block"
-      >
-        &larr; Back to blog
-      </Link>
-
-      <header className="mb-16">
-        <span className="text-neutral-600 text-[12px]">
-          {formatDate(post.date)}
-          {post.updated && ` — updated ${formatDate(post.updated)}`}
-        </span>
-        <h1 className="font-pixel text-neutral-100 text-3xl sm:text-4xl mt-4 mb-6 tracking-tight">
-          {post.title.toUpperCase()}
-        </h1>
-        <p className="text-neutral-400 text-[15px] mb-6">{post.description}</p>
-        <div className="flex flex-wrap gap-2">
-          {post.tags.map((tag) => (
-            <TechTag key={tag} tag={tag} />
-          ))}
-        </div>
-      </header>
-
+    <DetailLayout header={<PostHeader post={post} />} record={<PostRecord post={post} />}>
       <MDXContent code={post.body} />
-    </div>
+      <PostNav neighbours={neighbours} />
+    </DetailLayout>
   )
 }

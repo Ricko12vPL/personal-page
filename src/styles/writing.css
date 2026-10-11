@@ -1,0 +1,42 @@
+/* Writing indexes (/blog, /research): log-row grid for blog posts.
+   Breakpoints match Tailwind's sm (40rem) and lg (64rem). */
+
+.post-row {
+  display: grid;
+  column-gap: 1.5rem;
+  row-gap: 0.125rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "date min"
+    "title title"
+    "tags tags";
+}
+
+.post-row__date { grid-area: date; }
+.post-row__title { grid-area: title; min-width: 0; overflow-wrap: anywhere; }
+.post-row__min { grid-area: min; text-align: right; }
+.post-row__tags { grid-area: tags; min-width: 0; overflow-wrap: anywhere; }
+
+/* sm: date · title · min on one line, tags under the title */
+@media (min-width: 40rem) {
+  .post-row {
+    grid-template-columns: 6.5rem minmax(0, 1fr) 4rem;
+    grid-template-areas:
+      "date title min"
+      ". tags .";
+  }
+}
+
+/* lg: the whole entry is one log line, tags truncated */
+@media (min-width: 64rem) {
+  .post-row {
+    grid-template-columns: 6.5rem minmax(0, 1fr) 4rem 15rem;
+    grid-template-areas: "date title min tags";
+  }
+
+  .post-row__tags {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}

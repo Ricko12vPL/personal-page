@@ -1,14 +1,33 @@
-// One place that maps a project status to its label and colour, so the card
-// and the detail page cannot drift apart again.
+// One place that maps a project status to its label, colour and glyph, so the
+// index, the preview pane and the detail page cannot drift apart again.
 export type ProjectStatus = 'completed' | 'in-progress' | 'paused' | 'archived'
 
-const STATUS_STYLE: Record<ProjectStatus, { label: string; className: string }> = {
-  completed: { label: 'Completed', className: 'text-accent' },
-  'in-progress': { label: 'In Progress', className: 'text-amber-400' },
-  paused: { label: 'Paused', className: 'text-neutral-400' },
-  archived: { label: 'Archived', className: 'text-neutral-500' },
+interface StatusStyle {
+  label: string
+  className: string
+  glyph: string
 }
 
-export function projectStatus(status: string) {
-  return STATUS_STYLE[status as ProjectStatus] ?? STATUS_STYLE['in-progress']
+// Display order for counts lines and filter chips.
+export const PROJECT_STATUSES: readonly ProjectStatus[] = [
+  'completed',
+  'in-progress',
+  'paused',
+  'archived',
+]
+
+const STATUS_STYLE: Record<ProjectStatus, StatusStyle> = {
+  completed: { label: 'Completed', className: 'text-accent', glyph: '●' },
+  'in-progress': { label: 'In Progress', className: 'text-amber-400', glyph: '◐' },
+  paused: { label: 'Paused', className: 'text-neutral-400', glyph: '‖' },
+  archived: { label: 'Archived', className: 'text-neutral-500', glyph: '○' },
+}
+
+function isProjectStatus(status: string): status is ProjectStatus {
+  // Own keys only: 'toString' and friends live on the prototype.
+  return Object.hasOwn(STATUS_STYLE, status)
+}
+
+export function projectStatus(status: string): StatusStyle {
+  return isProjectStatus(status) ? STATUS_STYLE[status] : STATUS_STYLE['in-progress']
 }

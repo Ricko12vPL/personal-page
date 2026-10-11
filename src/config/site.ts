@@ -5,6 +5,7 @@ export const siteConfig = {
     'ML/Backend Engineer working on quantitative research tooling, enterprise AI agents, and production ML pipelines. Python, FastAPI, XGBoost, PyTorch. Warsaw, Poland.',
   url: 'https://kacpersaks.dev',
   ogImage: '/og-image.png',
+  cvPdf: '/cv/kacper-saks-cv.pdf',
   links: {
     github: 'https://github.com/Ricko12vPL',
     linkedin: 'https://linkedin.com/in/kacpersakspe',
