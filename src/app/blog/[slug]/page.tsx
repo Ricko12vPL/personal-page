@@ -5,6 +5,7 @@ import { MDXContent } from '@/components/mdx/mdx-components'
 import { TechTag } from '@/components/projects/tech-tag'
 import { formatDate } from '@/lib/utils'
 import Link from 'next/link'
+import { pageMetadata } from '@/lib/metadata'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -18,10 +19,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params
   const post = getPostBySlug(slug)
   if (!post) return {}
-  return {
+  return pageMetadata({
     title: post.title,
     description: post.description,
-  }
+    path: `/blog/${post.slug}`,
+    type: 'article',
+    publishedTime: post.date,
+    modifiedTime: post.updated ?? post.date,
+  })
 }
 
 export default async function BlogPostPage({ params }: PageProps) {

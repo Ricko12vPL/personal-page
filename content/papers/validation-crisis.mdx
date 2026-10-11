@@ -1,9 +1,9 @@
 ---
 slug: validation-crisis
-title: "The Validation Crisis in AGI Capability Forecasting"
+title: "The Validation Crisis in AI Forecasting: Deflating AGI Capability Forecasts with Quantitative-Finance Overfitting Tools"
 authors: ["Kacper Saks"]
 date: 2026-05-14
-updated: 2026-06-02
+updated: 2026-10-11
 venue: "Self-archived preprint"
 status: preprint
 abstract: "Forecasts of when artificial general intelligence will arrive increasingly shape capital allocation, regulation, and where a generation of talent is placed — yet the confidence attached to them exceeds what the methods producing them can support. This paper argues the gap is structural: the predictable consequence of fitting a model to a measured window and projecting it forward without the validation discipline other quantitative fields require. We import that discipline from quantitative finance — the deflated Sharpe ratio, the probability of backtest overfitting, and a walk-forward retrodiction protocol — and introduce the Deflated Capability Forecast (DCF), a method that widens a forecast's stated interval by the amount its underlying methodology warrants, returning a distribution with explicit treatment of the tails in place of a point estimate carrying unearned precision. Across the forecasts where the method could be fully computed, deflation factors cluster between 1.3× and 2.0× — the stated intervals are systematically too narrow. We then turn the method on this work itself: a preregistered prediction that one landmark forecast's interval would widen by at least 2.3× produced 1.285×. We report the failure rather than revise the threshold — a discipline of honest validation is supposed to surface exactly this."
@@ -13,12 +13,13 @@ pdf: /papers/validation-crisis-paper.pdf
 website: https://validationcrisis.vercel.app
 bibtex: |
   @misc{saks2026validation,
-    title        = {The Validation Crisis in AGI Capability Forecasting},
+    title        = {The Validation Crisis in AI Forecasting: Deflating AGI Capability Forecasts with Quantitative-Finance Overfitting Tools},
     author       = {Saks, Kacper},
     year         = {2026},
+    month        = jun,
     howpublished = {Self-archived preprint},
     url          = {https://kacpersaks.dev/research/validation-crisis},
-    note         = {21 pp., 186 references}
+    note         = {21 pp., 31 references}
   }
 ---
 
@@ -71,7 +72,7 @@ The financial tools do not transfer for free. Three adaptations are carried as e
 
 ## Results
 
-The DCF was computed for five forecasts. Across the surveyed set, deflation factors cluster between **1.28× and 2.02×** — the stated intervals are systematically too narrow.
+The DCF was computed in full for four published forecasts (Aschenbrenner, both Cotra configurations, Davidson) plus the paper's own preregistered hypothesis. Across the surveyed set, deflation factors cluster between **1.28× and 2.02×** — the stated intervals are systematically too narrow.
 
 | Forecast | Reported 95% CI | Deflation ratio |
 |----------|-----------------|-----------------|
@@ -79,15 +80,17 @@ The DCF was computed for five forecasts. Across the surveyed set, deflation fact
 | Cotra 2020 (anchors, 2052) | `[2031, 2100]` | 1.531× |
 | Cotra 2022 (anchors, 2040) | `[2030, 2100]` | 1.732× |
 | Davidson (takeoff duration) | `[1, 10]` yr | 2.021× |
-| Self-prediction (preregistered) | `[10, 82.5]` % | 1.320× |
+| Own preregistered hypothesis (HYP-A, self-application) | `[10, 82.5]` % | 1.320× |
+
+The Aschenbrenner row gives the DSR-only (Stage 1) and full-DCF (Stage 2) ratios; the other rows give the full-DCF ratio. In the paper's Table 1, the Stage-1 cells for the four non-Aschenbrenner rows are provisional, pending input series that are not yet recovered.
 
 ## The Integrity Capstone
 
-The strongest element of the paper is turned on the author. Before computing anything, the work **preregistered** a specific prediction: that applying the deflated Sharpe ratio to one landmark forecast would widen its interval by at least 2.3×.
+The strongest element of the paper is turned on the author. Before computing anything, the work **preregistered** a specific prediction: that applying the deflated Sharpe ratio to one landmark forecast, Aschenbrenner's, would widen its interval by at least 2.3×.
 
-It produced **1.285×**. The prediction **failed**.
+It produced **1.285×**. The prediction **failed**. (The 1.320× row in the table is a different self-application: the method run on the paper's own preregistered hypothesis HYP-A.)
 
-The paper reports the failure rather than revising the threshold. The failure lies not in the framework — which computed correctly and deflated each interval exactly as its derivation specifies — but in a prior set by intuition *before* the deflation it should have been derived from. That is precisely the error this work exists to identify, surfaced now against the author's own number. A discipline of honest validation is supposed to surface exactly this. The preregistration is cryptographically locked (git tag `preregistration-v3-locked`, SHA-256 sidecar fingerprint) so verification proceeds against the immutable record rather than against prose that could drift from it.
+The paper reports the failure rather than revising the threshold. The failure lies not in the framework — which computed correctly and deflated each interval exactly as its derivation specifies — but in a prior set by intuition *before* the deflation it should have been derived from. That is precisely the error this work exists to identify, surfaced now against the author's own number. A discipline of honest validation is supposed to surface exactly this. The preregistration is locked in the project repository (git tag `preregistration-v3-locked`, with a SHA-256 sidecar fingerprint), and the paper points to that tag rather than paraphrasing its predictions.
 
 ## What the Paper Refuses to Claim
 
@@ -95,4 +98,4 @@ The refusals matter as much as the claims. The paper does **not** argue that AGI
 
 ## Reproducibility
 
-LaTeX (single-column preprint), Python reference implementation (`deflated-capability-forecast` package), Jupyter notebooks that re-verify every plotted value against the package to a 1e-3 tolerance, git-tagged cryptographic preregistration, trace-to-source discipline (every paragraph cites a primary source), and explicit epistemic labeling throughout: *(established)* / *(speculative)* / *(speculative — derived)*.
+LaTeX (single-column preprint), Python reference implementation (`deflated-capability-forecast` package), Jupyter notebooks that re-verify every plotted value against the package to a 1e-3 tolerance, a preregistration locked under a git tag in the project repository, trace-to-source discipline, and explicit epistemic labeling throughout: *(established)* / *(speculative)* / *(speculative — derived)*. The project repository (code, notebooks and the locked preregistration) is not public yet; the paper PDF is available above.

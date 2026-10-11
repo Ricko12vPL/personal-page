@@ -4,6 +4,12 @@ import { ProjectCard } from '@/components/projects/project-card'
 import { getFeaturedProjects } from '@/lib/content'
 import { siteConfig } from '@/config/site'
 import Link from 'next/link'
+import { pageMetadata } from '@/lib/metadata'
+
+export const metadata = pageMetadata({
+  description: siteConfig.description,
+  path: '/',
+})
 
 export default function HomePage() {
   const featured = getFeaturedProjects()
@@ -54,12 +60,13 @@ export default function HomePage() {
           >
             View Projects
           </Link>
-          <Link
-            href="/cv"
+          <a
+            href="/cv/kacper-saks-cv.pdf"
+            download="Kacper-Saks-CV.pdf"
             className="text-sm px-7 py-3 border border-neutral-700 text-neutral-400 rounded-md hover:border-neutral-500 hover:text-neutral-200 transition-colors"
           >
             Download CV
-          </Link>
+          </a>
         </div>
       </section>
 
@@ -75,8 +82,9 @@ export default function HomePage() {
           </p>
           <p className="text-neutral-500 text-base mt-8 leading-[1.9]">
             BEng in Mechanical Engineering from Silesian University of
-            Technology, currently pursuing a Master&apos;s in Project Management
-            at Collegium Civitas while working full-time at{' '}
+            Technology and a Master&apos;s programme in Project &amp; Process
+            Management at Collegium Civitas (2024–2026), alongside full-time
+            work at{' '}
             <span className="text-neutral-200">Airbus Defence and Space</span>.
             Alongside work and studies, completed{' '}
             <span className="text-neutral-200">42 Warsaw</span> — a tuition-free,

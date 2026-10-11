@@ -2,12 +2,14 @@ import type { Metadata } from 'next'
 import { getPapers } from '@/lib/content'
 import { SectionHeading } from '@/components/ui/section-heading'
 import { PublicationEntry } from '@/components/research/publication-entry'
+import { pageMetadata } from '@/lib/metadata'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Research',
   description:
     'Publications and preprints by Kacper Saks — quantitative methods, statistical validation, and AI forecasting.',
-}
+  path: '/research',
+})
 
 export default function ResearchPage() {
   const papers = getPapers()

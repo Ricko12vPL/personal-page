@@ -1,0 +1,130 @@
+---
+slug: alpha-lab
+title: "Alpha Lab: A Local Research Workstation for Honest Alpha Research"
+description: "A local research workstation for building algorithmic strategies and searching for alpha signals, with honesty built in: point-in-time data, a hash-chained trial ledger, sealed holdouts and overfitting statistics. Phases F0–F3 are done; there are no real-return results yet."
+date: 2026-09-29
+updated: 2026-10-11
+featured: true
+priority: 3
+status: in-progress
+tags: [python, quantitative-research, backtesting, research-integrity, duckdb, fastapi, react, mutation-testing]
+---
+
+## Overview
+
+Alpha Lab is a local research workstation for building algorithmic strategies yourself and searching for alpha signals. Its thesis: the internal research platforms of large firms share a common core, and that core can be built on one laptop.
+
+It does not generate strategies. The researcher forms the hypothesis and makes every choice; the app does the computing, shows every diagnostic and guards that the result is true. It provides the tools research teams use, plus the barrier against self-deception that proved most valuable in the earlier project, [X_Quant](/projects/x-quant) v2. The barrier carried over; the attempts did not. The trial ledger started from an empty genesis block, and no attempts were imported from X_Quant.
+
+The parts built so far are point-in-time data, a fast vectorised engine, a signal lab and a research-integrity engine (trial ledger, seals, pre-registration, overfitting statistics). An event-driven execution engine is planned for the next phase, F5, and is not built yet.
+
+The repository is private, so there is no public code link. This page describes the design and the phase evidence as of 11 October 2026.
+
+## Principles
+
+- **Point in time.** Every datum carries `ts_event` and `ts_available`, and a decision at time t sees only data with `ts_available ≤ t`. A 10:00 bar stays invisible until 10:01.
+- **Ledger before number.** Every number computed against returns is written to the trial ledger before it can be read.
+- **Every attempt counts.** Not every click is an attempt, but every attempt is counted, and the count feeds the Deflated Sharpe ratio and the significance thresholds.
+- **Tamper-evident ledger.** The trial ledger is a separate SQLite database (WAL mode) with a hash chain: each entry contains the hash of the previous one, so deleting or rewriting an entry leaves a trace. An anchor file detects a ledger that has been rewritten or rolled back.
+- **Sealed holdouts, described honestly.** A holdout window opens only after pre-registration, once, with a permanent ledger entry: a one-time exam ceremony. Seals are optional (scrypt and AES-256-GCM); sealing survives interruption and opening is one-time only. The documentation says plainly that this irreversibility is procedural: the service detects and refuses a second exam, but whoever holds the key could still decrypt outside the service.
+- **Net by default.** Costs are realistic from the first click. The gross view is never the default.
+- **A truncation test against look-ahead.** Every feature gets a data-truncation test: values computed on data cut just before the decision moment must equal the values on the full data. In F2 the test covered all 110 operators (190 cases, 20,752 cuts, 64,892 comparisons) with 0 mismatches, and it rejected all 6 deliberately broken versions.
+- **Reproducible runs.** A run's identity combines the data-version hash, the code hash (git SHA), the config hash and the random seed.
+- **Raw data is untouchable.** Raw files are read-only. Faulty files go to quarantine and are never deleted.
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  ACCESS PATHS                                           │
+│  web UI → FastAPI + WebSocket API (127.0.0.1 only)      │
+│  SQL console · notebook SDK · CLI · MCP server          │
+└────────────────────────────┬────────────────────────────┘
+                             ▼
+┌─────────────────────────────────────────────────────────┐
+│  DATA SERVICE (one process)                             │
+│  only writer to the DuckDB catalog                      │
+│  only place that logs attempts                          │
+└────────────────────────────┬────────────────────────────┘
+                             ▼
+┌───────────────────┬──────────────────┬──────────────────┐
+│  DATA             │  ENGINES         │  INTEGRITY       │
+│  Parquet (zstd)   │  vectorised      │  trial ledger    │
+│  Arrow · DuckDB   │  (numba, built)  │  (hash chain)    │
+│  Polars (lazy)    │  event-driven    │  seals · prereg  │
+│  ts_available ≤ t │  (planned, F5)   │  PSR/DSR · PBO   │
+│                   │                  │  RC · SPA · FDR  │
+└───────────────────┴──────────────────┴──────────────────┘
+```
+
+- **One data service.** Every data access path (web UI, SQL console, notebook SDK, CLI, MCP server) goes through a single data-service process. It is the only writer to the DuckDB catalog and the only place that logs attempts.
+- **Seven one-way layers.** Communication runs one way, from data through computation, research and validation to presentation. The UI never computes a result itself; it always asks the engine through the API, so the same calls work from Jupyter or the CLI.
+- **Storage.** Parquet (zstd), Apache Arrow, DuckDB and lazy Polars. In F0 all data was normalised into 1.04 billion rows and 16 GB of Parquet, and checksums matched for all 127,227 raw files.
+- **Two engines, by design.** The vectorised engine answers "is there information in the signal?" in a fraction of a second; the event-driven engine answers "can it be executed?". Both must produce identical trade lists on reference strategies.
+  - The vectorised engine (numba) is **built**. It runs 16 years of NQ 1-minute bars in 0.83 s on a warm process, against a 2 s target, and it matches all 47 golden checks against X_Quant v2, to within $0.005 per day where daily values are compared.
+  - The event-driven engine, NautilusTrader in a Linux x86_64 container, is **planned for F5** and not built yet.
+- **API and jobs.** FastAPI with WebSocket, plus a SQLite-backed job queue (Huey) on warm worker processes. The API and the web app are served on 127.0.0.1 only.
+- **Local web UI.** React, TypeScript and Vite with the Monaco editor. It talks only to the local server on 127.0.0.1, and nothing loads from other hosts. Screens so far: data explorer, strategy builder, backtest results, jobs and trade inspector (F1); signal lab with a DSL editor and language server, alpha pool, research journal and event study (F2); an asset-class switch for US equities and ETFs (F2.1); optimisation, robustness, evaluation, exam, and ledger and audit (F3). The UI is in Polish.
+- **Signal language.** A DSL with 110 operators on numba kernels (time series, logic, intraday, 1-second microstructure, cross-market, cross-sectional, futures, crypto, events such as FOMC, CPI and NFP, regimes and factors), 47 Qlib-compatible aliases, and Alpha158/Alpha360. The parser reports errors in Polish.
+- **Integrity statistics.** PSR and DSR (with the expected-maximum term computed by quadrature), CSCV PBO, White's Reality Check, Hansen's SPA, StepM, Benjamini–Hochberg and Benjamini–Yekutieli FDR control, and the bootstrap.
+- **Optimisation and robustness.** Grid, random, Optuna (TPE, NSGA-II) and genetic search; walk-forward with purge and embargo; walk-forward efficiency; a stability map that picks a plateau, not a peak; and an attempt plan shown before every start. The robustness lab varies costs (×2, ×3, ×5), slippage (+1 tick), sub-periods, regimes, placebo, trade Monte Carlo, next-bar, delay and other markets.
+- **Credibility card.** Every result carries a card with 8 tiles (attempts, DSR, PBO, OOS/IS Sharpe, best-year share, costs ×2, 1-bar delay, and Sharpe with PSR and intervals) and a "too good" badge.
+
+## How It Is Built and Checked
+
+The build runs in phases, each with written completion criteria.
+
+| Phase | Scope | Merged | Result |
+|-------|-------|--------|--------|
+| F0 | Foundation and data service | 2026-09-30 | All 4 criteria met |
+| F1 | Engine and first screens | 2026-10-01 | Criteria 1 and 2 met; criterion 3 (daily recorder) only partly checkable at close |
+| F2 | Signal lab | 2026-10-02 | All 3 criteria met |
+| F2.1 | US equity/ETF data integration (inserted step) | 2026-10-04 | Done; work then returned to the plan |
+| F3 | Research integrity and optimisation | 2026-10-11 | All 3 criteria met; CI green |
+
+**Independent review, by AI agents.** The plan puts an independent code review after F0, F1, F3 and F5, focused on look-ahead, timestamps, seals, the trial ledger and engine parity. The reviewers are separate AI agents, and in F0 and F3 sceptic agents then tried to refute each finding before it counted. This is adversarial checking by AI agents, not an external or human audit.
+
+- **F0:** 6 reviewers raised 44 issues; the sceptics confirmed 37 and 2 more were accepted; three fix rounds followed.
+- **F1:** 5 reviewers raised 32 issues.
+- **F2:** 5 checkers found 26 bugs.
+- **F3:** 36 findings, of which 34 were confirmed (1 critical, 7 high, 16 medium, 10 low) and 2 refuted. All 34 are fixed. Verifying the fixes turned up 8 more defects, all fixed as well.
+
+**Test-first fixes.** In F3, every fix began with a test that failed first.
+
+**Mutation testing in two tiers.** Tier 1 is a curated set of named mutants of the statistics, the ceremony and the seals: 100% must be killed, in CI. Tier 2 runs mutmut 3.7 over the integrity statistics: at least 90% of covered mutants must be killed, and every survivor is triaged.
+
+F3 closed with this evidence:
+
+| Check | Result |
+|-------|--------|
+| Holdout ceremony | 108/108 tests passed; 15/15 ceremony and seal mutants killed |
+| Statistics, tier 1 | 82/82 named mutants killed |
+| Statistics, tier 2 (mutmut 3.7.0) | 3,081 of 3,146 mutants killed: 97.93% against a 90% threshold; all 65 survivors triaged |
+| Walk-forward folds in the ledger | 6/6 fold rows, also after killing and resuming the job; 13 folds wrote exactly the 78 rows the plan predicted |
+| Independent review | 34 confirmed defects, all fixed |
+| Python tests | 8,712 passed, 1 skipped, 1 failed only because the test sandbox blocks a process-listing call (it passes outside the sandbox); line coverage 92.09%, integrity package 96.45%, statistics package 100% |
+| Web tests | 658 vitest tests (94.4% line coverage); end-to-end 17/17 on a mock backend and 15/15 on the real one |
+| Static checks | ruff 0, pyright 0 across 1,539 files |
+
+**Measurement honesty.**
+
+- Every number in a phase report must cite a source: a file, a run or a test.
+- Benchmarks and real-data checks run from in-progress code use synthetic or placebo targets and report only timings. Real statistics are computed only after merge, from main.
+- The F3 benchmarks were re-measured on an idle machine, with system load below 1.5 before each case. The earlier run on a loaded machine is kept in the evidence file and marked out of date.
+- CI runs on GitHub Actions on synthetic data. Tests, end-to-end runs and screenshots use synthetic data only.
+
+**An honest shortfall.** The plan's target of 1,000 variants in under 3 minutes is met on daily data (8.5–10.8 s) but **not** on NQ 1-minute data, where it measured about 4.2 minutes per 1,000. The F3 report records it as not met.
+
+## Status and What's Next
+
+As of 11 October 2026, F0–F3 and the inserted F2.1 step are complete. The phase order is F0 → F1 → F2 → F3 → F5 → F4 → F4K → F6 → F7.
+
+- **Next: F5, execution.** NautilusTrader in a container, a single timestamp conversion, limit, stop, stop-limit, OCO and bracket orders, partial fills, 1-second data, a trade-list parity test and bar-by-bar replay, followed by an independent review. F5 is done when both engines give identical trade lists on market-order reference strategies and limit orders report an execution gap.
+- **Then:** F4, equities and cross-sections; F4K, crypto; F6, machine learning and mass search (purged CV, CPCV, placebo, an enforced trial budget); F7, portfolio, forward test and reports.
+- **Later:** a broker and paper-trading stage, as a separate decision.
+
+**No results yet.** Alpha Lab has no real-return results, and nothing on this page is a performance claim. So far the code has measured only timings, on synthetic or placebo targets. After the F3 merge the production trial ledger held one entry, the genesis block, and zero attempts, so there are no DSR, PBO or SPA figures on real data yet. When they come, they will come from a real sweep run from main and logged in the ledger before anyone reads them.
+
+## Tech Stack
+
+Python 3.12, numba, Polars, DuckDB, Apache Arrow, Parquet (zstd), SQLite (WAL, hash-chained trial ledger), FastAPI, WebSocket, Huey, Optuna, scrypt and AES-256-GCM seals, mutmut, ruff, pyright, React, TypeScript, Vite, Monaco, vitest, GitHub Actions, gitleaks; NautilusTrader planned for F5.

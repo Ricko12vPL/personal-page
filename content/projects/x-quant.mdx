@@ -1,88 +1,95 @@
 ---
 slug: x-quant
-title: "X_Quant: Institutional-Grade Quantitative Trading Platform"
-description: "A single-operator quant platform trading one frozen, CSCV-validated momentum strategy (cfg_00 / MetaEnsemble v56, PBO 0.0108), wrapped in Aladdin-grade risk & compliance layers — with pre-registration discipline and an honest validated-vs-traded distinction. On IBKR paper; live pending."
+title: "X_Quant: A Quant Research Program That Learned to Say No"
+description: "My solo quant research program, in two lives. v1 (≈274K LOC) was retired in August 2026 after a formal post-mortem and its published metrics are withdrawn. v2 rebuilt the process around a written research constitution and recorded every strategy it tested as a documented verdict."
 date: 2024-06-15
-updated: 2026-07-22
+updated: 2026-10-11
 featured: true
 priority: 2
-status: in-progress
-tags: [python, quantitative-finance, momentum, cscv, risk-management, compliance, ibkr, pre-registration]
-github: "https://github.com/Ricko12vPL/X_Quant"
+status: archived
+tags: [python, quantitative-research, research-integrity, pre-registration, backtesting, validation, post-mortem]
 ---
+
+> **Correction (October 2026).** Earlier versions of this page presented a frozen momentum strategy (`cfg_00` / MetaEnsemble v56) as CSCV-validated and trading on a paper account, with headline overfitting and out-of-sample metrics. That system was formally **rejected on 2 August 2026 and decommissioned on 9 August 2026**. The metrics previously shown here are withdrawn and should not be cited.
 
 ## Overview
 
-X_Quant is a single-operator quantitative trading platform built around **one frozen strategy** — `cfg_00` / **MetaEnsemble v56**, a long-only momentum system trained on ~15 years of hourly US-equity data. The strategy is locked (no live re-fitting); the engineering effort goes into *validating* it honestly and wrapping it in institutional-grade risk, compliance, and execution infrastructure.
+X_Quant is my solo quantitative-research program. It has had two lives, and the second one exists because the first one failed review.
 
-Its defining trait is intellectual honesty about its own state. The codebase draws a hard line between **the strategy that was validated** and **the strategy that is actually trading** — and reports the gap rather than papering over it. It trades on an IBKR paper account today; live is gated behind account permissions and a certified-engine deploy.
+**v1** grew over two years into a ≈274K-line trading platform built around a single strategy. An internal post-mortem rejected it. **v2** started the same week, from zero, with the post-mortem turned into a written research constitution — and spent seven weeks measuring, under that constitution, whether any strategy I could afford to trade had a real edge. None did, and every one of those answers is on record.
 
-## The Honest Core: Validated ≠ Traded
+## v1 (2024–2026): what the post-mortem found
 
-Most trading systems present a backtest and imply it is what runs in production. X_Quant refuses to.
+v1 was retired on 2026-08-09. Its post-mortem is not a single verdict but a set of lessons that v2's standards now name explicitly:
 
-- The **validated engine** (cfg_00) lives in the CSCV harness: inverse-volatility sizing, a 5% position cap, a rolling beta-neutral SPY hedge, and vol-target / drawdown / crash overlays.
-- The **live daemon still executes a simpler LEGACY engine**: top-≤98 signal-proportional weights, with *no* hedge, *no* cap, and *no* overlays.
+- **PBO had been computed in-sample.** v2's rule: *"PBO only on the out-of-sample matrix — PBO on in-sample data is not PBO."*
+- **Free-form feature discovery turned it into "an overfitting machine".** v2 allows machine learning only to *combine* at most three pre-registered signals, never to search for features.
+- **Results were tuned until they passed**, and paper-fill cost assumptions were never verified.
+- **Eleven engineering failure patterns**, each now paired with a guard rule: code and tests reading dead copies of the tree; a monitor that overloaded the very resource it was watching; gates that reported "clean" when they had not measured anything; empty results read as success; tests that wrote to the live journal; multi-hour runs with no checkpoints; evidence kept outside version control — and four more.
 
-So the current paper track record measures the **legacy** engine — not cfg_00 — and the CSCV certificate (PBO = 0.0108) does **not** certify what is in production. The remediation (porting production onto the certified engine) is an explicit, gated phase; when it deploys, the Phase-1 clock **restarts from zero**, because the pre-deploy paper data is a different regime. This is logged as **Incident P-2** — one of a standing register of incidents the project keeps in the open.
+The through-line: v1 had validation *machinery*, but not a validation *process* that could stop me from believing my own numbers.
 
-## Validation & the R1 Campaign
+## v2 (August–September 2026): a process built to kill bad ideas cheaply
 
-The strategy is defended against overfitting the way a hedge fund defends external capital:
+v2 is governed by a written constitution of eight articles. A result produced in breach of any of them is void, however good it looks. The core of it:
 
-- **CSCV** — Combinatorial Symmetric Cross-Validation with a canonical power test.
-- **PBO** — Probability of Backtest Overfitting: **0.0108** for cfg_00 (Sharpe 5.24 out-of-sample, through COVID).
-- **Pre-registration** — every validation campaign is committed *before* it runs; a FAIL is a legal outcome.
+- **Truth of measurement** — causality checked per bar; PBO only out-of-sample; folds that cover 2008, 2011, 2020 and 2022; pre-registration before the run, one shot; data pinned by hashed manifests.
+- **The instrument is not the strategy** — the measurement harness lives apart from strategies; *build*, *verify* and *repair* are separate sessions, and no session judges its own work.
+- **Limits are law** — every run has a wall-clock budget; gates fail closed; *zero means "not measured", never "success"*.
+- **A register of truth** — an append-only decision register; a wrong entry is corrected by a new entry, never by editing the old one.
+- **Edge before code** — no strategy without a written, falsifiable hypothesis: who pays, why it isn't arbitraged away, and how its death will be recognised.
+- **Honest data from day zero** — total-return prices and point-in-time constituents; survivorship-biased data is not data.
+- **One engine** for research and production, with bit-for-bit parity.
 
-The latest campaign, **R1**, just completed (2026-07-22) — re-validating cfg_00 on the live-tradable universe. The raw result: **PBO = 0.0000** (0 of 462 overfit configurations at both k=5 and k=6). But the campaign flagged its own **fragility caveat** — a leave-one-out PBO swing of 0.1126 (> 0.10), meaning the result leans on a single configuration. Per the project's own rule, **no PASS is declared until the formal wrap-up report is written** — so the verdict is deliberately still pending. Reporting the caveat and withholding the verdict is the discipline working as intended.
+Around that sit a **permanent attempts ledger** (every configuration ever evaluated counts toward the deflated Sharpe of every future test — 2,976 attempts by the last recorded run), a **sealed 2018–2025 holdout** that only a pre-registered one-shot confirmation may open, an incident log where an incident closes only when its root cause is removed, and decisions taken in a recorded dialogue with an **adversarial AI partner** (Claude) whose objections stay in the register.
 
-## Universe & Constraints
+## Results: every line of work on record
 
-The live-tradable universe is **424 instruments** (∪ SPY) — 590 candidates minus **159 PRIIPS-blocked US ETFs** (no EU-retail KID) minus 7 delisted. Different pipeline stages legitimately use different counts (529 legacy-prod, 619 / 615 / 562 in validation at different history thresholds), and a reconciliation report tracks each — including flagging a stale "534" left in older docs. Code is the source of truth over documentation.
+| Line of work | What was tested | Recorded verdict |
+|---|---|---|
+| Post-earnings drift, small/micro caps | Pre-registered event hypothesis | **Dead** — gross drift +0.26%, net −0.74% against a pre-registered +1.5% bar |
+| Insider-purchase clusters | Pre-registered event hypothesis | **Dead** |
+| 8-K filing drift | Pre-registered event hypothesis | **Dead** |
+| Event-signal discovery scan | 633 configurations | **0** passed all three stages |
+| Signal-combination portfolio | 57 weak signals combined | **Not a candidate** — gross Sharpe +2.33, net −2.46 |
+| Indicator discovery scan | 166 configurations | **0** passed the first stage |
+| Re-costing at 5k / 25k / 100k USD | The 57 first-stage signals | **0** survived costs at any capital level |
+| Replication of Carver's trend system on ETFs | Three versions (below) | **Closed** — no measurable edge at retail capital |
+| NQ futures track | Third-party rules, ensembles, ML (below) | **No tradeable candidate** |
 
-## Effective Risk Controls (code = truth)
+By 23 September, in the register's own words: *"7 weeks and 8 programmes: 0 candidates."* The futures track that followed added none. Nothing ever reached paper or live trading.
 
-The system audits what the code *actually* enforces, not what the docs claim:
+### The Carver replication
 
-- **Position cap = 5%** effective (a config-declared 4% is a dead value, floored to 5%); the legacy engine has no cap at all.
-- **Kill switches** — daily −3% / weekly −5% / **max-drawdown −10%** (tightened from an aspirational 15% down to the backtest's 6.59% envelope), wired into the money-path.
-- **VIX ≥ 60 = alert-only** — an auto-flatten path exists but is deliberately gated dormant, after a history of feedback-loop bugs.
-- **Deadman + launchd KeepAlive** — a 300s deadman switch plus process respawn; recovery after an alert is deliberately **manual**, not automatic.
+The deepest line of work replicated a published trend-following system on ETFs, under one frozen specification per version:
 
-## Aladdin-Grade Layers
+- **v1.0** (85 ETFs, six rules) reproduced the author's gross Sharpe — **+1.00** — but was **−1.46 net** at 25k: small orders cannot carry retail costs.
+- **v1.1** applied the author's own cost rule: **0 of 528** rule–instrument pairs were admissible at any capital up to 50k.
+- **v1.2.1** was fitted to the capital (four ETFs, two rules), calibrated against a martingale first, then run once: **gross −0.07, net −0.14**, at the **45th percentile** of the null distribution — indistinguishable from no signal.
 
-The platform is being built toward the institutional risk/compliance stack that systems like BlackRock's Aladdin provide — mapped deliberately, with an explicit anti-roadmap for what a single-operator system should *not* build:
+A separate verify session reproduced the verdict from the committed artifacts and found one wrong number in the register itself (positive years: 4, not 3). It was corrected by a new entry, and the standard was tightened so that a number may enter the register only from a numeric artifact, never from report prose. The conclusion that closed the line: the author's edge is **breadth**, and breadth under his cost rule needs at least ~100k on ETFs.
 
-| Institutional function | X_Quant equivalent | Status |
-|------------------------|--------------------|--------|
-| Risk analytics (ex-ante VaR) | VaR backtest — Kupiec POF, Christoffersen, Basel traffic-light | deploy-ready (behind flag) |
-| Compliance engine | Rulebook + advisory rule-engine (codifies existing limits, adds none) | deploy-ready (behind flag) |
-| Factor model | Fama-French factor risk decomposition | planned |
-| Pre-trade what-if | Calls the certified core, not a separate engine | planned |
-| Cost model / TCA | Transaction-cost analyzer + TCA loop | planned |
-| Book of record (IBOR) | `journal.db` (trades, snapshots, signals) | live |
-| Front-to-back | One certified core consumed by research *and* production | pending deploy |
+### The NQ futures track
 
-The risk and compliance layers pass **19/19 independent + 12 baseline verification checks**; both ship disabled behind flags, and compliance runs **advisory-only** (it logs would-block events, it never blocks) until the certified engine has cleared multiple clean rebalances.
+In the last week, a futures track tested a public third-party rule set and the strategies built around it:
 
-**Anti-roadmap** — consciously *not* built: multi-asset, an accounting book-of-record, multi-tenancy, and a meta capital-allocator (which only makes sense across many strategies; cfg_00 is one).
+- Reproducing the third party's published trade ledger **confirmed its numbers, not an edge** — without its ten best days, it was negative.
+- A one-shot out-of-sample test of an ensemble of variants: Sharpe 0.19, profit factor 1.016 — **failed** four of five criteria.
+- An ensemble with an in-sample Sharpe of 2.84 fell to **−0.88 and −0.48** on clean out-of-sample windows — **rejected as overfit**.
+- A second ensemble passed its out-of-sample test formally (Sharpe 1.18), but its gain came from the window in which its families were discovered — **invalidated** as selection leakage.
+- A walk-forward of the *whole selection procedure* over 2014–2026 reached Sharpe 0.36 against 0.8 and PSR 90.2% against 95% — **failed**, with no threshold loosened.
+- A pooled gradient-boosting model across seven markets: walk-forward Sharpe −0.42 — **failed**, with no tuning and no second attempt allowed.
 
-## What It Has That Aladdin Doesn't
+A prediction-market track got as far as a design package; no model was built.
 
-- **Campaign pre-registration** — commitments locked before a run; a documented FAIL is legal.
-- **PBO / DSR / canonical CSCV power test** — an explicit, quantified defense against overfitting.
-- **A public incident register** — P-1 (config-as-deploy), P-2 (validated ≠ traded), P-3 (money-path outside version control), P-4 (private-repo journal exposure) — each with an evidence class and a status, closed or in remediation.
+## What it produced
 
-## Production Notes
+The register's closing assessment names the real output: not a strategy, but **the instrument** — an engine, a register, a calibration method and a set of executable gates that can close a research question with evidence in a few sessions, and that refuse to let me fool myself. That instrument is what carried over.
 
-- **Operations** — a nightly coordinator (23:40 CEST) does a clean IBKR bootout → reset → bootstrap; rebalance, snapshot, and daily-report run on fixed slots. Deploys go only through the nightly window to avoid wedging the IBKR Gateway API.
-- **Evidence discipline** — every claim in the system briefing carries an evidence class: `[VERIFIED-smoke]` (actually run), `[VERIFIED-static]` (code-verified with file:line), `[DORMANT]`, `[PENDING-DEPLOY]`. Documentation that drifts from the code is flagged, not trusted.
-- **Trading** — IBKR paper account (Gateway port 4002); the live account waits on permissions and the certified-engine deploy.
+## Status
+
+Dormant since 29 September 2026; the repository is not public. Its successor is [Alpha Lab](/projects/alpha-lab), which reads X_Quant's data read-only and deliberately starts its own attempts ledger from zero.
 
 ## Tech Stack
 
-Python, NumPy, Pandas, a CSCV / PBO / DSR validation harness, Interactive Brokers API (IBKR Gateway), inverse-volatility sizing, beta-neutral hedging, VaR (Kupiec / Christoffersen / Basel), macOS launchd services, SQLite (`journal.db` as IBOR), git-tagged pre-registration.
-
-## Evolution
-
-X_Quant began as a classical ML-driven signal pipeline (v1: ~30 alphas, a 6-model XGBoost / LightGBM / CatBoost ensemble, CPCV validation) and consolidated over time into the single frozen **MetaEnsemble v56** strategy it validates and trades today. The through-line across every version is the same: *validate honestly, then defend the validation.*
+Python, pandas, NumPy, PyArrow / Parquet, LightGBM, pytest with mutation tests on the gates, hashed data manifests, git-pinned pre-registrations, and append-only Markdown registers.

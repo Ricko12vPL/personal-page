@@ -2,12 +2,14 @@ import type { Metadata } from 'next'
 import { getProjects } from '@/lib/content'
 import { ProjectGrid } from '@/components/projects/project-grid'
 import { SectionHeading } from '@/components/ui/section-heading'
+import { pageMetadata } from '@/lib/metadata'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Projects',
   description:
-    'Quantitative trading systems, AI agents, and full-stack applications by Kacper Saks.',
-}
+    'Quantitative research systems, AI agents, and full-stack applications by Kacper Saks.',
+  path: '/projects',
+})
 
 export default function ProjectsPage() {
   const projects = getProjects()

@@ -3,27 +3,30 @@ slug: research-org-runs-real-research
 title: "From Demo to Operator: My AI Research Org Now Runs Real Research — and Reviews Its Own Papers Before I Do"
 description: "I took the multi-agent research organization that killed all five of its own ideas, pointed it at a real problem, and let it run its own selection, pre-registration, and pilots. Then I built a second org whose only job is to tear the resulting papers apart before a human submits them."
 date: 2026-06-20
+updated: 2026-10-11
 published: true
 tags: [multi-agent, ai-agents, research-automation, pre-registration, evaluation, claude]
 ---
 
+*Update (October 2026): after this post, a cross-model pilot measured wrong-reason rates of 0.20 (GPT-5), 0.13 (DeepSeek-R1) and 0.07 (Gemini). That put H1 at kill risk, so the per-system calibration card (H1″) was chosen as primary before any confirmatory data; H1 is retained as exploratory. The third evaluator slot later moved to Mistral, and since 2026-07-05 C1 has been paused at its pre-registration checkpoint, waiting on one API key. No external review outcome is recorded for the paper System B pre-reviewed. Current state: [project page](/projects/worldclass-research-org).*
+
 ## Where We Left Off
 
-A couple of weeks ago I [shipped a 39-role multi-agent research organization](/blog/executable-gate-research-org) with one rule — *nothing self-certifies* — and reported the uncomfortable result: on its first real run it abandoned all five candidate research directions, and retracted its own showcase exhibit when it failed its verifier. A pre-registered calibration study then showed the gates *do* discriminate (they caught every planted flaw), but that a "reject by default" prior was quietly destroying specificity.
+A couple of weeks ago I [shipped a 39-role multi-agent research organization](/blog/executable-gate-research-org) with one rule — *nothing self-certifies* — and reported the uncomfortable result: on its first real run it abandoned all five candidate research directions, and retracted its own showcase exhibit when it failed its verifier. A pre-registered calibration study then showed the gates are not a uniform rejector (no planted flaw was missed entirely, and the correct flaw was cited for 13–14 of 15), and suggested — in a result I have since downgraded to exploratory — that a "reject by default" prior was costing specificity.
 
 That was the artifact. The obvious next question: can it actually *do research* — not study itself, but run a real frontier project end to end? This post is what happened when I let it try.
 
 ## It Selected Its Own Project
 
-I didn't hand it a thesis. I let the organization run its own selection. It generated a 12-candidate slate, froze it before any judgment (a single commit, so I couldn't quietly reshuffle later), then ran each candidate through four non-compensatory gates — does it have a real asset, a real falsifier, real feasibility, real novelty. Ten of the twelve were killed. One survived: a project I'll call **C1 — "Evaluator Calibration at Scale."**
+I didn't hand it a thesis. I let the organization run its own selection. It generated a 12-candidate slate, froze it before any judgment (a single commit, so I couldn't quietly reshuffle later), then ran each candidate through four non-compensatory gates — does it have a real asset, a real falsifier, real feasibility, real novelty. Ten of the twelve were killed. Two passed every gate, and one was selected (the other is the recorded runner-up): a project I'll call **C1 — "Evaluator Calibration at Scale."**
 
 C1 is pleasingly recursive. The artifact's whole premise is that AI evaluators need to be measured, not trusted. C1 turns that lens outward, onto the field: **do third-party LLM paper-review systems reject flawed research for the *right reasons* — or do they reject the right papers by accident, citing the wrong flaw?**
 
 That distinction is the entire contribution. "Rejected" is cheap. "Rejected, and correctly identified *why*" is the thing a reviewer is actually for. The design measures both, plus how often each system false-kills sound work:
 
-- **Cross-family.** At least three evaluator families (OpenAI, Google, Meta-Llama). My own model family is *banned from every confirmatory cell* — it can plant flaws, never judge them. The most important reviewer in the study is the one I don't control.
-- **Matched pairs, one flaw each.** Every flawed document has a sound twin differing only in a single planted, externally certified defect. No confounds.
-- **Humans hold the ground truth.** Every plant is certified by two independent non-author raters under a frozen rubric — recruited with an *unconditional* co-authorship offer made before they rate anything, so their judgment can't be bent by the result.
+- **Cross-family.** Three distinct evaluator families. When I wrote this the candidates were OpenAI, Google and Meta-Llama; the selected (not yet frozen) roster is now OpenAI GPT-5, Google Gemini and Mistral, and the Meta-Llama candidate was carded but not selected. My own model family is *banned from every confirmatory cell* — it can plant flaws, never judge them. The most important reviewer in the study is the one I don't control.
+- **Matched pairs, one flaw each.** Every flawed document has a sound twin from the same pipeline and genre, differing only in a single planted defect that external raters will certify. That is the fix for the genre confound that downgraded my own specificity numbers (below).
+- **Humans hold the ground truth.** Every plant will be certified by two independent non-author raters under a frozen rubric (pooled κ ≥ 0.70); none has been contracted yet. Raters are to be offered co-authorship *unconditionally*, before they rate anything, so their judgment can't be bent by the result.
 
 The honest framing also means crediting the predecessor: [SoundnessBench](https://arxiv.org/abs/2605.30329) already established that current LLMs aren't reliable first-gate reviewers (a 74% mean false-positive rate across 12 models). C1 doesn't re-discover that — it adds the construction-validity controls SoundnessBench structurally lacks (seeded ground truth, matched pairs, attribution scoring, cross-family seeding).
 
@@ -34,9 +37,9 @@ The interesting part isn't the design. It's watching the integrity machinery bit
 - An independent **circularity review** ("can the author certify his own ground truth?") imposed eight binding conditions before the project could proceed. Two are fatal-if-dropped: the matched-pair corpus and the external human certification.
 - Four independent reviewers — two outside my model family — read the *first* paper and all named the same weakness #1: "no independent baseline detector." So before running anything confirmatory, I added a **single-judge baseline arm**: you can't claim cross-model aggregation helps unless you measure a single model alone as the control.
 - While specifying that baseline, I had to **retract a claim from my own earlier writeup**: I'd described the detector as a "multi-gate wall." It isn't. The only real structural multiplicity is cross-model majority voting. The inaccurate description is now logged as a correction, not silently edited away.
-- And the specificity numbers from the calibration study (the 0.96 / 0.72 result) turned out to be engine-specific. So I shipped a **public erratum** downgrading them to exploratory *on the public repo* — before any new freeze — so the public record matches what I privately know.
+- And an independent re-review found a genre confound in the calibration study: the sound theses were self-identifying reproductions and the flawed ones novel proposals, so a gate could score high specificity without reading content. So I shipped a **public erratum** (v0.2.1, limitation L8) downgrading the specificity numbers (the 0.96 / 0.72 result), the sound-thesis kill contrast and the rationale for switching that prior off to exploratory *on the public repo* — before any new freeze — so the public record matches what I privately know. The attribution result is measured within one arm and stands.
 
-The pilots, meanwhile, are quietly threatening the headline hypothesis. At pilot scale the "wrong-reason gap" I expected to find is sitting near *zero*, and raw flaw-detection sensitivity is around 0.4–0.5. That might kill the primary framing. It's pre-registered anyway — a clean, publishable null about the *structure* of evaluator failure beats a result I fished for. (Same lesson as my [validation-crisis paper](/research/validation-crisis): the prediction is frozen before the data, and a failed prediction gets reported in the same units as a successful one.)
+The first pilot (same model family as mine, n = 15), meanwhile, is quietly threatening the headline hypothesis. At pilot scale the "wrong-reason gap" I expected to find is sitting near *zero*, and raw flaw-detection sensitivity is around 0.4–0.5. That might kill the primary framing. It's pre-registered anyway — a clean, publishable null about the *structure* of evaluator failure beats a result I fished for. (Same lesson as my [validation-crisis paper](/research/validation-crisis): the prediction is frozen before the data, and a failed prediction gets reported in the same units as a successful one.)
 
 Right now C1 is **halted at its pre-registration checkpoint**, blocked on third-party API access. Pilots are run; the confirmatory freeze is not. Every planning number is explicitly provisional. I'd rather report a blocked program honestly than a finished one I rushed.
 
@@ -51,7 +54,7 @@ It deliberately **inverts the lesson from the calibration study**. The first org
 1. **It can never click submit.** No agent, script, or Makefile can emit a "submit" action. The human gate is non-removable.
 2. **Its approval is necessary but not sufficient.** System B is the same model family as the writer, so it's blind to whatever that family is blind to. Its "accept" only ever means "accept against the cached rubric → human gate." The external venue is the only terminal authority.
 
-And it calibrates itself: every verdict logs a prediction of the real outcome, so over time I can measure whether multi-agent pre-review actually predicts peer review. The first paper has already gone through it to a round-2 accept, targeting a workshop at EMNLP 2026.
+And it calibrates itself: every verdict logs a prediction of the real outcome, so over time I can measure whether multi-agent pre-review actually predicts peer review. The first paper, the calibration-study write-up, has already passed System B's internal pre-review against the REALM @ EMNLP 2026 workshop rubric (round 2: ACCEPT). That is System B's own same-family verdict, not a venue decision.
 
 ## Takeaways
 
@@ -60,4 +63,4 @@ And it calibrates itself: every verdict logs a prediction of the real outcome, s
 - **Build the adversary as a separate org.** A reviewer that shares the writer's incentives isn't a reviewer. System B is deliberately separate, deliberately hostile, and structurally barred from ever submitting.
 - **Report the blocked state.** C1 is stuck at a checkpoint waiting on API keys, and a pilot is threatening its headline. Saying so plainly is the same discipline as everything above.
 
-The system, the C1 program, and System B are written up in the [project page](/projects/worldclass-research-org); the original artifact is archived with a [DOI](https://doi.org/10.5281/zenodo.20645678).
+The system, the C1 program, and System B are written up in the [project page](/projects/worldclass-research-org); the original artifact's v0.2.0 release is archived on Zenodo with a [DOI](https://doi.org/10.5281/zenodo.20645678), and the v0.2.1 erratum is on [GitHub](https://github.com/Ricko12vPL/worldclass-research-org) (tag `v0.2.1`).

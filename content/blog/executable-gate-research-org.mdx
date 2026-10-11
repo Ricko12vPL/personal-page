@@ -3,9 +3,12 @@ slug: executable-gate-research-org
 title: "I Built a 39-Role AI Research Organization — Its First Run Killed Every Idea"
 description: "I built a multi-agent research organization with executable quality gates. Its first full run abandoned every candidate thesis. So I ran a pre-registered, blinded calibration study to find out whether the gates discriminate between sound and flawed research — or just kill everything."
 date: 2026-06-11
+updated: 2026-10-11
 published: true
 tags: [multi-agent, ai-agents, research-automation, pre-registration, claude]
 ---
+
+*Update (October 2026): Erratum v0.2.1 (June 13, 2026) added limitation L8, a genre confound between the corpus arms, so the specificity and sound-thesis kill contrasts below, and the rationale for flipping the prior, are now exploratory. The attribution result (13/15 and 14/15, no plant missed) stands. Current state: [project page](/projects/worldclass-research-org).*
 
 ## The Idea
 
@@ -17,7 +20,7 @@ I built the organization to find out. Thirty-nine roles across thirteen division
 
 ## The First Run Killed Everything
 
-v0.1.0 ran end-to-end on five candidate research directions in post-selection inference.
+v0.1.0 ran end-to-end on five candidate research directions spanning backtest-overfitting transfer, post-selection inference, winner's-curse methods, agent-benchmark temporal validation, and time-series validation.
 
 It abandoned **all five**. At the gates, with documented reasons. Then the flagship integrity exhibit — the simulation meant to showcase the system — failed its own verifier and was **retracted**. The publication plan was downgraded from a methods paper to an open-source release with a case study.
 
@@ -27,7 +30,7 @@ I shipped that result as-is, because it's the honest record. But it left a quest
 
 The only way to distinguish a discriminator from a uniform rejector is ground truth. v0.2.0 is a **pre-registered, blinded, seeded calibration study**:
 
-- A corpus of **20 theses**: 10 known-flawed (with defects planted across 6 flaw classes — circularity, irreproducibility, scope overclaims, and others) and 10 known-sound reproductions of established results.
+- A corpus of **20 theses**: 10 known-flawed (with 15 defects planted across six flaw classes: leakage, uncorrected multiple testing, false novelty, citation misuse, irreproducibility, and circular design) and 10 known-sound reproductions of established results.
 - **Blinded** — salted filenames, labels sealed with SHA-256 hash commitments before any evaluation ran.
 - **Pre-registered** — predictions frozen at git tag `calibration-prereg-v1` before the first verdict.
 - **Two arms** — the system as-shipped (M1-ON: a "round-1 auto-fail" prior meaning nothing passes first review) and an ablation with that prior off (M1-OFF).
@@ -37,18 +40,18 @@ The only way to distinguish a discriminator from a uniform rejector is ground tr
 | Metric | M1-ON | M1-OFF |
 |--------|-------|--------|
 | Sensitivity (flaw caught, correct reason) | 0.87 | 0.93 |
-| Validity-gate specificity | 0.72 | **0.96** |
-| Known-sound theses killed | 8 / 10 | 1 / 10 |
+| Validity-gate specificity *(exploratory, see update)* | 0.72 | 0.96 |
+| Known-sound theses killed *(exploratory, see update)* | 8 / 10 | 1 / 10 |
 | Known-flawed theses killed | 10 / 10 | 10 / 10 |
 | Plants missed entirely | 0 / 15 | 0 / 15 |
 
 (95% exact Clopper–Pearson intervals in the release; they are wide — n is small and reported in full.)
 
-Two things came out of this. The first is reassuring: **the gates discriminate**. Every planted flaw was detected in both arms, with the correct reason cited in 13–14 of 15 cases. The system is not a uniform rejector.
+Two things came out of this. The first is reassuring: **the gates are not a uniform rejector**. No planted flaw was missed entirely in either arm, and the rejection cited the correct flaw class at the correct location for 13 of 15 plants (M1-ON) and 14 of 15 (M1-OFF).
 
-The second is the actual lesson. The **round-1 auto-fail prior** — "nothing passes review on the first try," which sounds like admirable skepticism — was the dominant source of false positives. It dragged specificity from 0.96 down to 0.72 and killed **8 of 10 known-sound theses**, while adding exactly nothing to sensitivity. Hard-coded skepticism didn't make the system more rigorous. It made it blind to good work.
+The second looked like the actual lesson, and is now exploratory. On this corpus the **round-1 auto-fail prior** — "nothing passes review on the first try," which sounds like admirable skepticism — lowered pooled specificity from 0.96 to 0.72 and killed **8 of 10 known-sound theses**, with no observed sensitivity benefit (0.87 vs 0.93; the intervals overlap). Per Erratum v0.2.1 (limitation L8) this cross-arm contrast is exploratory: the sound theses announced themselves as reproductions and the flawed ones were novel proposals, so part of the gap could come from recognizing genre rather than reading content.
 
-That retroactively explains the v0.1.0 massacre: some of those five abandonments were probably the prior, not the gates. The default is now flipped — and because the calibration corpus is spent, the release states plainly that the new default is unvalidated on fresh data. That limitation is L5 of seven, all stated in full.
+It does not rewrite the v0.1.0 run. The study shows the prior inflates false positives on a seeded corpus, and v0.1.0 ran under it, but the five v0.1.0 abandonments were independently upheld on corrected sources; the study does not re-adjudicate them. The default is now flipped — and because the calibration corpus is spent, the release states plainly that the new default is unvalidated on fresh data. That limitation is L5 (of seven at v0.2.0; eight since Erratum v0.2.1), all stated in full.
 
 ## The Citation Lesson
 
@@ -59,8 +62,8 @@ The structural fix is the **Citation Fidelity Protocol**: every citation now car
 ## Takeaways
 
 - **Measure your gates or you don't have gates.** An agent organization that has never been calibrated against ground truth is a vibe, not a quality-control system. Seeded corpora with sealed labels are cheap to build relative to what they tell you.
-- **Skeptical priors are not free.** "Reject by default" feels rigorous and silently destroys specificity. If a rule can't show a sensitivity benefit, its only output is killed good work.
+- **Skeptical priors are not free.** "Reject by default" feels rigorous, but on my corpus it cost specificity with no observed sensitivity benefit (an exploratory result since Erratum v0.2.1). If a rule can't show a sensitivity benefit, the burden is on it to justify the good work it kills.
 - **Pre-register against yourself.** Same discipline as my validation-crisis paper: predictions frozen before results, failures reported in the same units as successes. The system retracted its own showcase exhibit. That's the gate rule applied to its author.
 - **Agents misread citations confidently.** Pin every citation to a verbatim, hash-anchored quote or assume some fraction of your literature grounding is wrong.
 
-The full artifact — all 39 roles, the calibration corpus, every verdict, the pre-registration, the provenance trail for every abandonment — is open: [GitHub](https://github.com/Ricko12vPL/worldclass-research-org), archived with DOI [10.5281/zenodo.20645678](https://doi.org/10.5281/zenodo.20645678). Code MIT, docs CC BY 4.0. A fresh clone plus `make reproduce` regenerates every number above.
+The full artifact — all 39 roles, the calibration corpus, every verdict, the pre-registration, the provenance trail for every abandonment — is open: [GitHub](https://github.com/Ricko12vPL/worldclass-research-org), with the v0.2.0 release archived on Zenodo under DOI [10.5281/zenodo.20645678](https://doi.org/10.5281/zenodo.20645678) and the v0.2.1 erratum on GitHub (tag `v0.2.1`). Code MIT, docs CC BY 4.0. `make calibration-analyze` recomputes the calibration numbers above from the frozen verdicts; `make reproduce` reruns the retracted v0.1.0 simulation and is expected to fail its integrity check, which confirms the retraction.

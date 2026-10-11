@@ -306,8 +306,20 @@ p {
   /* Selected projects links — no URL suffix */
   .flex.flex-wrap a[href^="/projects"]::after { content: ""; }
 
-  /* Page breaks */
-  section { page-break-inside: avoid; }
+  /* Page breaks — let long sections flow, keep single entries together */
+  section { page-break-inside: auto; break-inside: auto; }
+  .border-l-2, .flex.gap-8, .py-2 { break-inside: avoid; page-break-inside: avoid; }
+  h2, .font-pixel { break-after: avoid; page-break-after: avoid; }
+
+  /* Accent shades and fixed pixel sizes that the rules above miss */
+  .text-accent\/80, .text-accent\/60, .text-accent\/40 { color: #444 !important; }
+  .max-w-2xl { max-width: 100% !important; }
+  .cv-print-name.font-pixel { font-size: 20pt !important; margin-bottom: 2px !important; }
+  .text-\[15px\] { font-size: 9.5pt !important; line-height: 1.4 !important; }
+  .text-\[14px\] { font-size: 9pt !important; line-height: 1.4 !important; }
+  .text-\[13px\] { font-size: 8.5pt !important; }
+  .text-\[12px\] { font-size: 7.5pt !important; }
+  .leading-\[1\.9\], .leading-\[1\.8\] { line-height: 1.4 !important; }
 
   /* Float clear for print button area */
   .float-right { display: none !important; }

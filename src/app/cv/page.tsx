@@ -6,13 +6,15 @@ import { SkillSection } from '@/components/cv/skill-section'
 import { LeetcodeStats } from '@/components/cv/leetcode-stats'
 import { PrintButton } from '@/components/cv/print-button'
 import Link from 'next/link'
+import { pageMetadata } from '@/lib/metadata'
 
 export function generateMetadata(): Metadata {
-  return {
+  return pageMetadata({
     title: 'CV',
     description:
       'Curriculum Vitae of Kacper Saks — aerospace process engineer at Airbus Defence and Space with an independent applied-AI/ML research track in modelling, verification and validation.',
-  }
+    path: '/cv',
+  })
 }
 
 const experience = [
@@ -45,27 +47,35 @@ const experience = [
 
 const research = [
   {
-    title: 'The Validation Crisis in AGI-Timeline Forecasting',
-    meta: 'Public preprint · 2026',
+    title: 'The Validation Crisis in AI Forecasting',
+    meta: 'Self-archived preprint · 2026',
     description:
-      'Deflated performance metrics, PBO/CSCV, combinatorial purged cross-validation and walk-forward to quantify the out-of-sample reliability of published forecasts — fully reproducible, pre-registered pipeline.',
+      'Deflated performance metrics, PBO/CSCV, combinatorial purged cross-validation and walk-forward applied to published AGI capability forecasts — a pre-registered pipeline that reports its own failed prediction.',
     href: '/research/validation-crisis',
     external: false,
   },
   {
-    title: 'worldclass-research-org — 38-agent autonomous research organisation',
-    meta: 'Open source · Zenodo DOI 10.5281/zenodo.20645678',
+    title: 'worldclass-research-org — 39-role autonomous research organisation',
+    meta: 'Open source · Zenodo DOI 10.5281/zenodo.20645678 (v0.2.0)',
     description:
       'Multi-agent pipeline enforcing pre-registration and reproducibility across the research lifecycle; centrepiece pre-registered gate-calibration study with honest reporting of threshold failures.',
     href: '/research/executable-gate-research-org',
     external: false,
   },
   {
-    title: 'X_Quant — large-scale model-selection & validation system',
-    meta: 'Solo research codebase · ≈274K LOC',
+    title: 'X_Quant — solo quantitative research program',
+    meta: 'Solo research · 2024–2026',
     description:
-      'A single frozen, CSCV-validated momentum strategy (cfg_00 / MetaEnsemble v56) over ~15 years of hourly US-equity data — PBO 0.0108, Sharpe 5.24 out-of-sample (through COVID), 424 live-tradable universe. Pre-registered validation with an honest validated-vs-traded distinction and transparent reporting of failure modes.',
+      'v1 (≈274K LOC) was retired in Aug 2026 after a formal post-mortem; its published metrics are withdrawn. v2 rebuilt the process under a written research constitution — pre-registration, an append-only decision register, a permanent attempts ledger and separate build/verify sessions — and closed every line of work it tested with a documented verdict; none reached paper or live trading.',
     href: '/projects/x-quant',
+    external: false,
+  },
+  {
+    title: 'Alpha Lab — local research workstation for alpha research',
+    meta: 'Private · in progress · 2026',
+    description:
+      'Successor to X_Quant: point-in-time data, a fast vectorised backtest engine, a signal lab and a research-integrity engine (hash-chained trial ledger, sealed holdouts, DSR / PBO / SPA). Each phase closes with an independent AI-agent review and mutation tests; no real-return results yet.',
+    href: '/projects/alpha-lab',
     external: false,
   },
   {
@@ -84,7 +94,7 @@ const education = [
     title: 'MSc Project & Process Management',
     organization: 'Collegium Civitas',
     location: 'Warsaw',
-    current: true,
+    current: false,
   },
   {
     period: 'Project-based',
@@ -191,6 +201,15 @@ export default function CvPage() {
           Download PDF &darr;
         </a>
         <PrintButton />
+      </div>
+
+      {/* Name block — only in print / PDF, where the site header is hidden */}
+      <div className="hidden print:block mb-4">
+        <p className="cv-print-name font-pixel text-neutral-100">Kacper Saks</p>
+        <p className="text-neutral-400 text-[13px] text-left">
+          Warsaw, Poland · {siteConfig.links.email} · kacpersaks.dev ·
+          github.com/Ricko12vPL · linkedin.com/in/kacpersakspe
+        </p>
       </div>
 
       {/* Summary */}

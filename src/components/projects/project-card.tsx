@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { TechTag } from '@/components/projects/tech-tag'
 import { formatDate } from '@/lib/utils'
+import { projectStatus } from '@/lib/status'
 
 export interface ProjectStats {
   lines?: string
@@ -26,7 +27,7 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
-  const isCompleted = project.status.toLowerCase() === 'completed'
+  const status = projectStatus(project.status)
 
   return (
     <Link
@@ -34,12 +35,8 @@ export function ProjectCard({ project }: ProjectCardProps) {
       className="block group p-8 sm:p-10 border border-neutral-800 rounded-xl hover:border-neutral-600 transition-all duration-300 bg-neutral-900/30 hover:-translate-y-0.5"
     >
       <div className="flex items-center justify-between mb-5">
-        <span
-          className={`text-[11px] tracking-wider uppercase ${
-            isCompleted ? 'text-accent' : 'text-amber-400'
-          }`}
-        >
-          {isCompleted ? 'Completed' : 'In Progress'}
+        <span className={`text-[11px] tracking-wider uppercase ${status.className}`}>
+          {status.label}
         </span>
         <span className="text-neutral-600 text-[12px]">
           {formatDate(project.date)}

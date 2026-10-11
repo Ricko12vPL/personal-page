@@ -5,7 +5,7 @@ export function Footer() {
     <footer className="border-t border-neutral-800/50 mt-auto">
       <div className="max-w-[1100px] mx-auto px-8 py-16 flex items-center justify-between">
         <p className="text-neutral-600 text-[13px]">
-          &copy; 2025 Kacper Saks
+          &copy; {new Date().getFullYear()} Kacper Saks
         </p>
         <div className="flex items-center gap-8">
           {[

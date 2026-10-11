@@ -6,6 +6,7 @@ import { MDXContent } from '@/components/mdx/mdx-components'
 import { TechTag } from '@/components/projects/tech-tag'
 import { CiteBlock } from '@/components/research/cite-block'
 import { formatDate } from '@/lib/utils'
+import { pageMetadata, summarize } from '@/lib/metadata'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -27,10 +28,14 @@ export async function generateMetadata({
   const { slug } = await params
   const paper = getPaperBySlug(slug)
   if (!paper) return {}
-  return {
+  return pageMetadata({
     title: paper.title,
-    description: paper.abstract.slice(0, 200),
-  }
+    description: summarize(paper.abstract, 200),
+    path: `/research/${paper.slug}`,
+    type: 'article',
+    publishedTime: paper.date,
+    modifiedTime: paper.updated ?? paper.date,
+  })
 }
 
 export default async function PaperPage({ params }: PageProps) {

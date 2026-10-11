@@ -4,7 +4,9 @@ import { getProjects, getProjectBySlug } from '@/lib/content'
 import { MDXContent } from '@/components/mdx/mdx-components'
 import { TechTag } from '@/components/projects/tech-tag'
 import { formatDate } from '@/lib/utils'
+import { projectStatus } from '@/lib/status'
 import Link from 'next/link'
+import { pageMetadata } from '@/lib/metadata'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -18,10 +20,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params
   const project = getProjectBySlug(slug)
   if (!project) return {}
-  return {
+  return pageMetadata({
     title: project.title,
     description: project.description,
-  }
+    path: `/projects/${project.slug}`,
+  })
 }
 
 export default async function ProjectPage({ params }: PageProps) {
@@ -41,15 +44,9 @@ export default async function ProjectPage({ params }: PageProps) {
       <header className="mb-16">
         <div className="flex items-center gap-4 mb-6">
           <span
-            className={`text-[11px] tracking-wider uppercase ${
-              project.status === 'in-progress'
-                ? 'text-amber-400'
-                : 'text-accent'
-            }`}
+            className={`text-[11px] tracking-wider uppercase ${projectStatus(project.status).className}`}
           >
-            {project.status === 'in-progress'
-              ? 'In Progress'
-              : 'Completed'}
+            {projectStatus(project.status).label}
           </span>
           <span className="text-neutral-600 text-[12px]">
             {formatDate(project.date)}
