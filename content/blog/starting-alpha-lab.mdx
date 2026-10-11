@@ -1,0 +1,55 @@
+---
+slug: starting-alpha-lab
+title: "Starting Alpha Lab: Same Discipline, Empty Ledger"
+description: "The evening I closed X_Quant, I started Alpha Lab: a local research workstation for building strategies and searching for alpha, with the integrity checks built into the tool. The decisions of day one, and where it stood twelve days later."
+date: "2026-09-29T21:38:39+02:00"
+updated: 2026-10-11
+published: true
+tags: [quantitative-research, research-integrity, backtesting, python, duckdb, mutation-testing]
+---
+
+*Written on 11 October 2026 and dated to the day the repository was created. The current state, with every number sourced, is on the [Alpha Lab project page](/projects/alpha-lab).*
+
+## Why a New Project
+
+A few hours after [X_Quant's last commit](/blog/closing-x-quant), on the evening of 29 September 2026, I created a new repository: Alpha Lab.
+
+X_Quant's own register had named its real output, an instrument for closing research questions with evidence, and called it an asset transferable to whatever came next. Alpha Lab's plan says the same thing from the other side: the barrier against self-deception was the most valuable part of the earlier work. So Alpha Lab keeps that barrier and builds a proper workstation around it.
+
+Its thesis: the internal research platforms of large firms share a common core, and that core can be built on one laptop. It does not generate strategies. I form the hypothesis and make every choice; the tool does the computing, shows every diagnostic and guards that the result is true.
+
+## Day One: Five Entries
+
+Alpha Lab has its own append-only decision register. Its first five entries, four of them my decisions, were all written on 29 September:
+
+- **A new private repository**, reading X_Quant's data through a configured path, with the raw files read-only and none of them copied. First milestone: phases F0 to F2.
+- **No data purchases, no subscriptions, local compute.** Everything runs on a laptop; the few components that need Linux run in a container.
+- **No seals at the start.** All data stays available. Sealing a holdout window remains a feature, used when I want a clean exam for a specific study, with the key held by me. Overfitting is answered by validation on the results: walk-forward, CPCV and PBO, a deflated Sharpe ratio fed by Alpha Lab's own attempt count, the bootstrap, placebo and robustness tests, and forward tests on new data.
+- **The trial ledger starts from zero.** None of X_Quant's 2,976 attempts were imported. Nothing in X_Quant was deleted or changed either.
+- **The environment**: a pinned Python toolchain, a container runtime for the Linux-only parts, and secret scanning in pre-commit and CI.
+
+Starting the ledger from zero has a cost, and I would rather say so than hide it. A deflated Sharpe ratio is only as honest as its attempt count, and much of the same history was already searched by X_Quant. Any future Alpha Lab result on that history should be read with this in mind. A result on data that arrives after 29 September carries no such caveat, which is why forward tests are on the list.
+
+## The House Rules
+
+The build brief written that day opens with nine hard rules, among them:
+
+- Never delete data. Raw files are read-only; faulty files go to quarantine.
+- Keys live only in environment variables or a private config directory, never in the repository, logs or reports. Licensed data stays out of git.
+- Seals are never opened without the owner's key. The trial ledger is appended to, never edited.
+- Only the owner changes the scope. A mistake in the spec is reported with a proposed fix and a section number.
+- Every number in a phase report cites its source: a file, a run or a test.
+
+The phases run in a fixed order (F0 → F1 → F2 → F3 → F5 → F4 → F4K → F6 → F7), each with written completion criteria. After F0, F1, F3 and F5, separate AI agents review the code for look-ahead, timestamps, seals, the trial ledger and engine parity. That is adversarial checking by AI agents, not an external or human audit, and the project page says so too.
+
+## Twelve Days Later
+
+*Update, 11 October 2026.* F0, F1, F2 and F3 are merged, along with an inserted step that integrated US equity and ETF data:
+
+- **Data.** At F0, all the data then available was normalised into 1.04 billion rows and 16 GB of Parquet, with checksums matching for all 127,227 raw files; the equity and ETF step added more.
+- **Engine.** The vectorised engine runs 16 years of NQ 1-minute bars in 0.83 s on a warm process, and matches all 47 golden checks against X_Quant v2.
+- **Look-ahead.** A truncation test covered all 110 signal operators with 0 mismatches and rejected all 6 deliberately broken versions.
+- **Integrity code.** Mutation testing on the integrity statistics killed 3,081 of 3,146 mutants (97.93% against a 90% threshold), and the holdout ceremony passed 108 of 108 tests.
+- **One honest miss.** The target of 1,000 variants in under 3 minutes is met on a synthetic daily series but not on NQ 1-minute data, where it measured about 4.2 minutes. The F3 report records it as not met.
+
+What it does not have is results. After the F3 merge, the production trial ledger held one entry, the genesis block, and zero attempts. Real data has been used only for correctness checks and timings. The first research numbers will come from a real sweep run from main and logged in the ledger before anyone reads them. Next up is F5: the event-driven execution engine.

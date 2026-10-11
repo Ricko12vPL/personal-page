@@ -1,0 +1,67 @@
+---
+slug: closing-x-quant
+title: "Closing X_Quant: Seven Weeks, Eight Programmes, Zero Candidates"
+description: "On 29 September 2026 I stopped X_Quant. Its second life ran under a written research constitution for seven weeks and found no strategy worth trading. What happened, what the last week looked like, and what I kept."
+date: "2026-09-29T17:15:44+02:00"
+updated: 2026-10-11
+published: true
+tags: [quantitative-research, research-integrity, post-mortem, pre-registration, backtesting, validation]
+---
+
+*Written on 11 October 2026 and dated to the day it describes. The full record, with every number sourced, is on the [X_Quant project page](/projects/x-quant).*
+
+## The Short Version
+
+X_Quant's last commit landed on 29 September 2026 at 17:15. That evening I started a new repository, [Alpha Lab](/blog/starting-alpha-lab). X_Quant's decision register has no closing entry; the record simply stops. This post is the closing entry it never got.
+
+The headline is the one the register itself wrote on 23 September, translated from Polish: *"After 7 weeks and 8 programmes: 0 candidates."* The futures work in the final week added none. Nothing X_Quant tested was validated for trading, and nothing in its second life was ever recorded as trading on paper or live.
+
+## Two Lives
+
+**v1 (2024–2026)** grew into a ≈274K-line trading platform built around a single strategy. For a while this site presented that strategy as validated and trading on a paper account. It was rejected on 2 August 2026 and decommissioned on 9 August; its metrics are withdrawn. The [April post](/blog/x-quant-v2) that described it is kept, marked superseded.
+
+**v2 (from 9 August)** started from zero with a written constitution drawn from v1's post-mortem: eight articles, and a list of eleven engineering failure patterns, each with a guard rule. The ones that mattered most:
+
+- **Pre-register, then run once.** The hypothesis, thresholds and data are frozen before the first look.
+- **Every attempt counts.** A permanent attempts ledger feeds the deflated Sharpe ratio of every later test; by the last committed run it held 2,976 attempts.
+- **Zero means "not measured", never "success".** Gates fail closed.
+- **No session judges its own repair.** Build, repair and verify run in separate sessions, and decisions were argued out with an adversarial AI partner whose objections stay in the register.
+- **Append-only records.** A wrong entry is corrected by a new entry, never by an edit.
+
+## Seven Weeks of No
+
+Every line of work was set up to die cheaply, and they did:
+
+- Three pre-registered event hypotheses on US equities (post-earnings drift, insider-purchase clusters, 8-K filing drift) died under their own conditions. The post-earnings drift study is typical: +0.26% gross, −0.74% net, against a pre-registered +1.5% bar.
+- Two discovery scans, of 633 event configurations and 166 indicator configurations, produced zero candidates. Combining 57 weak signals gave a gross Sharpe of +2.33 and a net one of −2.46. Re-costed at 5k, 25k and 100k USD of capital, none of the 57 survived.
+- A replication of Carver's trend-following system on ETFs reached a gross Sharpe of +1.00, in line with the author's published figures, and was −1.46 net at retail scale. A version fitted to a small account, calibrated against a martingale first and run once, landed at the 45th percentile of the null distribution, which is indistinguishable from no signal. A separate verify session reproduced that verdict and found a wrong number in the register itself; it was corrected by a new entry, and the standard was tightened so that a number can enter the register only from a numeric artifact.
+
+The lesson the register drew from the dead programmes, translated: *cost and capacity kill earlier than the absence of a signal.* Several lines had something in them gross (the drift, the signal combination, the trend system), and the costs a small account actually pays took all of it.
+
+## The Last Week
+
+In its final week X_Quant turned to NQ futures. These are build-session results; none of the results was independently verified (only the data and one test's setup were checked before running), and all of them ended the same way:
+
+- A public third-party rule set was reproduced. The replay matched its published ledger, which confirmed the numbers but did not demonstrate an edge, and it became the unchanged baseline for everything below.
+- An ensemble of its variants, tested once out of sample, failed four of five criteria.
+- An ensemble with an in-sample Sharpe of 2.84 fell to −0.88 and −0.48 on clean out-of-sample windows: overfit.
+- A second ensemble formally passed its one-shot out-of-sample test, with a Sharpe of 1.18, but the gain came from the window in which its strategy families had been discovered. That pass was treated as void.
+- A walk-forward of the whole selection procedure over 2014–2026 reached a Sharpe of 0.36 against a required 0.8. No threshold was loosened.
+- A pooled gradient-boosting model across seven markets reached −0.42, with no tuning and no second attempt allowed.
+
+On 29 September itself, on my instruction, a last micro-futures programme was run without a freeze step, and its results were never committed. Under v2's own rules it has no result. The last thing X_Quant did was a programme that broke its own rule.
+
+## What I Kept
+
+The 23 September assessment had already named what the program produced: not a strategy but the instrument, meaning the engine, the register, a calibration method and executable gates that can close a research question with evidence in about four sessions. It called that an asset transferable to whatever came next, at the time a track still planned inside X_Quant.
+
+So that is what I carried into Alpha Lab: the method rather than the code. Alpha Lab rebuilt its engine and integrity checks on X_Quant's patterns, checks its engine against X_Quant's golden results, and reads X_Quant's raw data read-only. Its trial ledger starts from an empty genesis block: none of the 2,976 attempts came with it, and X_Quant's strategies appear only as engine-correctness tests, not as candidates.
+
+What I take with me, in one line each:
+
+- **A pass you can explain away is not a pass.** Ensemble2 cleared its test formally and was still void.
+- **In-sample is not a result.** v2's standard records that v1 computed its overfitting statistic in-sample, and that PBO on in-sample data is not PBO. The v1 figures this site once showed are withdrawn.
+- **Numbers come from artifacts, not from prose.** The register's own error proved it.
+- **Saying no is a deliverable.** Seven weeks of documented "no" cost less than one undetected "yes".
+
+The next post covers what [Alpha Lab](/blog/starting-alpha-lab) set out to be on its first day.
