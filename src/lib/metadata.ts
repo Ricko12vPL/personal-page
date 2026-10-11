@@ -13,9 +13,12 @@ interface PageMetadataInput {
 }
 
 export function summarize(text: string, max = 200): string {
-  if (text.length <= max) return text
-  const cut = text.slice(0, max)
-  return `${cut.slice(0, cut.lastIndexOf(' ')).replace(/[\s,;:.—–-]+$/, '')}…`
+  const clean = text.replace(/\s+/g, ' ').trim()
+  if (clean.length <= max) return clean
+  const window = clean.slice(0, max + 1)
+  const space = window.lastIndexOf(' ')
+  const cut = space > 0 ? window.slice(0, space) : clean.slice(0, max)
+  return `${cut.replace(/[\s,;:.—–-]+$/, '')}…`
 }
 
 export function pageMetadata({

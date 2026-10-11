@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   webpack: (config) => {
     config.plugins.push(new VeliteWebpackPlugin())
     return config
@@ -8,15 +9,15 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: '/projects/validation-crisis',
-        destination: '/research/validation-crisis',
-        permanent: true,
-      },
-      {
         // One canonical host: www serves a duplicate of the site otherwise.
         source: '/:path*',
         has: [{ type: 'host', value: 'www.kacpersaks.dev' }],
         destination: 'https://kacpersaks.dev/:path*',
+        permanent: true,
+      },
+      {
+        source: '/projects/validation-crisis',
+        destination: '/research/validation-crisis',
         permanent: true,
       },
     ]

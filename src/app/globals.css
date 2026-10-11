@@ -315,6 +315,10 @@ p {
   .text-accent\/80, .text-accent\/60, .text-accent\/40 { color: #444 !important; }
   .max-w-2xl { max-width: 100% !important; }
   .cv-print-name.font-pixel { font-size: 20pt !important; margin-bottom: 2px !important; }
+  .cv-print-contact { text-align: left !important; }
+  .cv-print-contact a::after { content: "" !important; }
+  .print-no-url::after { content: "" !important; }
+  html, body, p, li { hyphens: none !important; -webkit-hyphens: none !important; }
   .text-\[15px\] { font-size: 9.5pt !important; line-height: 1.4 !important; }
   .text-\[14px\] { font-size: 9pt !important; line-height: 1.4 !important; }
   .text-\[13px\] { font-size: 8.5pt !important; }

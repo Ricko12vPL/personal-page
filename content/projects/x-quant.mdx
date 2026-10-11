@@ -1,7 +1,7 @@
 ---
 slug: x-quant
 title: "X_Quant: A Quant Research Program That Learned to Say No"
-description: "My solo quant research program, in two lives. v1 (≈274K LOC) was retired in August 2026 after a formal post-mortem and its published metrics are withdrawn. v2 rebuilt the process around a written research constitution and recorded every strategy it tested as a documented verdict."
+description: "My solo quant research program, in two lives. v1 (≈274K LOC) was retired in August 2026 and its published metrics are withdrawn. v2 rebuilt the process around a written research constitution and an append-only decision register. No strategy it tested was validated for trading."
 date: 2024-06-15
 updated: 2026-10-11
 featured: true
@@ -10,21 +10,21 @@ status: archived
 tags: [python, quantitative-research, research-integrity, pre-registration, backtesting, validation, post-mortem]
 ---
 
-> **Correction (October 2026).** Earlier versions of this page presented a frozen momentum strategy (`cfg_00` / MetaEnsemble v56) as CSCV-validated and trading on a paper account, with headline overfitting and out-of-sample metrics. That system was formally **rejected on 2 August 2026 and decommissioned on 9 August 2026**. The metrics previously shown here are withdrawn and should not be cited.
+> **Correction (October 2026).** Earlier versions of this page presented a frozen momentum strategy (`cfg_00` / MetaEnsemble v56) as CSCV-validated and trading on a paper account, with headline overfitting and out-of-sample metrics. That system was **rejected on 2 August 2026 and decommissioned on 9 August 2026**. The metrics previously shown here are withdrawn and should not be cited.
 
 ## Overview
 
-X_Quant is my solo quantitative-research program. It has had two lives, and the second one exists because the first one failed review.
+X_Quant is my solo quantitative-research program. It has had two lives.
 
-**v1** grew over two years into a ≈274K-line trading platform built around a single strategy. An internal post-mortem rejected it. **v2** started the same week, from zero, with the post-mortem turned into a written research constitution — and spent seven weeks measuring, under that constitution, whether any strategy I could afford to trade had a real edge. None did, and every one of those answers is on record.
+**v1** grew over two years into a ≈274K-line trading platform built around a single strategy. It was rejected on 2 August 2026 and decommissioned on 9 August. **v2** started a week later — the day v1 was decommissioned — from zero, with a written research constitution drawn from v1's post-mortem. It then spent seven weeks measuring, under that constitution, whether any strategy tradeable at retail scale had a real edge. None did.
 
-## v1 (2024–2026): what the post-mortem found
+## v1 (2024–2026): lessons the post-mortem left behind
 
-v1 was retired on 2026-08-09. Its post-mortem is not a single verdict but a set of lessons that v2's standards now name explicitly:
+The v2 documents do not record a single verdict on v1. What they record are the lessons they attribute to it:
 
-- **PBO had been computed in-sample.** v2's rule: *"PBO only on the out-of-sample matrix — PBO on in-sample data is not PBO."*
-- **Free-form feature discovery turned it into "an overfitting machine".** v2 allows machine learning only to *combine* at most three pre-registered signals, never to search for features.
-- **Results were tuned until they passed**, and paper-fill cost assumptions were never verified.
+- **PBO had been computed in-sample.** v2's standard: *"PBO only on the out-of-sample matrix — PBO on in-sample data is not PBO."*
+- **Free-form feature discovery.** v2's standard calls it *"an overfitting machine"* (a v1 lesson) and allows machine learning only to *combine* at most three pre-registered signals.
+- **An unverified cost assumption.** v1's paper-fill cost estimate was never verified.
 - **Eleven engineering failure patterns**, each now paired with a guard rule: code and tests reading dead copies of the tree; a monitor that overloaded the very resource it was watching; gates that reported "clean" when they had not measured anything; empty results read as success; tests that wrote to the live journal; multi-hour runs with no checkpoints; evidence kept outside version control — and four more.
 
 The through-line: v1 had validation *machinery*, but not a validation *process* that could stop me from believing my own numbers.
@@ -34,16 +34,16 @@ The through-line: v1 had validation *machinery*, but not a validation *process* 
 v2 is governed by a written constitution of eight articles. A result produced in breach of any of them is void, however good it looks. The core of it:
 
 - **Truth of measurement** — causality checked per bar; PBO only out-of-sample; folds that cover 2008, 2011, 2020 and 2022; pre-registration before the run, one shot; data pinned by hashed manifests.
-- **The instrument is not the strategy** — the measurement harness lives apart from strategies; *build*, *verify* and *repair* are separate sessions, and no session judges its own work.
+- **The instrument is not the strategy** — the measurement harness lives apart from strategies; *repair* and *verify* run in separate sessions, and no session judges its own repair.
 - **Limits are law** — every run has a wall-clock budget; gates fail closed; *zero means "not measured", never "success"*.
 - **A register of truth** — an append-only decision register; a wrong entry is corrected by a new entry, never by editing the old one.
 - **Edge before code** — no strategy without a written, falsifiable hypothesis: who pays, why it isn't arbitraged away, and how its death will be recognised.
 - **Honest data from day zero** — total-return prices and point-in-time constituents; survivorship-biased data is not data.
 - **One engine** for research and production, with bit-for-bit parity.
 
-Around that sit a **permanent attempts ledger** (every configuration ever evaluated counts toward the deflated Sharpe of every future test — 2,976 attempts by the last recorded run), a **sealed 2018–2025 holdout** that only a pre-registered one-shot confirmation may open, an incident log where an incident closes only when its root cause is removed, and decisions taken in a recorded dialogue with an **adversarial AI partner** (Claude) whose objections stay in the register.
+Around that sit a **permanent attempts ledger** (every configuration ever evaluated counts toward the deflated Sharpe of every future test — 2,976 attempts at the last committed run), a **sealed 2018–2025 holdout** for the equity discovery programmes that only a pre-registered one-shot confirmation could open (none ever qualified), an incident log where an incident closes only when its root cause is removed, and decisions taken in a recorded dialogue with an **adversarial AI partner** (Claude) whose objections stay in the register.
 
-## Results: every line of work on record
+## Results on record
 
 | Line of work | What was tested | Recorded verdict |
 |---|---|---|
@@ -54,41 +54,41 @@ Around that sit a **permanent attempts ledger** (every configuration ever evalua
 | Signal-combination portfolio | 57 weak signals combined | **Not a candidate** — gross Sharpe +2.33, net −2.46 |
 | Indicator discovery scan | 166 configurations | **0** passed the first stage |
 | Re-costing at 5k / 25k / 100k USD | The 57 first-stage signals | **0** survived costs at any capital level |
-| Replication of Carver's trend system on ETFs | Three versions (below) | **Closed** — no measurable edge at retail capital |
+| Replication of Carver's trend system on ETFs | Three versions (below) | **Closed** — no measurable edge at retail scale |
 | NQ futures track | Third-party rules, ensembles, ML (below) | **No tradeable candidate** |
 
-By 23 September, in the register's own words: *"7 weeks and 8 programmes: 0 candidates."* The futures track that followed added none. Nothing ever reached paper or live trading.
+By 23 September, in the register's words (translated from Polish): *"After 7 weeks and 8 programmes: 0 candidates."* The futures track that followed added none. Nothing in v2 was ever recorded as trading on paper or live.
 
 ### The Carver replication
 
-The deepest line of work replicated a published trend-following system on ETFs, under one frozen specification per version:
+The deepest line of work replicated a published trend-following system on ETFs, each version under its own specification:
 
-- **v1.0** (85 ETFs, six rules) reproduced the author's gross Sharpe — **+1.00** — but was **−1.46 net** at 25k: small orders cannot carry retail costs.
-- **v1.1** applied the author's own cost rule: **0 of 528** rule–instrument pairs were admissible at any capital up to 50k.
-- **v1.2.1** was fitted to the capital (four ETFs, two rules), calibrated against a martingale first, then run once: **gross −0.07, net −0.14**, at the **45th percentile** of the null distribution — indistinguishable from no signal.
+- **v1.0** (85 ETFs, six rules) reached a gross Sharpe of **+1.00**, in line with the author's published figures — but was **−1.46 net** at 25k: small orders cannot carry retail costs.
+- **v1.1**, a dry-run of the author's own cost rule (its spec deliberately never frozen): **0 of 528** rule–instrument pairs were admissible at any capital up to 50k.
+- **v1.2.1** was fitted to a small retail account (four ETFs, two rules), calibrated against a martingale first, then run once: **gross −0.07, net −0.14**, at the **45th percentile** of the null distribution — indistinguishable from no signal.
 
-A separate verify session reproduced the verdict from the committed artifacts and found one wrong number in the register itself (positive years: 4, not 3). It was corrected by a new entry, and the standard was tightened so that a number may enter the register only from a numeric artifact, never from report prose. The conclusion that closed the line: the author's edge is **breadth**, and breadth under his cost rule needs at least ~100k on ETFs.
+A separate verify session reproduced the verdict from the committed artifacts. It found a wrong number in the register itself (positive years: 4, not 3) plus several smaller errata; all were corrected by a new entry, and the standard was tightened so that a number may enter the register only from a numeric artifact, never from report prose. The conclusion that closed the line: the author's edge is **breadth**, and breadth under his cost rule needs at least ~100k on ETFs.
 
 ### The NQ futures track
 
-In the last week, a futures track tested a public third-party rule set and the strategies built around it:
+In the last week, a futures track worked through a public third-party rule set and the strategies built around it. These are build-session results; none was independently verified:
 
-- Reproducing the third party's published trade ledger **confirmed its numbers, not an edge** — without its ten best days, it was negative.
+- A public third-party NQ rule set was reproduced: it matched the published numbers but showed no edge, so it was not adopted.
 - A one-shot out-of-sample test of an ensemble of variants: Sharpe 0.19, profit factor 1.016 — **failed** four of five criteria.
 - An ensemble with an in-sample Sharpe of 2.84 fell to **−0.88 and −0.48** on clean out-of-sample windows — **rejected as overfit**.
-- A second ensemble passed its out-of-sample test formally (Sharpe 1.18), but its gain came from the window in which its families were discovered — **invalidated** as selection leakage.
+- A second ensemble passed its out-of-sample test formally (Sharpe 1.18), but its gain came from the window in which its families were discovered — its pass was **treated as void**, and the paper forward test proposed for it never produced a recorded result.
 - A walk-forward of the *whole selection procedure* over 2014–2026 reached Sharpe 0.36 against 0.8 and PSR 90.2% against 95% — **failed**, with no threshold loosened.
-- A pooled gradient-boosting model across seven markets: walk-forward Sharpe −0.42 — **failed**, with no tuning and no second attempt allowed.
+- A pooled gradient-boosting model across seven markets — a departure from the "combine at most three pre-registered signals" standard — reached a walk-forward Sharpe of −0.42 and **failed**, with no tuning and no second attempt allowed.
 
-A prediction-market track got as far as a design package; no model was built.
+One last micro-futures run (29 September) was executed without a freeze step and its results were never committed, so under v2's own rules it has no result. A prediction-market track got as far as a design package; no model was built.
 
 ## What it produced
 
-The register's closing assessment names the real output: not a strategy, but **the instrument** — an engine, a register, a calibration method and a set of executable gates that can close a research question with evidence in a few sessions, and that refuse to let me fool myself. That instrument is what carried over.
+The 23 September assessment that closed the ETF and equity phase names the real output: not a strategy, but **the instrument** — an engine, a register, a calibration method and a set of executable gates that can close a research question with evidence in about four sessions. That instrument, and the habit of not believing my own numbers until something independent has tried to break them, is what carried over.
 
 ## Status
 
-Dormant since 29 September 2026; the repository is not public. Its successor is [Alpha Lab](/projects/alpha-lab), which reads X_Quant's data read-only and deliberately starts its own attempts ledger from zero.
+No commits or register entries since 29 September 2026; the repository is not public. Its successor is [Alpha Lab](/projects/alpha-lab), which reads X_Quant's data read-only and deliberately starts its own attempts ledger from zero.
 
 ## Tech Stack
 

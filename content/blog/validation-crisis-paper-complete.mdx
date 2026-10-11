@@ -8,13 +8,13 @@ published: true
 tags: [research, quantitative-finance, ai-forecasting, statistics, validation]
 ---
 
-*Update (October 2026): two corrections. The paper is a preprint self-archived on this site, not an arXiv preprint, and it cites 31 references, not 186. The 1.320× table row is now labelled as my own preregistered hypothesis (HYP-A), which is separate from the failed prediction. Full title and current details are on the [paper page](/research/validation-crisis).*
+*Update (October 2026): three corrections. The paper is a preprint self-archived on this site, not an arXiv preprint, and it cites 31 references, not 186. The 1.320× table row is now labelled as my own preregistered hypothesis (HYP-A), which is separate from the failed prediction. Other edits: the failed prediction is now named as the Aschenbrenner one; the lock is described precisely (the prediction is in the project plan, frozen in a git tag; the SHA-256 fingerprint covers a separate preregistration document, not this prediction); the interval column is relabelled as the paper's reading of each source, treated as 95%; the provisional Cotra 2020, Cotra 2022 and Davidson rows are flagged; the "easy move" example no longer names a 2.0× threshold, which the 1.285× result would still have fallen short of; and the post now says the repository is not public yet. Full title and current details are on the [paper page](/research/validation-crisis).*
 
 ## It's Finished
 
 A few weeks ago I [started a research project](/blog/validation-crisis-research) arguing that the confidence attached to AGI timeline forecasts exceeds what the methods producing them can support — and that the gap is measurable with tools quantitative finance built for exactly this problem.
 
-The short version is now done: a **21-page preprint**, self-archived on this site, with 31 references, a Python reference implementation and reproducibility notebooks that re-verify every plotted number against the package to 1e-3 tolerance. I ended the first post with a commitment and a cliffhanger — I'd preregister a falsifiable prediction about what my own framework would produce, lock it cryptographically, and report the result honestly even if it failed.
+The short version is now done: a **21-page preprint**, self-archived on this site, with 31 references, a Python reference implementation and reproducibility notebooks that re-verify every plotted number against the package to 1e-3 tolerance. The repository (code, notebooks, locked preregistration) is not public yet. I ended the first post with a commitment and a cliffhanger — I'd preregister a falsifiable prediction about what my own framework would produce, lock it cryptographically, and report the result honestly even if it failed.
 
 This post is me keeping that promise. The short answer: **my prediction failed, and I'm reporting it as a fact.**
 
@@ -24,7 +24,7 @@ The paper composes three finance tools — the deflated Sharpe ratio, the probab
 
 I computed it for five forecasts. The result is consistent enough to state as a single pattern: deflation factors cluster between **1.28× and 2.02×**. Every stated interval was too narrow. None of them by a catastrophic amount — but all of them, in the same direction.
 
-| Forecast | Reported 95% CI | Deflation |
+| Forecast | Interval used (read as 95%) | Deflation |
 |----------|-----------------|-----------|
 | Aschenbrenner (OOM, 2027) | `[2025, 2029]` | 1.285× / 1.539× |
 | Cotra 2020 (anchors) | `[2031, 2100]` | 1.531× |
@@ -32,11 +32,11 @@ I computed it for five forecasts. The result is consistent enough to state as a 
 | Davidson (takeoff duration) | `[1, 10]` yr | 2.021× |
 | My own preregistered hypothesis (HYP-A, self-application) | `[10, 82.5]` % | 1.320× |
 
-The Aschenbrenner row gives the DSR-only (Stage 1) and full-DCF (Stage 2) ratios; the other rows give the full-DCF ratio. In the paper, the Stage-1 cells for the four non-Aschenbrenner rows are provisional, pending input series that are not yet recovered.
+Intervals are the paper's operationalisation of each source (e.g. Cotra 2020 is the P10–P80 range), treated as 95% intervals. The Aschenbrenner row gives the DSR-only (Stage 1) and full-DCF (Stage 2) ratios; the other rows give the full-DCF ratio. In the paper, the Stage-1 cells for the Cotra 2020, Cotra 2022 and Davidson rows are marked provisional, pending input series that are not yet recovered (dependencies D-2 and D-3); because the full-DCF ratio is built from the same deflation magnitude, those three ratios are provisional too.
 
 ## The Prediction I Got Wrong
 
-Before computing anything, I preregistered a specific claim: that applying the deflated Sharpe ratio to one landmark forecast, Aschenbrenner's, would widen its interval by at least **2.3×**. I locked it in a git tag with a SHA-256 fingerprint so it couldn't drift.
+Before computing anything, I preregistered a specific claim: that applying the deflated Sharpe ratio to one landmark forecast, Aschenbrenner's, would widen its interval by at least **2.3×**. I wrote it into the project plan on day one; that plan is frozen in the git tag `preregistration-v3-locked`.
 
 The framework produced **1.285×**.
 
@@ -50,7 +50,7 @@ That is, with some discomfort, the exact error the paper exists to identify. I b
 
 ## Why I Didn't Just Change the Number
 
-The honest move and the easy move pointed in opposite directions. The easy move was to quietly lower the threshold to 2.0× after seeing the results and call it a successful prediction. Nobody would have known.
+The honest move and the easy move pointed in opposite directions. The easy move was to quietly rewrite the threshold after seeing the results so that the prediction passed. Nobody would have known.
 
 But a forecast that quietly updates its commitments after seeing how they fare is the precise failure mode the paper exists to name. If I'd done that, the whole project would be worthless — the author exempting himself from the one standard he's asking everyone else to wear. So the preregistered content is fixed. The failed prediction is in the paper, in the same plain terms and at the same precision as the four external forecasts it accompanies.
 

@@ -26,7 +26,7 @@ export default function HomePage() {
         </div>
         <p className="text-neutral-400 text-[17px] mt-10 max-w-2xl leading-[1.8] animate-in animate-in-delay-2">
           I build production ML systems and scalable backend infrastructure
-          — from model training and institutional backtesting to real-time
+          — from model training and rigorous backtest validation to real-time
           inference, monitoring and CI/CD.
         </p>
         <div className="flex items-center gap-6 mt-10 animate-in animate-in-delay-3">
@@ -74,8 +74,8 @@ export default function HomePage() {
       <section className="pb-40">
         <div className="border-l-2 border-accent/30 pl-8 max-w-3xl">
           <p className="text-neutral-300 text-base leading-[1.9]">
-            Specializing in institutional-grade backtesting (CPCV, DSR, PBO)
-            for quantitative trading platforms, high-performance Python
+            Specializing in validation methodology for quantitative research
+            (CPCV, DSR, PBO, pre-registration), high-performance Python
             backends, multi-agent LLM systems, and AI engineering — from
             RAG pipelines to autonomous agent architectures. Engineering
             discipline from aerospace applied to software.

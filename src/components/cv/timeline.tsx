@@ -7,6 +7,7 @@ interface TimelineItem {
   location: string
   description?: string[]
   current?: boolean
+  keepCase?: boolean
 }
 
 interface TimelineProps {
@@ -40,7 +41,7 @@ export function Timeline({ items }: TimelineProps) {
               {item.period}
             </span>
             <h3 className="font-pixel text-neutral-100 text-[14px] mt-1">
-              {item.title.toUpperCase()}
+              {item.keepCase ? item.title : item.title.toUpperCase()}
             </h3>
             <p className="text-accent/70 text-[13px] mt-1">
               {item.organization}

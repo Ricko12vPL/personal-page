@@ -50,32 +50,33 @@ const research = [
     title: 'The Validation Crisis in AI Forecasting',
     meta: 'Self-archived preprint · 2026',
     description:
-      'Deflated performance metrics, PBO/CSCV, combinatorial purged cross-validation and walk-forward applied to published AGI capability forecasts — a pre-registered pipeline that reports its own failed prediction.',
-    href: '/research/validation-crisis',
+      'Deflated Sharpe ratio, a sequential adaptation of PBO (probability of forecast overfitting) and walk-forward retrodiction applied to published AGI capability forecasts — a pre-registered pipeline that reports its own failed prediction.',
+    href: `${siteConfig.url}/research/validation-crisis`,
     external: false,
   },
   {
     title: 'worldclass-research-org — 39-role autonomous research organisation',
     meta: 'Open source · Zenodo DOI 10.5281/zenodo.20645678 (v0.2.0)',
+    metaHref: 'https://doi.org/10.5281/zenodo.20645678',
     description:
-      'Multi-agent pipeline enforcing pre-registration and reproducibility across the research lifecycle; centrepiece pre-registered gate-calibration study with honest reporting of threshold failures.',
-    href: '/research/executable-gate-research-org',
+      'Multi-agent pipeline enforcing pre-registration and reproducibility across the research lifecycle (github.com/Ricko12vPL/worldclass-research-org); centrepiece pre-registered gate-calibration study, with a public erratum (v0.2.1) downgrading its cross-arm results to exploratory.',
+    href: `${siteConfig.url}/research/executable-gate-research-org`,
     external: false,
   },
   {
     title: 'X_Quant — solo quantitative research program',
     meta: 'Solo research · 2024–2026',
     description:
-      'v1 (≈274K LOC) was retired in Aug 2026 after a formal post-mortem; its published metrics are withdrawn. v2 rebuilt the process under a written research constitution — pre-registration, an append-only decision register, a permanent attempts ledger and separate build/verify sessions — and closed every line of work it tested with a documented verdict; none reached paper or live trading.',
-    href: '/projects/x-quant',
+      'v1 (≈274K LOC) was retired in Aug 2026; its published metrics are withdrawn. v2 rebuilt the process under a written research constitution — pre-registration, an append-only decision register, a permanent attempts ledger and separate build/verify sessions. No strategy it tested was validated for trading; none reached paper or live trading.',
+    href: `${siteConfig.url}/projects/x-quant`,
     external: false,
   },
   {
     title: 'Alpha Lab — local research workstation for alpha research',
     meta: 'Private · in progress · 2026',
     description:
-      'Successor to X_Quant: point-in-time data, a fast vectorised backtest engine, a signal lab and a research-integrity engine (hash-chained trial ledger, sealed holdouts, DSR / PBO / SPA). Each phase closes with an independent AI-agent review and mutation tests; no real-return results yet.',
-    href: '/projects/alpha-lab',
+      'Successor to X_Quant: point-in-time data, a fast vectorised backtest engine, a signal lab and a research-integrity engine (hash-chained trial ledger, sealed holdouts, DSR / PBO / SPA). Key phases close with an independent AI-agent review, and the integrity statistics are mutation-tested; no real-return results yet.',
+    href: `${siteConfig.url}/projects/alpha-lab`,
     external: false,
   },
   {
@@ -91,7 +92,8 @@ const research = [
 const education = [
   {
     period: 'Oct 2024 — Aug 2026',
-    title: 'MSc Project & Process Management',
+    title: 'Master’s programme — Project & Process Management',
+    keepCase: true,
     organization: 'Collegium Civitas',
     location: 'Warsaw',
     current: false,
@@ -108,6 +110,7 @@ const education = [
   {
     period: 'Oct 2018 — Feb 2022',
     title: 'BEng Mechanical Engineering',
+    keepCase: true,
     organization: 'Silesian University of Technology',
     location: 'Gliwice',
     description: [
@@ -206,9 +209,14 @@ export default function CvPage() {
       {/* Name block — only in print / PDF, where the site header is hidden */}
       <div className="hidden print:block mb-4">
         <p className="cv-print-name font-pixel text-neutral-100">Kacper Saks</p>
-        <p className="text-neutral-400 text-[13px] text-left">
-          Warsaw, Poland · {siteConfig.links.email} · kacpersaks.dev ·
-          github.com/Ricko12vPL · linkedin.com/in/kacpersakspe
+        <p className="cv-print-contact text-neutral-400 text-[13px]">
+          Warsaw, Poland · {siteConfig.links.email} ·{' '}
+          {[siteConfig.url, siteConfig.links.github, siteConfig.links.linkedin].map((url, i) => (
+            <span key={url}>
+              {i > 0 && ' · '}
+              <a href={url}>{url.replace(/^https?:\/\//, '')}</a>
+            </span>
+          ))}
         </p>
       </div>
 
@@ -226,7 +234,7 @@ export default function CvPage() {
           production; in parallel, building probabilistic models and reproducible
           validation pipelines — deflated performance metrics, combinatorial
           purged cross-validation, calibration and uncertainty quantification —
-          and publishing the results (public preprint; Zenodo DOI). FEM-certified;
+          and publishing the results (a self-archived preprint; an open-source research artifact with a Zenodo DOI). FEM-certified;
           CATIA V5, SAP ERP and Python in daily use.
         </p>
       </section>
@@ -263,7 +271,18 @@ export default function CvPage() {
                 )}
               </div>
               <p className="text-accent/60 text-[12px] uppercase tracking-wider mb-2">
-                {item.meta}
+                {'metaHref' in item && item.metaHref ? (
+                  <a
+                    href={item.metaHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="print-no-url hover:text-accent transition-colors"
+                  >
+                    {item.meta}
+                  </a>
+                ) : (
+                  item.meta
+                )}
               </p>
               <p className="text-neutral-400 text-[14px] leading-[1.8]">
                 {item.description}
@@ -318,20 +337,21 @@ export default function CvPage() {
         <p className="text-neutral-300 text-[14px] leading-[1.9] max-w-2xl">
           <span className="text-neutral-100">Polish</span> (native) ·{' '}
           <span className="text-neutral-100">English</span> (professional working
-          proficiency — daily working language at Airbus). Holder of a Polish
-          national personnel security clearance; experienced with export-control
-          and classified-information regimes.
+          proficiency — daily working language at Airbus). Polish national (EU /
+          ESA Member State). Holder of a Polish national personnel security
+          clearance; experienced with export-control and classified-information
+          regimes.
         </p>
       </section>
 
       {/* LeetCode */}
-      <section className="mb-32">
+      <section className="mb-32 print-hidden">
         <SectionHeading title="leetcode" />
         <LeetcodeStats />
       </section>
 
       {/* Contact */}
-      <section>
+      <section className="print-hidden">
         <SectionHeading title="contact" />
         <div className="flex flex-wrap gap-8">
           {[

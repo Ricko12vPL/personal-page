@@ -38,7 +38,7 @@ The repository is private, so there is no public code link. This page describes 
 ┌─────────────────────────────────────────────────────────┐
 │  ACCESS PATHS                                           │
 │  web UI → FastAPI + WebSocket API (127.0.0.1 only)      │
-│  SQL console · notebook SDK · CLI · MCP server          │
+│  SQL console · notebook SDK · CLI · (MCP: planned F7)   │
 └────────────────────────────┬────────────────────────────┘
                              ▼
 ┌─────────────────────────────────────────────────────────┐
@@ -57,7 +57,7 @@ The repository is private, so there is no public code link. This page describes 
 └───────────────────┴──────────────────┴──────────────────┘
 ```
 
-- **One data service.** Every data access path (web UI, SQL console, notebook SDK, CLI, MCP server) goes through a single data-service process. It is the only writer to the DuckDB catalog and the only place that logs attempts.
+- **One data service.** Every data access path (web UI, SQL console, notebook SDK, CLI; an MCP server is planned for F7, and its restricted role is already enforced) goes through a single data-service process. It is the only writer to the DuckDB catalog and the only place that logs attempts.
 - **Seven one-way layers.** Communication runs one way, from data through computation, research and validation to presentation. The UI never computes a result itself; it always asks the engine through the API, so the same calls work from Jupyter or the CLI.
 - **Storage.** Parquet (zstd), Apache Arrow, DuckDB and lazy Polars. In F0 all data was normalised into 1.04 billion rows and 16 GB of Parquet, and checksums matched for all 127,227 raw files.
 - **Two engines, by design.** The vectorised engine answers "is there information in the signal?" in a fraction of a second; the event-driven engine answers "can it be executed?". Both must produce identical trade lists on reference strategies.
@@ -82,14 +82,14 @@ The build runs in phases, each with written completion criteria.
 | F2.1 | US equity/ETF data integration (inserted step) | 2026-10-04 | Done; work then returned to the plan |
 | F3 | Research integrity and optimisation | 2026-10-11 | All 3 criteria met; CI green |
 
-**Independent review, by AI agents.** The plan puts an independent code review after F0, F1, F3 and F5, focused on look-ahead, timestamps, seals, the trial ledger and engine parity. The reviewers are separate AI agents, and in F0 and F3 sceptic agents then tried to refute each finding before it counted. This is adversarial checking by AI agents, not an external or human audit.
+**Independent review, by AI agents.** The plan puts an independent code review after F0, F1, F3 and F5, focused on look-ahead, timestamps, seals, the trial ledger and engine parity. The reviewers are separate AI agents, and in F0, F1 and F3 sceptic agents then tried to refute each finding before it counted. This is adversarial checking by AI agents, not an external or human audit.
 
 - **F0:** 6 reviewers raised 44 issues; the sceptics confirmed 37 and 2 more were accepted; three fix rounds followed.
-- **F1:** 5 reviewers raised 32 issues.
+- **F1:** 5 reviewers raised 32 issues; refuting verifiers confirmed 26, rated 3 plausible and refuted 3.
 - **F2:** 5 checkers found 26 bugs.
 - **F3:** 36 findings, of which 34 were confirmed (1 critical, 7 high, 16 medium, 10 low) and 2 refuted. All 34 are fixed. Verifying the fixes turned up 8 more defects, all fixed as well.
 
-**Test-first fixes.** In F3, every fix began with a test that failed first.
+**Test-first fixes.** In the F3 fix round (and in F2's), every fix began with a test that failed first.
 
 **Mutation testing in two tiers.** Tier 1 is a curated set of named mutants of the statistics, the ceremony and the seals: 100% must be killed, in CI. Tier 2 runs mutmut 3.7 over the integrity statistics: at least 90% of covered mutants must be killed, and every survivor is triaged.
 
@@ -109,11 +109,11 @@ F3 closed with this evidence:
 **Measurement honesty.**
 
 - Every number in a phase report must cite a source: a file, a run or a test.
-- Benchmarks and real-data checks run from in-progress code use synthetic or placebo targets and report only timings. Real statistics are computed only after merge, from main.
+- Benchmarks run from in-progress code use synthetic or placebo targets and report only timings. Real research statistics are computed only after merge, from main.
 - The F3 benchmarks were re-measured on an idle machine, with system load below 1.5 before each case. The earlier run on a loaded machine is kept in the evidence file and marked out of date.
-- CI runs on GitHub Actions on synthetic data. Tests, end-to-end runs and screenshots use synthetic data only.
+- CI runs on GitHub Actions on synthetic data only, and so do the web tests, end-to-end runs and screenshots. A separate local suite reads the real data read-only; its evidence records counts and timings, never prices or returns.
 
-**An honest shortfall.** The plan's target of 1,000 variants in under 3 minutes is met on daily data (8.5–10.8 s) but **not** on NQ 1-minute data, where it measured about 4.2 minutes per 1,000. The F3 report records it as not met.
+**An honest shortfall.** The plan's target of 1,000 variants in under 3 minutes is met on a synthetic daily series (8.5–10.8 s; writing results to disk not timed) but **not** on NQ 1-minute data, where it measured about 4.2 minutes per 1,000. The F3 report records it as not met.
 
 ## Status and What's Next
 
@@ -123,7 +123,7 @@ As of 11 October 2026, F0–F3 and the inserted F2.1 step are complete. The phas
 - **Then:** F4, equities and cross-sections; F4K, crypto; F6, machine learning and mass search (purged CV, CPCV, placebo, an enforced trial budget); F7, portfolio, forward test and reports.
 - **Later:** a broker and paper-trading stage, as a separate decision.
 
-**No results yet.** Alpha Lab has no real-return results, and nothing on this page is a performance claim. So far the code has measured only timings, on synthetic or placebo targets. After the F3 merge the production trial ledger held one entry, the genesis block, and zero attempts, so there are no DSR, PBO or SPA figures on real data yet. When they come, they will come from a real sweep run from main and logged in the ledger before anyone reads them.
+**No results yet.** Alpha Lab has no research result on real returns, and nothing on this page is a performance claim. So far real data has been used only for correctness checks (reproducing X_Quant v2's reference strategies to the cent, look-ahead checks) and for timings with synthetic or placebo targets — none of which is a performance figure. After the F3 merge the production trial ledger held one entry, the genesis block, and zero attempts, so there are no DSR, PBO or SPA figures on real data yet. When they come, they will come from a real sweep run from main and logged in the ledger before anyone reads them.
 
 ## Tech Stack
 

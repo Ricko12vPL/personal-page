@@ -3,7 +3,9 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Not found',
+  description: 'This page does not exist.',
   robots: { index: false, follow: true },
+  openGraph: { title: 'Not found | Kacper Saks', description: 'This page does not exist.' },
 }
 
 export default function NotFound() {
