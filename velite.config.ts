@@ -11,7 +11,7 @@ const projects = defineCollection({
     updated: s.isodate().optional(),
     featured: s.boolean().default(false),
     priority: s.number().optional(),
-    status: s.enum(['completed', 'in-progress', 'archived']),
+    status: s.enum(['completed', 'in-progress', 'paused', 'archived']),
     tags: s.array(s.string()),
     github: s.string().optional(),
     live: s.string().optional(),
