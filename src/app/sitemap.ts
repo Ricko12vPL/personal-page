@@ -18,7 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const research = getPapers().map((p) => ({
     url: `${siteConfig.url}/research/${p.slug}`,
-    lastModified: new Date(p.updated ?? p.date),
+    lastModified: new Date(p.pageUpdated ?? p.updated ?? p.date),
   }))
 
   // Listing pages change when their newest item changes; a build date would

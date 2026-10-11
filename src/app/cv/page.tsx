@@ -58,8 +58,9 @@ const research = [
     title: 'worldclass-research-org — 39-role autonomous research organisation',
     meta: 'Open source · Zenodo DOI 10.5281/zenodo.20645678 (v0.2.0)',
     metaHref: 'https://doi.org/10.5281/zenodo.20645678',
+    repoHref: 'https://github.com/Ricko12vPL/worldclass-research-org',
     description:
-      'Multi-agent pipeline enforcing pre-registration and reproducibility across the research lifecycle (github.com/Ricko12vPL/worldclass-research-org); centrepiece pre-registered gate-calibration study, with a public erratum (v0.2.1) downgrading its cross-arm results to exploratory.',
+      'Multi-agent pipeline enforcing pre-registration and reproducibility across the research lifecycle; centrepiece pre-registered gate-calibration study, with a public erratum (v0.2.1) downgrading its cross-arm results to exploratory.',
     href: `${siteConfig.url}/research/executable-gate-research-org`,
     external: false,
   },
@@ -67,7 +68,7 @@ const research = [
     title: 'X_Quant — solo quantitative research program',
     meta: 'Solo research · 2024–2026',
     description:
-      'v1 (≈274K LOC) was retired in Aug 2026; its published metrics are withdrawn. v2 rebuilt the process under a written research constitution — pre-registration, an append-only decision register, a permanent attempts ledger and separate build/verify sessions. No strategy it tested was validated for trading; none reached paper or live trading.',
+      'v1 (≈274K LOC) was retired in Aug 2026; its published metrics are withdrawn. v2 rebuilt the process under a written research constitution — pre-registration, an append-only decision register, a permanent attempts ledger and separate build/verify sessions. No strategy it tested was validated for trading, and none is recorded as reaching paper or live trading.',
     href: `${siteConfig.url}/projects/x-quant`,
     external: false,
   },
@@ -282,6 +283,19 @@ export default function CvPage() {
                   </a>
                 ) : (
                   item.meta
+                )}
+                {'repoHref' in item && item.repoHref && (
+                  <>
+                    {' · '}
+                    <a
+                      href={item.repoHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="print-no-url hover:text-accent transition-colors"
+                    >
+                      GitHub ({item.repoHref.replace(/^https?:\/\//, '')})
+                    </a>
+                  </>
                 )}
               </p>
               <p className="text-neutral-400 text-[14px] leading-[1.8]">

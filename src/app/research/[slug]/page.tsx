@@ -34,7 +34,7 @@ export async function generateMetadata({
     path: `/research/${paper.slug}`,
     type: 'article',
     publishedTime: paper.date,
-    modifiedTime: paper.updated ?? paper.date,
+    modifiedTime: paper.pageUpdated ?? paper.updated ?? paper.date,
   })
 }
 

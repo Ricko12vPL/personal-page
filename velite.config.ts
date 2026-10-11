@@ -54,6 +54,9 @@ const papers = defineCollection({
     authors: s.array(s.string()),
     date: s.isodate(),
     updated: s.isodate().optional(),
+    // `updated` is the paper's own revision date (shown as "rev."); `pageUpdated`
+    // is when this page was last edited (sitemap and article:modified_time).
+    pageUpdated: s.isodate().optional(),
     venue: s.string(),
     status: s.enum(['preprint', 'published', 'working-paper']),
     abstract: s.string().max(2500),

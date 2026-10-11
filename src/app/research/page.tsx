@@ -28,8 +28,9 @@ export default function ResearchPage() {
           <span className="text-neutral-200">validation methodology</span> — the
           discipline of separating a real result from an artifact of search, and
           importing the tools one field paid for in hard lessons into another
-          that has not yet learned them. Every result below ships with
-          reproducible code and explicit epistemic labeling.
+          that has not yet learned them. Every result below carries explicit
+          epistemic labeling and says what is reproducible and what is not
+          yet public.
         </p>
       </div>
 

@@ -73,8 +73,8 @@ A separate verify session reproduced the verdict from the committed artifacts. I
 
 In the last week, a futures track worked through a public third-party rule set and the strategies built around it. These are build-session results; none was independently verified:
 
-- A public third-party NQ rule set was reproduced: it matched the published numbers but showed no edge, so it was not adopted.
-- A one-shot out-of-sample test of an ensemble of variants: Sharpe 0.19, profit factor 1.016 — **failed** four of five criteria.
+- A public third-party NQ rule set was reproduced: the replay matched its published ledger, which confirmed the numbers but did not demonstrate an edge. It received no pass and served, unchanged, as the baseline for the tests below.
+- A one-shot out-of-sample test of an ensemble of its variants: Sharpe 0.19, profit factor 1.016 — **failed** four of five criteria.
 - An ensemble with an in-sample Sharpe of 2.84 fell to **−0.88 and −0.48** on clean out-of-sample windows — **rejected as overfit**.
 - A second ensemble passed its out-of-sample test formally (Sharpe 1.18), but its gain came from the window in which its families were discovered — its pass was **treated as void**, and the paper forward test proposed for it never produced a recorded result.
 - A walk-forward of the *whole selection procedure* over 2014–2026 reached Sharpe 0.36 against 0.8 and PSR 90.2% against 95% — **failed**, with no threshold loosened.
@@ -88,7 +88,7 @@ The 23 September assessment that closed the ETF and equity phase names the real 
 
 ## Status
 
-No commits or register entries since 29 September 2026; the repository is not public. Its successor is [Alpha Lab](/projects/alpha-lab), which reads X_Quant's data read-only and deliberately starts its own attempts ledger from zero.
+No commits or register entries since 29 September 2026; neither version's repository is public. Its successor is [Alpha Lab](/projects/alpha-lab), which reads X_Quant's data read-only and deliberately starts its own attempts ledger from zero.
 
 ## Tech Stack
 
