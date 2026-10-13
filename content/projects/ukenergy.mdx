@@ -1,0 +1,69 @@
+---
+slug: ukenergy
+title: "UKenergy: Finding Sites for Battery Storage Across Great Britain"
+description: "A geospatial prospecting tool for battery-storage (BESS) projects in Great Britain, built on open data: 807,954 land parcels scored by distance to the grid, 2,625 BESS projects with their connection-queue status, and a learned site-ranking candidate tested on temporal and spatial hold-outs."
+date: 2026-09-23
+updated: 2026-10-13
+featured: true
+priority: 4
+status: in-progress
+tags: [python, geospatial, energy, battery-storage, open-data, machine-learning, leaflet, playwright]
+---
+
+## Overview
+
+UKenergy is a prospecting tool for battery energy storage (BESS) in Great Britain. It answers three practical questions: where is there land a battery could go, which battery projects are already in the pipeline and how far along they are, and which commercial and industrial (C&I) sites could use a battery behind the meter.
+
+It is a commercial tool, built in a small team in September 2026. I built most of it, working with Claude Code as a coding agent; a collaborator contributed the second version of the C&I module. The repository is private and the deployed app is password-protected, so there is no public link; this page describes what it does and how it was checked.
+
+## What It Does
+
+- **Land (England and Wales).** 807,954 freehold parcels of at least 0.5 ha that sit near the electricity network, drawn from all 318 local authorities in HM Land Registry's INSPIRE polygons. Every parcel carries its distance to lines of each voltage class, the nearest substation, published spare capacity where network operators publish it, land cover, which project size it fits (up to 2 MW, 2–20 MW, 20 MW+), and nearby storage, solar and wind projects.
+- **BESS projects (all of Great Britain).** 2,625 battery projects from the government's Renewable Energy Planning Database, each with its planning status, its place in the national grid operator's connection queue (Gate 1 / Gate 2, dates) and matching entries from network operators' embedded-capacity registers, plus a qualification card.
+- **C&I sites (the Midlands and Greater London).** 2,133 and 1,110 commercial and industrial buildings with a screening estimate of battery savings on published 2026/27 network tariffs. Where a building has no matching tariff area, the tool says "not computed" rather than showing a false zero, and it never borrows another region's tariffs.
+- **Investor view.** Low, base and high scenarios across three project structures; revenue and CAPEX assumptions are tied to published benchmarks, trading terms are explicitly hypothetical, and every figure is marked to be replaced by real quotes.
+
+The interface works in Polish and English, on a desktop or a 390 px phone, and opens on a one-page summary: what is confirmed, what the tool cannot confirm, and the next step.
+
+## The Data Pipeline
+
+Everything starts from open data: HM Land Registry INSPIRE polygons (OGL), OpenStreetMap lines, substations and land cover via Geofabrik (ODbL), the Renewable Energy Planning Database and the grid operator's queue data (OGL), and spare-capacity maps from the network operators that publish them.
+
+A Python pipeline (shapely, pyproj, NumPy, osmium) cuts parcels from the raw polygons, extracts the network from OpenStreetMap, computes distances and land cover per parcel, and packs the result into gzip tiles of 1° × 0.5°. The web app (Leaflet) loads a national top list at start-up and streams every parcel and line in view once you zoom in.
+
+## The Ranking, and How It Was Checked
+
+The first ranking was a transparent score from 0 to 100: 30% distance to the medium- and high-voltage network, 22% parcel area, 24% spare generation and demand capacity, 14% land cover and 10% site advantages (20 ha or more, solar or wind next door). Where an operator publishes no capacity map, the capacity term is neutral, so regions with better published data are not favoured by default.
+
+Validated against 2,098 storage projects in England and Wales, 73.4% had a selected parcel within 300 m and 99.2% within 1 km. Its AUC was 0.70 once the deliberate penalty for parcels next to existing storage was removed. The plan's target was an AUC above 0.8, but the check as first defined was mis-specified: the label almost always fell on parcels the score deliberately penalised, so the raw AUC was 0.16. The validation was redefined with temporal and spatial hold-outs and confidence intervals, and the second version was evaluated that way:
+
+- **A learned model** (L2-regularised logistic regression, written in NumPy) on parcel features only. Anything derived from nearby projects was excluded as label leakage, and so was the local authority.
+- **A temporal split.** The model learns from applications filed up to a cut-off date and is scored only on applications filed after it, on parcels with no earlier project nearby.
+- **A spatial split.** 50 × 50 km blocks in five groups; every parcel is scored by a model that never saw its group, with 95% intervals from a block bootstrap.
+
+| Cut-off | Version 1 AUC (no storage penalty) | Version 2 AUC (95% CI) |
+|---|---|---|
+| 31 Dec 2022 | 0.674 | **0.798** (0.781–0.814) |
+| 31 Dec 2023 | 0.660 | **0.795** (0.771–0.815) |
+
+Version 2 is clearly better, with a hit rate in the top 1,000 parcels 2.6 times higher. Its advantage does not come from the 2026 capacity maps, which could reflect later applications: the variant without them scores the same. But the plan's target was an AUC above 0.8, and the confidence intervals straddle it, so the evaluation does **not count the criterion as met**. It also names the limits: the network data is from 2026, and the label measures where developers apply, not where projects succeed.
+
+Version 2 is frozen as a candidate; the app still ranks with version 1 until a deployment decision, and the ranking only orders manual site checks — it is not a probability of success.
+
+## What the Tool Does Not Claim
+
+- **Evidence is graded.** A connection on a map, a budget estimate, a formal offer and accepted terms are kept apart, each with its source, date and scope. Source, date and scope are recorded as entered; the tool does not verify document contents or whether a connection is live.
+- **Owners and privacy.** Open data does not name landowners. An importer for HM Land Registry's corporate-ownership data is built but awaiting data access; for private individuals a draft process (one letter about a specific parcel, under UK GDPR and PECR, no profiling of private wealth) awaits UK legal review, and no outreach channel is enabled until it is approved.
+- **Safe exports.** CSV exports leave out notes and are protected against spreadsheet formula injection.
+
+## How It Was Built
+
+88 commits and 30 merged pull requests between 23 and 30 September 2026, with changes tracked against a written implementation plan whose statuses distinguish "confirmed", "partial", "to do", "unverified" and "blocked". A historical "done" never counts as current evidence. Python unit tests, model tests and Playwright acceptance tests (including the 390 px phone layout) run in CI on every push. On an emulated phone (390 × 844, throttled 4G, 4× slower CPU) the first screen appears in 0.7–0.9 s, and fetching the C&I data first cut full-map readiness from 4.47 s to 3.88 s (median of five runs); the 3 s target for the full map is not yet met.
+
+## Status
+
+The phase plan runs into early 2027. Phase-1 exit criteria (50 field-verified parcels, AUC > 0.8) are not yet met, and no pilot has started. The last commit was on 30 September 2026.
+
+## Tech Stack
+
+Python, NumPy, shapely, pyproj, osmium, Pillow, Leaflet, JavaScript, gzip map tiles, Supabase, Vercel, GitHub Actions, Playwright.
