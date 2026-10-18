@@ -7,6 +7,9 @@ const projects = defineCollection({
     slug: s.slug('projects'),
     title: s.string().max(120),
     description: s.string().max(300),
+    // Card wording for the GitHub profile (profile.json oneLiner): verbatim
+    // sentences from `description`, <= 110 characters.
+    summary: s.string().max(110).optional(),
     date: s.isodate(),
     updated: s.isodate().optional(),
     featured: s.boolean().default(false),
