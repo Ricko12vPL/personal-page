@@ -7,7 +7,8 @@
 //   GITHUB_TOKEN=... node scripts/...           # optional, only lifts API rate limits
 //
 // The script refuses to write if the parsed day counts do not add up to the
-// "N contributions in the last year" heading GitHub renders in the same HTML.
+// "N contributions in the last year" heading GitHub renders in the same HTML,
+// allowing only a small lag of the day cells behind the heading (see below).
 
 import { writeFile, mkdir } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
@@ -18,6 +19,10 @@ const CALENDAR_URL = `https://github.com/users/${LOGIN}/contributions`
 const PROFILE_URL = `https://api.github.com/users/${LOGIN}`
 const TIMEOUT_MS = 20_000
 const USER_AGENT = 'kacpersaks.dev-snapshot (+https://kacpersaks.dev)'
+// While commits are landing, GitHub renders the heading from slightly fresher data than the day
+// cells, so the heading can run a few contributions ahead (seen: 1,973 vs 1,964). Anything beyond
+// this share, or a heading below the cells, is treated as a broken parse.
+const MAX_HEADING_LEAD = 0.01
 const OUT_FILE = resolve(
   dirname(fileURLToPath(import.meta.url)),
   '../src/data/github-snapshot.json'
@@ -90,10 +95,11 @@ export function parseCalendar(html) {
 
   const total = days.reduce((sum, day) => sum + day.count, 0)
   const expected = headingTotal(html)
-  if (total !== expected) {
+  const lead = expected - total
+  if (lead < 0 || lead > Math.ceil(expected * MAX_HEADING_LEAD)) {
     throw new Error(`Sanity check failed: days sum to ${total}, heading says ${expected}`)
   }
-  return { total, from: days[0].date, to: days[days.length - 1].date, days }
+  return { total, headingTotal: expected, from: days[0].date, to: days[days.length - 1].date, days }
 }
 
 async function fetchProfile() {

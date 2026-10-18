@@ -75,6 +75,7 @@ describe('parseCalendar (scripts/github-snapshot.mjs)', () => {
   it('pairs day cells with their tooltips and checks the heading total', () => {
     expect(parseCalendar(calendarHtml('1,204'))).toEqual({
       total: 1204,
+      headingTotal: 1204,
       from: '2026-10-10',
       to: '2026-10-11',
       days: [
@@ -84,8 +85,18 @@ describe('parseCalendar (scripts/github-snapshot.mjs)', () => {
     })
   })
 
-  it('refuses a calendar whose days do not add up to the heading', () => {
-    expect(() => parseCalendar(calendarHtml('1,205'))).toThrow(/Sanity check failed/)
+  it('tolerates a heading a few contributions ahead of the day cells', () => {
+    const parsed = parseCalendar(calendarHtml('1,210'))
+    expect(parsed.total).toBe(1204)
+    expect(parsed.headingTotal).toBe(1210)
+  })
+
+  it('refuses a heading too far ahead of the day cells', () => {
+    expect(() => parseCalendar(calendarHtml('1,300'))).toThrow(/Sanity check failed/)
+  })
+
+  it('refuses a heading below the day cells', () => {
+    expect(() => parseCalendar(calendarHtml('1,203'))).toThrow(/Sanity check failed/)
   })
 
   it('refuses a day without a tooltip', () => {
