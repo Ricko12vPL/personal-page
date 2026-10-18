@@ -1,0 +1,43 @@
+---
+slug: starting-job-agent
+title: "Starting job-agent: Handing My Job Search to Agents, Under Rules I Set"
+description: "On 15 October 2026 I started job-agent: AI agents that find fully remote roles, review them twice, write claim-checked applications and fill the forms, while captchas and judgement calls stay with me. Why I built it, the rules I set, and the first three days."
+date: 2026-10-15
+updated: 2026-10-18
+published: true
+tags: [ai-agents, automation, claude, playwright, python]
+---
+
+*Written on 18 October 2026 and dated to the day the project started. The current state is on the [job-agent project page](/projects/job-agent).*
+
+## Why
+
+I work full time. A serious job search is a second job: finding the roles worth applying for, reading each posting properly, tailoring a CV and a cover letter, and filling in the same fields on a different form every time. Most of that is a pipeline, and pipelines are what I build.
+
+The danger in automating it is obvious. An AI that writes applications at volume will, sooner or later, claim something that is not true. So the first design question was not how to apply faster, but how to make sure nothing it sends is something I would not sign.
+
+## The Rules
+
+Most were in place on day one. Fully remote only and the no-AI rule came on day two, and the never-resend rule on day three, after a browser crash.
+
+- **Every claim comes from a fact bank.** The CV, the cover letter and every form answer are traced sentence by sentence to a written file of facts about me. An independent verifier agent has to pass each package; two failed rounds send it to me.
+- **Two opinions before a yes.** A job goes ahead only if Claude's rubric score and a blind second opinion from a separate agent both clear the bar.
+- **Fully remote only.** Hybrid, on-site and relocation roles are out of scope.
+- **Humans do human checks.** The bot never solves a captcha, never creates accounts, never pays fees and never applies through LinkedIn. A captcha means the form is handed to me. The one exception is an e-mail verification code sent to my own inbox: the bot reads it there and types it in.
+- **If a form says no AI, the answers are mine.** The bot fills only the factual fields and attaches no cover letter.
+- **Never twice.** One application per company per 30 days (unless two roles are clearly for different teams and I approve both), and a form that may already have been sent is never sent again automatically.
+
+## How It Works
+
+Every six hours, a scheduled job pulls postings from a rotating share of about 33,000 company job boards and filters out everything that does not fit. Each cycle, agents triage the queue, review the promising jobs twice and prepare an application package for each one that passes. A browser bot then fills the form, reads every value back from the page, and only then presses Submit. It runs in the cloud, or on my own Mac when a form needs a person present. A confirmation e-mail, or a checked confirmation screenshot when none arrives, is what finally marks an application as sent.
+
+## The First Three Days
+
+*Update, 18 October 2026.*
+
+- **Volume.** The job store holds 25,739 postings. 388 jobs had a full review, 114 application packages were prepared, and 70 are marked applied: about half sent by the bot on its own, the rest submitted by me after the bot had filled the form, or sent by me by hand.
+- **Forms are the hard part.** Every applicant-tracking system builds its forms differently, and they change. The hardest forms needed many attempts, and a few I finished by hand; the test suite has 94 tests, including fixture forms for the awkward cases.
+- **The mailbox is the ground truth.** An application counts as sent when the employer's confirmation arrives, or, if an employer sends none, after a checked confirmation screenshot or my own word. It never counts just because the bot clicked.
+- **Stopping works.** On 17 October I paused everything: one setting stops every browser runner, and I switched off the schedules too. While it was paused I released only the forms I named. It is still paused. Being able to stop it instantly matters more to me than how much it can send.
+
+The aim is not to send as many applications as possible. It is to send only the ones I would have written myself, if I had the time.

@@ -1,0 +1,56 @@
+---
+slug: job-agent
+title: "job-agent: A Job Search Run by Agents, Under Rules I Set"
+description: "A system that finds fully remote roles across ~33,000 company job boards, reviews each with two independent AI opinions, writes a tailored, claim-checked CV and cover letter, and fills the application in a real browser. Captchas and judgement calls stay with me."
+date: 2026-10-15
+updated: 2026-10-18
+featured: false
+status: paused
+tags: [python, ai-agents, claude, playwright, github-actions, automation, llm]
+---
+
+## Overview
+
+job-agent runs my job search as a pipeline. It finds fully remote software, AI, data and quant roles, decides which ones actually fit, prepares a tailored application for each, fills and submits the forms in a real browser, and keeps a ledger so that no company is ever applied to twice by accident.
+
+Claude (Claude Code) plays the hiring manager: it screens, reviews and writes. I am the candidate and the owner: I set the rules, solve every captcha, and can stop every browser runner with one setting. The repository is private, because it holds my answers and documents; this page describes how it works.
+
+## How a Job Flows Through It
+
+1. **Discover.** Every six hours a GitHub Actions job pulls postings from a rotating share of about 33,000 company job boards across nine applicant-tracking systems (the busiest every run, the rest every six to nine days), plus job boards, RSS feeds and a daily dataset snapshot, into one job store. Hard filters drop anything that is not fully remote, too senior, outside the target roles, not in English or stale.
+2. **Screen.** Each cycle, three parallel AI subagents triage up to 300 waiting jobs into "worth a full review" or "skip".
+3. **Review.** Up to 40 jobs a cycle get a rubric score from Claude and a blind second opinion from an independent subagent. A job goes ahead only if the mean is at least 65, both scores are at least 60, and nothing blocks it outright.
+4. **Prepare.** Each approved job gets its own package: a one-page CV, a cover letter and the form answers, rendered to DOCX and PDF. Every sentence is traced to a written fact bank in a claims file, and an independent verifier subagent must return PASS: no unsupported or exaggerated claim, nothing outside the facts. Two failed rounds send the package to manual review.
+5. **Submit.** A browser bot fills the form, reads every typed value back from the page and compares it with the plan before it presses Submit. It runs in the cloud on GitHub Actions, and on my own Mac for forms that need a human present.
+6. **Confirm.** A confirmation e-mail marks an application as applied. When none arrives, only an audited confirmation screenshot or my own word does. A click alone never counts.
+
+## The Rules
+
+These are enforced in code wherever possible, not just written in instructions.
+
+- **Truthfulness.** Every claim comes from the fact bank. No invented skills, numbers or experience, and work-authorisation questions are answered truthfully even when that costs the application.
+- **Humans do human checks.** The bot never solves a captcha, never creates accounts, never pays fees, never uploads identity documents and never applies through LinkedIn. A captcha means the form is handed to me in an open browser window. The one exception is an e-mail verification code sent to my own inbox: the bot reads it there and types it in.
+- **Respect the employer's rules.** If a form asks candidates not to use AI for their answers, the bot writes none of them and attaches no cover letter; I write those answers myself.
+- **Never twice.** One application per company per 30 days, unless two roles are clearly for different teams and I approve both. A form that may already have been sent is never sent again automatically. Every Submit press of mine is recorded within a minute, and the mailbox is the ground truth.
+- **A last check before every click.** Before each Submit, the bot re-reads the repository. If the package's status has changed since its run started, or a pause or hold is set, it does not click. One setting stops every browser runner.
+- **Privacy.** Passwords live only in the macOS Keychain. The mailbox is read only for confirmations and verification codes, as headers and a short snippet, and message bodies are never stored.
+- **Everything is traceable.** Every status change is a git commit, and a ledger lists every package by status.
+
+## Engineering Notes
+
+- **Two runners, one owner per status.** The cloud runner owns packages that are ready to send; the Mac owns anything that needs me. Neither touches the other's packages.
+- **Forms are the hard part.** Applicant-tracking systems differ and change their markup (comboboxes, hidden file inputs, fields re-rendered while you type), so field detection keeps being extended; the hardest forms needed many attempts, and a few I finished by hand. The suite has 94 Python tests, including fixture forms for the awkward cases.
+- **Read-back before Submit.** Typing a value is not the same as the page accepting it, so every field is read back, and a mismatch stops the submission.
+- **Pausing works.** On 17 October I paused everything. While it was paused I released only the forms I named, one at a time, and everything else stayed held. It is still paused.
+
+## First Days
+
+In its first three days, by 18 October, the job store held 25,739 postings, 388 jobs had a full review, 114 application packages were prepared, and 70 of them were marked applied: about half sent by the bot on its own, the rest submitted by me after the bot had filled the form, or sent by me by hand. Most of the 548 commits in that time are the agents' own status updates.
+
+## Status
+
+Paused since 17 October 2026: no runner opens or submits a form until I resume it, and only the read-only mailbox check still runs. It is a personal tool, not a product.
+
+## Tech Stack
+
+Python, Playwright, GitHub Actions, Claude Code with subagents, Node.js (DOCX rendering), YAML configuration, JSONL job store, macOS launchd and Keychain, Proton Mail Bridge, pytest.
